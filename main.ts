@@ -7,8 +7,8 @@ interface MyPluginSettings {
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
-}
+	mySetting: 'default',
+};
 
 export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
@@ -34,7 +34,7 @@ export default class MyPlugin extends Plugin {
 			name: 'Open sample modal (simple)',
 			callback: () => {
 				new SampleModal(this.app).open();
-			}
+			},
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
 		this.addCommand({
@@ -43,7 +43,7 @@ export default class MyPlugin extends Plugin {
 			editorCallback: (editor: Editor, view: MarkdownView) => {
 				console.log(editor.getSelection());
 				editor.replaceSelection('Sample Editor Command');
-			}
+			},
 		});
 		// This adds a complex command that can check whether the current state of the app allows execution of the command
 		this.addCommand({
@@ -62,7 +62,7 @@ export default class MyPlugin extends Plugin {
 					// This command will only show up in Command Palette when the check function returns true
 					return true;
 				}
-			}
+			},
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
@@ -78,9 +78,7 @@ export default class MyPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
-	onunload() {
-
-	}
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -97,12 +95,12 @@ class SampleModal extends Modal {
 	}
 
 	onOpen() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.setText('Woah!');
 	}
 
 	onClose() {
-		const {contentEl} = this;
+		const { contentEl } = this;
 		contentEl.empty();
 	}
 }
@@ -116,19 +114,21 @@ class SampleSettingTab extends PluginSettingTab {
 	}
 
 	display(): void {
-		const {containerEl} = this;
+		const { containerEl } = this;
 
 		containerEl.empty();
 
 		new Setting(containerEl)
 			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
+			.setDesc("It's a secret")
+			.addText((text) =>
+				text
+					.setPlaceholder('Enter your secret')
+					.setValue(this.plugin.settings.mySetting)
+					.onChange(async (value) => {
+						this.plugin.settings.mySetting = value;
+						await this.plugin.saveSettings();
+					}),
+			);
 	}
 }
