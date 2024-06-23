@@ -26,6 +26,37 @@ export class BudgetCodeBlock {
 		return wrapper;
 	}
 
+	private createTableCell(row: HTMLTableRowElement, value: string, className = ''): HTMLTableCellElement {
+		const cell = row.createEl('td');
+		cell.className = className;
+		const wrapper = cell.createEl('div', { attr: { class: 'budget-table-cell' } });
+		wrapper.innerHTML = value;
+
+		return cell;
+	}
+
+	private createTableHeader(table: HTMLTableElement, text: string): void {
+		const categoryRow = table.createEl('tr');
+		const cell = categoryRow.createEl('td', { attr: { colspan: 3 } });
+		cell.innerHTML = `<strong class="budget-table-cell budget-table-title">${text}</strong>`;
+	}
+
+	private createTableCategorySummary(table: HTMLTableElement, sum: number): void {
+		const summaryRow = table.createEl('tr');
+		summaryRow.createEl('td');
+
+		this.createTableCell(summaryRow, this.moneyFormatter.format(sum), 'text-right budget-amount');
+		this.createTableCell(summaryRow, '');
+	}
+
+	private createTableSummary(table: HTMLTableElement, sum: number): void {
+		const summaryRow = table.createEl('tr');
+		summaryRow.createEl('td');
+
+		this.createTableCell(summaryRow, this.moneyFormatter.format(sum), 'text-right budget-amount');
+		this.createTableCell(summaryRow, '');
+	}
+
 	public render() {
 		const data = this.parser.parseCode();
 		const categories = Array.from(data.keys());
@@ -34,17 +65,20 @@ export class BudgetCodeBlock {
 		const table = this.el.createEl('table', { attr: { class: 'budget-table' } });
 
 		categories.forEach((category) => {
-			const categoryRow = table.createEl('tr');
-			categoryRow.createEl('td', { text: category, attr: { colspan: 3 } });
+			this.createTableHeader(table, category);
 
-			const rows = data.get(category) || [];
-			rows.forEach((row) => {
+			const dataValue = data.get(category) || { rows: [], meta: { sum: 0 } };
+			dataValue.rows.forEach((row) => {
 				const rowEl = table.createEl('tr');
-				rowEl.createEl('td', { text: row.name });
-				rowEl.createEl('td', { text: this.moneyFormatter.format(row.amount), attr: { class: 'text-right' } });
-				rowEl.createEl('td', { text: row.comment });
+				this.createTableCell(rowEl, row.name, 'budget-name');
+				this.createTableCell(rowEl, this.moneyFormatter.format(row.amount), 'text-right budget-amount');
+				this.createTableCell(rowEl, row.comment, 'budget-comment');
 			});
+			this.createTableCategorySummary(table, dataValue.meta.sum);
 		});
+
+		const sum = Array.from(data.values()).reduce((acc, value) => acc + value.meta.sum, 0);
+		this.createTableSummary(table, sum);
 
 		wrapper.appendChild(table);
 		this.el.appendChild(wrapper);
