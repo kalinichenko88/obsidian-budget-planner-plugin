@@ -74,11 +74,16 @@ export class BudgetCodeBlock {
 				this.createTableCell(rowEl, this.moneyFormatter.format(row.amount), 'text-right budget-amount');
 				this.createTableCell(rowEl, row.comment, 'budget-comment');
 			});
-			this.createTableCategorySummary(table, dataValue.meta.sum);
+
+			if (dataValue.meta.sum > 0) {
+				this.createTableCategorySummary(table, dataValue.meta.sum);
+			}
 		});
 
 		const sum = Array.from(data.values()).reduce((acc, value) => acc + value.meta.sum, 0);
-		this.createTableSummary(table, sum);
+		if (sum > 0) {
+			this.createTableSummary(table, sum);
+		}
 
 		wrapper.appendChild(table);
 		this.el.appendChild(wrapper);
