@@ -42,7 +42,7 @@ export class BudgetCodeBlock {
 	}
 
 	private createTableCategorySummary(table: HTMLTableElement, sum: number): void {
-		const summaryRow = table.createEl('tr');
+		const summaryRow = table.createEl('tr', { attr: { class: 'budget-category-summary' } });
 		summaryRow.createEl('td');
 
 		this.createTableCell(summaryRow, this.moneyFormatter.format(sum), 'text-right budget-amount');
@@ -50,7 +50,7 @@ export class BudgetCodeBlock {
 	}
 
 	private createTableSummary(table: HTMLTableElement, sum: number): void {
-		const summaryRow = table.createEl('tr');
+		const summaryRow = table.createEl('tr', { attr: { class: 'budget-summary' } });
 		summaryRow.createEl('td');
 
 		this.createTableCell(summaryRow, this.moneyFormatter.format(sum), 'text-right budget-amount');

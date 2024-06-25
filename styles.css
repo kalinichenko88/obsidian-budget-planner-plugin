@@ -26,3 +26,10 @@
 	width: 20%;
 }
 
+.budget-wrapper > table > tr.budget-summary {
+	background-color: var(--color-base-40);
+}
+
+.budget-wrapper > table > tr.budget-category-summary {
+	background-color: var(--color-base-30);
+}
