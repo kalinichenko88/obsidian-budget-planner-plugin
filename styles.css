@@ -26,10 +26,19 @@
 	width: 20%;
 }
 
+.budget-wrapper > table > tr:nth-child(odd) {
+	background-color: var(--color-base-10);
+}
+
 .budget-wrapper > table > tr.budget-summary {
 	background-color: var(--color-base-40);
 }
 
 .budget-wrapper > table > tr.budget-category-summary {
 	background-color: var(--color-base-30);
+}
+
+.budget-wrapper > table > tr.budget-category {
+	background-color: var(--color-base-60);
+	color: var(--color-base-20);
 }
