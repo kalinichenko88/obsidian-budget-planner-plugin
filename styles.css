@@ -1,5 +1,6 @@
 .budget-wrapper > table {
 	--table-width: 100%;
+	width: var(--table-width);
 }
 
 .budget-wrapper > table td {
