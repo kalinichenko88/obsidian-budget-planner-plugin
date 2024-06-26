@@ -38,7 +38,7 @@ export class BudgetCodeBlock {
 	private createTableHeader(table: HTMLTableElement, text: string): void {
 		const categoryRow = table.createEl('tr', { attr: { class: 'budget-category' } });
 		const cell = categoryRow.createEl('td', { attr: { colspan: 3 } });
-		cell.innerHTML = `<strong class="budget-table-cell budget-table-title">${text}</strong>`;
+		cell.innerHTML = `<span class="budget-table-cell budget-table-title">${text}</span>`;
 	}
 
 	private createTableCategorySummary(table: HTMLTableElement, sum: number): void {

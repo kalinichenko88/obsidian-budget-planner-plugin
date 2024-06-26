@@ -13,6 +13,7 @@
 
 .budget-wrapper > table td  > .budget-table-title {
 	font-size: 0.9em;
+	font-weight: bold;
 }
 
 .budget-wrapper > table td.text-right {
@@ -33,6 +34,7 @@
 
 .budget-wrapper > table > tr.budget-summary {
 	background-color: var(--color-base-40);
+	color: var(--color-base-10);
 }
 
 .budget-wrapper > table > tr.budget-category-summary {
@@ -41,5 +43,5 @@
 
 .budget-wrapper > table > tr.budget-category {
 	background-color: var(--color-base-60);
-	color: var(--color-base-20);
+	color: var(--color-base-10);
 }
