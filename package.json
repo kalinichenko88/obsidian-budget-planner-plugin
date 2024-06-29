@@ -1,15 +1,22 @@
 {
 	"name": "obsidian-budget-planner-plugin",
 	"version": "1.0.0",
-	"description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+	"description": "A custom code block plugin for Obsidian that provides a user-friendly table for budget planning.",
+	"keywords": [
+		"obsidian",
+		"plugin",
+		"budget",
+		"planner",
+		"table",
+		"code block"
+	],
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
-	"keywords": [],
-	"author": "",
+	"author": "Ivan Kalinichenko <joker.bsg@gmail.com>",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.18.101",
