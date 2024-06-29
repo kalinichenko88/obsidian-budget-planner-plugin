@@ -3,9 +3,8 @@
 	"name": "Budget Planner",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Ivan Kalinichenko",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"description": "A custom code block plugin for Obsidian that provides a table for budget planning.",
+	"author": "Ivan Kalinichenko <joker.bsg@gmail.com>",
+	"authorUrl": "https://github.com/kalinichenko88/obsidian-budget-planner-plugin",
 	"isDesktopOnly": false
 }
