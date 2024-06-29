@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+echo "Release starting..."
+
+DIST_DIR=dist
+
+echo "Dist directory clearing"
+if [ -d $DIST_DIR ]; then
+	rm -rf $DIST_DIR
+	mkdir $DIST_DIR
+fi
+
+npm run build
+
+if [ -d main.js ]; then
+	echo "main.js not found. Build failed."
+	exit 1
+fi
+
+echo "Copying files to dist directory"
+
+mv main.js $DIST_DIR
+cp styles.css $DIST_DIR
+cp manifest.json $DIST_DIR
+cp versions.json $DIST_DIR
+
+echo "Release complete."
