@@ -9,7 +9,7 @@ on:
       - '**'
 
 jobs:
-  deploy:
+  linting:
     runs-on: ubuntu-22.04
 
     steps:
