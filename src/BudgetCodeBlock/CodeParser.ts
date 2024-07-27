@@ -36,7 +36,7 @@ export class CodeParser {
 		let category = '';
 		this.rawData.forEach((line) => {
 			if (!line.startsWith('\t')) {
-				category = line.replace(':', '');
+				category = line.replace(/:$/, '');
 				this.blockData.set(category, { rows: [], meta: { sum: 0 } });
 			} else {
 				const [name, amount, comment] = line.split('|').map((cell) => cell.trim());
