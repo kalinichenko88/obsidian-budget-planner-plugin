@@ -24,6 +24,7 @@ export class CodeParser {
 	private addRowToBlockData(key: string, row: Row): void {
 		const dataValue: BlockDataValue | undefined = this.blockData.get(key);
 		if (!dataValue) {
+			this.blockData.set(key, { rows: [row], meta: { sum: row.amount } });
 			return;
 		}
 		dataValue.rows.push(row);
@@ -43,16 +44,18 @@ export class CodeParser {
 
 	public parseCode(): BlockData {
 		let category = '';
-		this.rawData.forEach((line) => {
-			if (!line.startsWith('\t')) {
+
+		for (const line of this.rawData) {
+			if (line.endsWith(':') && !line.startsWith('\t')) {
 				category = line.replace(/:$/, '');
 				this.blockData.set(category, { rows: [], meta: { sum: 0 } });
-			} else {
-				const [name, amount, comment] = line.split('|').map((cell) => cell.trim());
-				const row: Row = { name, amount: this.parseSumFromRow(amount), comment: comment || '' };
-				this.addRowToBlockData(category, row);
+				continue;
 			}
-		});
+
+			const [name, amount, comment] = line.split('|').map((cell) => cell.trim());
+			const row: Row = { name, amount: this.parseSumFromRow(amount), comment: comment || '' };
+			this.addRowToBlockData(category, row);
+		}
 
 		return this.blockData;
 	}
