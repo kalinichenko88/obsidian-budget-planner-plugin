@@ -7,6 +7,7 @@ Obsidian using a markdown code block named budget.
 
 ### Without category
 
+```
 ```budget
 Spotify    | $4.99
 Youtube    | $16.99
@@ -15,6 +16,7 @@ Youtube    | $16.99
 
 ### With category
 
+```
 ```budget
 Online services:
 	Spotify    | $4.99
