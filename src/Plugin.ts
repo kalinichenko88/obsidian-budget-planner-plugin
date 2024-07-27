@@ -33,10 +33,6 @@ class BudgetPlannerPlugin extends Plugin {
 
 		this.addSettingTab(new SettingTab(this.app, this));
 	}
-
-	onunload() {
-		console.log('unloading Budget Planner Plugin');
-	}
 }
 
 export default BudgetPlannerPlugin;
