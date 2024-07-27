@@ -32,6 +32,15 @@ export class CodeParser {
 		this.summarizeBlockData(key);
 	}
 
+	private parseSumFromRow(amount: string): number {
+		const result = parseFloat(amount.replace(/[^0-9.]/g, ''));
+		if (Number.isNaN(result)) {
+			return 0;
+		}
+
+		return result;
+	}
+
 	public parseCode(): BlockData {
 		let category = '';
 		this.rawData.forEach((line) => {
@@ -40,7 +49,7 @@ export class CodeParser {
 				this.blockData.set(category, { rows: [], meta: { sum: 0 } });
 			} else {
 				const [name, amount, comment] = line.split('|').map((cell) => cell.trim());
-				const row: Row = { name, amount: Number(amount), comment: comment || '' };
+				const row: Row = { name, amount: this.parseSumFromRow(amount), comment: comment || '' };
 				this.addRowToBlockData(category, row);
 			}
 		});
