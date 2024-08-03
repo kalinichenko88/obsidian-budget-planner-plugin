@@ -1,5 +1,9 @@
-import esbuild from 'esbuild';
+import path from 'node:path';
+import fs from 'node:fs';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+
+import esbuild from 'esbuild';
 import builtins from 'builtin-modules';
 
 const banner = `/*
@@ -9,6 +13,18 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = process.argv[2] === 'production';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const copyFiles = () => {
+	const files = ['manifest.json', 'styles.css'];
+	const outDir = 'dist';
+
+	files.forEach((file) => {
+		fs.copyFileSync(path.join(__dirname, file), path.join(outDir, file));
+	});
+};
 
 const context = await esbuild.context({
 	banner: {
@@ -37,12 +53,12 @@ const context = await esbuild.context({
 	logLevel: 'info',
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
-	outfile: 'main.js',
+	outfile: 'dist/main.js',
 });
 
 if (prod) {
-	await context.rebuild();
+	await context.rebuild().then(() => copyFiles());
 	process.exit(0);
 } else {
-	await context.watch();
+	await context.watch().then(() => copyFiles());
 }
