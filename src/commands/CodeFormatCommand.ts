@@ -37,7 +37,6 @@ export class CodeFormatCommand {
 		let maxNameLength = 0;
 		let maxAmountLength = 0;
 
-		// Первый проход - находим максимальные длины колонок
 		for (const row of rows) {
 			if (!row.startsWith('\t')) {
 				continue;
@@ -47,7 +46,6 @@ export class CodeFormatCommand {
 			maxAmountLength = Math.max(maxAmountLength, amount.length);
 		}
 
-		// Второй проход - форматируем строки
 		for (const row of rows) {
 			if (this.isCategoryRow(row)) {
 				result += row.trim() + '\n';
@@ -59,11 +57,9 @@ export class CodeFormatCommand {
 
 			const [name, amount = '', comment = ''] = row.split('|').map((cell) => cell.trim());
 
-			// Добавляем пробелы после имени и суммы для выравнивания
 			const paddedName = name.padEnd(maxNameLength, ' ');
 			const paddedAmount = amount.padEnd(maxAmountLength, ' ');
 
-			// Собираем строку с правильным форматированием
 			let formattedRow = `\t${paddedName} | ${paddedAmount}`;
 			if (comment) {
 				formattedRow += ` | ${comment}`;
@@ -71,7 +67,6 @@ export class CodeFormatCommand {
 			result += formattedRow + '\n';
 		}
 
-		// Убираем последний перенос строки, если он есть
 		return result;
 	}
 
