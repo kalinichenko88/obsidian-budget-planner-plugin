@@ -42,7 +42,7 @@ export class CodeFormatCommand {
 			if (!row.startsWith('\t')) {
 				continue;
 			}
-			const [name, amount = '', comment = ''] = row.split('|').map((cell) => cell.trim());
+			const [name, amount = ''] = row.split('|').map((cell) => cell.trim());
 			maxNameLength = Math.max(maxNameLength, name.length);
 			maxAmountLength = Math.max(maxAmountLength, amount.length);
 		}
