@@ -1,10 +1,11 @@
 import { Editor, Plugin } from 'obsidian';
 
+import type { Settings } from '../settings';
 import { CodeFormatCommand } from './CodeFormatCommand';
 
-type Asd = Plugin & { settings: { defaultBudgetBlock: string } };
+type BudgetPlugin = Plugin & { settings: Settings };
 
-export const registerCommands = (plugin: Asd) => {
+export const registerCommands = (plugin: BudgetPlugin) => {
 	plugin.addCommand({
 		id: 'insert-budget-planner',
 		name: 'Insert Budget Planner',
