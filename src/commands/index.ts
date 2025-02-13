@@ -1,0 +1,1 @@
+export { registerCommands } from './commands';

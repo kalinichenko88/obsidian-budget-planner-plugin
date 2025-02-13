@@ -1,8 +1,6 @@
-export interface PluginSettings {
-	defaultBudgetBlock: string;
-}
+import type { Settings } from './types';
 
-export const DEFAULT_SETTINGS: PluginSettings = {
+export const DEFAULT_SETTINGS: Settings = {
 	defaultBudgetBlock:
 		'Category 1:\n' +
 		'\tRent       | 1000 | Comment\n' +

@@ -1,11 +1,11 @@
-import { Editor, MarkdownView, Plugin } from 'obsidian';
+import { Plugin } from 'obsidian';
 
-import { PluginSettings, DEFAULT_SETTINGS } from './settings';
-import { BudgetCodeBlock } from './BudgetCodeBlock';
-import { SettingTab } from './SettingTab';
+import { DEFAULT_SETTINGS, SettingTab, type Settings } from './settings';
+import { registerCodeBlocks } from './codeblocks';
+import { registerCommands } from './commands';
 
 class BudgetPlannerPlugin extends Plugin {
-	settings: PluginSettings;
+	settings: Settings;
 
 	private async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -18,18 +18,8 @@ class BudgetPlannerPlugin extends Plugin {
 	public async onload() {
 		await this.loadSettings();
 
-		this.addCommand({
-			id: 'insert-budget-planner',
-			name: 'Insert Budget Planner',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				editor.replaceSelection('```budget\n' + this.settings.defaultBudgetBlock + '\n```');
-			},
-		});
-
-		this.registerMarkdownCodeBlockProcessor('budget', (source, el, ctx) => {
-			const codeBlock = new BudgetCodeBlock(source, el, ctx);
-			codeBlock.render();
-		});
+		registerCommands(this);
+		registerCodeBlocks(this);
 
 		this.addSettingTab(new SettingTab(this.app, this));
 	}
