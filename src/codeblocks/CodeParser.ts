@@ -3,11 +3,11 @@ import type { Row } from './models/Row';
 import type { Meta } from './models/Meta';
 
 export class CodeParser {
-	private readonly rawData: string[];
 	private readonly blockData: BlockData = new Map<string, BlockDataValue>();
+	protected readonly rawData: string[];
 
-	constructor(code: string) {
-		this.rawData = code.split('\n');
+	constructor(protected readonly source: string) {
+		this.rawData = source.split('\n');
 	}
 
 	private summarizeBlockData(key: string): void {
@@ -42,17 +42,21 @@ export class CodeParser {
 		return result;
 	}
 
+	protected isCategoryRow(line: string): boolean {
+		return line.endsWith(':') && !line.startsWith('\t');
+	}
+
 	public parseCode(): BlockData {
 		let category = '';
 
 		for (const line of this.rawData) {
-			if (line.endsWith(':') && !line.startsWith('\t')) {
+			if (this.isCategoryRow(line)) {
 				category = line.replace(/:$/, '');
 				this.blockData.set(category, { rows: [], meta: { sum: 0 } });
 				continue;
 			}
 
-			const [name, amount, comment] = line.split('|').map((cell) => cell.trim());
+			const [name, amount = '', comment = ''] = line.split('|').map((cell) => cell.trim());
 			const row: Row = { name, amount: this.parseSumFromRow(amount), comment: comment || '' };
 			this.addRowToBlockData(category, row);
 		}

@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 
-import Plugin from './Plugin';
+import Plugin from '../Plugin';
 
 export class SettingTab extends PluginSettingTab {
 	plugin: Plugin;
