@@ -1,6 +1,5 @@
-import { nanoid } from 'nanoid';
-
 import type { TableCategories, TableRows, CategoryId, TableRow } from './models';
+import { generateId } from './helpers/generateId';
 
 type ParseReturn = {
 	categories: TableCategories;
@@ -35,7 +34,7 @@ export class BudgetCodeParser {
 
 		for (const line of this.rawData) {
 			if (this.isCategoryRow(line)) {
-				categoryId = nanoid();
+				categoryId = generateId();
 				this.categories.set(categoryId, line.replace(/:$/, ''));
 				continue;
 			}
@@ -50,7 +49,7 @@ export class BudgetCodeParser {
 			const comment = isFirstCellCheckbox ? rowLine[3] : rowLine[2];
 
 			const row: TableRow = {
-				id: nanoid(),
+				id: generateId(),
 				checked,
 				name,
 				amount: parseFloat(amount) || 0,
