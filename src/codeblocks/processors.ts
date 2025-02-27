@@ -6,12 +6,7 @@ export const registerCodeBlocks = (plugin: Plugin) => {
 	plugin.registerMarkdownCodeBlockProcessor(
 		'budget',
 		(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-			const codeBlock = new BudgetCodeBlock(source, el, ctx);
-			codeBlock.render();
-
-			// ctx.addChild(() => {
-			// 	codeBlock.destroy();
-			// });
+			ctx.addChild(new BudgetCodeBlock(el, source));
 		},
 	);
 };

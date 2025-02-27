@@ -1,51 +1,59 @@
-import { type MarkdownPostProcessorContext } from 'obsidian';
+import { MarkdownRenderChild } from 'obsidian';
 import { mount, unmount } from 'svelte';
+import { writable } from 'svelte/store';
 
-import type { TableCategories, TableRows } from './models';
-import Table from './ui/componets/Table/Table.svelte';
+import type { TableCategories, TableRows, TableStore } from './models';
 import { BudgetCodeParser } from './BudgetCodeParser';
 
-export class BudgetCodeBlock {
+import Table from './ui/componets/Table/Table.svelte';
+
+export class BudgetCodeBlock extends MarkdownRenderChild {
 	private readonly source: string;
 	private readonly parser: BudgetCodeParser;
 	private readonly categories: TableCategories;
 	private readonly rows: TableRows;
+	private component: any;
 
 	constructor(
-		source: string,
 		private readonly el: HTMLElement,
-		private readonly ctx: MarkdownPostProcessorContext,
+		private readonly markdownSource: string,
 	) {
-		this.source = source || '';
+		super(el);
+
+		this.source = this.markdownSource || '';
 		this.parser = new BudgetCodeParser(this.source);
 
 		const { categories, rows } = this.parser.parse();
 		this.categories = categories;
 		this.rows = rows;
-
-		// this.ctx.addChild({
-		// 	unload: () => {
-		// 		this.destroy();
-		// 	},
-		// });
 	}
 
-	public render(): void {
+	private createTableStore(): TableStore {
+		return writable({
+			selectedRowId: '',
+			rows: this.rows,
+			categories: this.categories,
+		});
+	}
+
+	public onload(): void {
 		const onChange = (newData: any) => {
 			console.log('onChange called', newData);
 		};
 
-		mount(Table, {
+		this.component = mount(Table, {
 			target: this.el,
 			props: {
 				categories: this.categories,
 				rows: this.rows,
+				store: this.createTableStore(),
 				onChange,
 			},
 		});
 	}
 
-	public async destroy(): Promise<void> {
-		await unmount(this.el);
+	public async onunload(): Promise<void> {
+		super.unload();
+		await unmount(this.component);
 	}
 }
