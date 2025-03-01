@@ -25,10 +25,9 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 
-	import type { StoreActions } from '../actions';
 	import type { TableStore } from '../../../../models';
 	import { debounce } from '../../../helpers/debounce';
-	import { STORE_ACTIONS_CONTEXT_KEY, STORE_CONTEXT_KEY } from '../constants';
+	import { STORE_CONTEXT_KEY } from '../constants';
 
 	type Props = {
 		value: string;
@@ -39,7 +38,6 @@
 	const { value, type = 'text', onChange }: Props = $props();
 
 	const store = getContext<TableStore>(STORE_CONTEXT_KEY);
-	const { selectRow } = getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
 	let isEditing = $state(false);
 	let inputElement: HTMLInputElement | null = $state(null);
