@@ -1,7 +1,7 @@
 
 {#if isEditing}
-	<input
-		class="input"
+    <input
+        class="input"
 		bind:this={inputElement}
 		value={value}
 		type={type}
@@ -23,7 +23,7 @@
 {/if}
 
 <script lang="ts">
-	import { getContext } from 'svelte';
+    import { getContext } from 'svelte';
 	import { debounce } from 'obsidian';
 
 	import type { TableStore } from '../../../../models';
