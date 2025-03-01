@@ -16,7 +16,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
 
   constructor(
     private readonly el: HTMLElement,
-    private readonly markdownSource: string,
+    private readonly markdownSource: string
   ) {
     super(el);
 

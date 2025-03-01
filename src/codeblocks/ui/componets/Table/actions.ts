@@ -4,7 +4,7 @@ import type { CategoryId, RowId, TableRow, TableStore } from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 
 export function createStoreActions(store: TableStore) {
-  const getCategoryByRowId = (rowId: RowId) => {
+  const getCategoryByRowId = (rowId: RowId): CategoryId => {
     for (const [categoryId, categoryRows] of get(store).rows) {
       const row = categoryRows.find((row) => row.id === rowId);
 
@@ -17,14 +17,14 @@ export function createStoreActions(store: TableStore) {
   };
 
   return {
-    selectRow: (rowId: RowId | null) => {
-      store.update((data) => {
-        data.selectedRowId = rowId ? rowId : '';
+    selectRow: (rowId: RowId | null): void => {
+      return store.update((data) => {
+        data.selectedRowId = rowId ?? '';
 
         return data;
       });
     },
-    newRow: (categoryId?: CategoryId) => {
+    newRow: (categoryId?: CategoryId): void => {
       let selectedCategoryId: CategoryId | undefined = categoryId;
       if (!selectedCategoryId) {
         const rowId = get(store).selectedRowId;
@@ -35,7 +35,7 @@ export function createStoreActions(store: TableStore) {
         return;
       }
 
-      store.update((state) => {
+      return store.update((state) => {
         const { rows } = state;
         const categoryRows = rows.get(selectedCategoryId) || [];
         const rowId = generateId();
@@ -56,10 +56,10 @@ export function createStoreActions(store: TableStore) {
         };
       });
     },
-    deleteSelectedRow: () => {
+    deleteSelectedRow: (): void => {
       const rowId = get(store).selectedRowId;
 
-      store.update((state) => {
+      return store.update((state) => {
         const { rows } = state;
 
         for (const [categoryId, categoryRows] of rows) {
@@ -71,7 +71,7 @@ export function createStoreActions(store: TableStore) {
         return state;
       });
     },
-    newCategory: () => {
+    newCategory: (): void => {
       store.update((state) => {
         const { categories, rows } = state;
         const newCategory = generateId();
@@ -94,8 +94,8 @@ export function createStoreActions(store: TableStore) {
         };
       });
     },
-    deleteCategory: (categoryId: CategoryId) => {
-      store.update((state) => {
+    deleteCategory: (categoryId: CategoryId): void => {
+      return store.update((state) => {
         const { categories, rows } = state;
 
         categories.delete(categoryId);

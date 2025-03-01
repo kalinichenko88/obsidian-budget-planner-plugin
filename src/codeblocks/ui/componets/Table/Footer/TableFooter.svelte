@@ -1,7 +1,11 @@
+<script lang="ts">
+</script>
+
 <tfoot>
-	<tr>
-		<td colspan="4">
-			Footer
-		</td>
-	</tr>
+  <tr>
+    <td></td>
+    <td> Footer </td>
+    <td></td>
+    <td></td>
+  </tr>
 </tfoot>

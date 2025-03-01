@@ -1,28 +1,28 @@
-<div class="icon" bind:this={iconContainer}></div>
-
 <script lang="ts">
-	import { getIcon } from 'obsidian';
-	import { onMount } from 'svelte';
+  import { getIcon } from 'obsidian';
+  import { onMount } from 'svelte';
 
-	type Props = {
-		name: string;
-	}
+  type Props = {
+    name: string;
+  };
 
-	const { name }: Props = $props();
+  const { name }: Props = $props();
 
-	let iconContainer: HTMLDivElement;
+  let iconContainer: HTMLDivElement;
 
-	onMount(() => {
-		const icon = getIcon(name);
-		if (iconContainer && icon) {
-			iconContainer.appendChild(icon);
-		}
-	});
+  onMount(() => {
+    const icon = getIcon(name);
+    if (iconContainer && icon) {
+      iconContainer.appendChild(icon);
+    }
+  });
 </script>
 
+<div class="icon" bind:this={iconContainer}></div>
+
 <style>
-	.icon {
-		max-width: var(--icon-size);
-		width: auto;
-	}
+  .icon {
+    max-width: var(--icon-size);
+    width: auto;
+  }
 </style>
