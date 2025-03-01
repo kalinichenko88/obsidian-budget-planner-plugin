@@ -22,7 +22,7 @@
 
 <style>
   .icon {
-    max-width: var(--icon-size);
-    width: auto;
+    height: var(--icon-size);
+    width: var(--icon-size);
   }
 </style>

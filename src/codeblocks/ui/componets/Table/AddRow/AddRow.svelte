@@ -27,15 +27,16 @@
     background-color: var(--table-header-background-hover);
   }
 
-  .add-row td {
-    font-size: var(--font-smaller);
-  }
-
   .button {
     display: flex;
     align-items: center;
     gap: var(--size-2-2);
     color: var(--color-base-40);
     margin-left: 0.55rem;
+  }
+
+  .button > span {
+    font-size: var(--font-smaller);
+    line-height: normal;
   }
 </style>
