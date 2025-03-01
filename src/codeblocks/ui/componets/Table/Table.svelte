@@ -11,7 +11,6 @@
   import CategoryFooter from './CategoryFooter/CategoryFooter.svelte';
   import TableFooter from './Footer/TableFooter.svelte';
   import AddRow from './AddRow/AddRow.svelte';
-  import AddCategory from './AddCategory/AddCategory.svelte';
 
   type Props = {
     store: TableStore;
@@ -52,13 +51,14 @@
         <Row {row} />
       {/each}
 
-      <AddRow onClick={() => handleAddRow(categoryId)} />
+      <AddRow text="New Row" onClick={() => handleAddRow(categoryId)} />
 
       <CategoryFooter {categoryId} />
     {/each}
   </tbody>
 
-  <AddCategory onClick={handleAddCategory} />
+  <AddRow text="New Category" onClick={handleAddCategory} />
+
   <TableFooter />
 </table>
 
