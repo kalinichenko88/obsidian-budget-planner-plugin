@@ -18,8 +18,7 @@
   const { newCategory, deleteCategory, selectRow } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
-  const menu = new Menu();
-  menu
+  const menu = new Menu()
     .addItem((item) => {
       item.setTitle('New category');
       item.setIcon('table-rows-split');

@@ -2,6 +2,7 @@ import { get } from 'svelte/store';
 
 import type { CategoryId, RowId, TableRow, TableStore } from '../../../models';
 import { generateId } from '../../../helpers/generateId';
+import { SortColumn, SortOrder } from './models';
 
 export function createStoreActions(store: TableStore) {
   const getCategoryByRowId = (rowId: RowId): CategoryId => {
@@ -66,6 +67,33 @@ export function createStoreActions(store: TableStore) {
           const newRows = categoryRows.filter((row) => row.id !== rowId);
 
           rows.set(categoryId, newRows);
+        }
+
+        return state;
+      });
+    },
+    sortRows: (sortOrder: SortOrder, column: SortColumn): void => {
+      return store.update((state) => {
+        const { rows } = state;
+
+        for (const [categoryId, categoryRows] of rows) {
+          const sortedRows = categoryRows.sort((a, b) => {
+            if (column === SortColumn.CHECK) {
+              return a.checked === b.checked ? 0 : a.checked ? -1 : 1;
+            }
+
+            if (column === SortColumn.NAME) {
+              return a.name.localeCompare(b.name);
+            }
+
+            if (column === SortColumn.AMOUNT) {
+              return a.amount - b.amount;
+            }
+
+            return 0;
+          });
+
+          rows.set(categoryId, sortOrder === SortOrder.ASC ? sortedRows : sortedRows.reverse());
         }
 
         return state;
