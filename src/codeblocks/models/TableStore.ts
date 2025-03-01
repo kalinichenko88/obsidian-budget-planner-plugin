@@ -4,7 +4,7 @@ import type { TableCategories } from './TableCategories';
 import type { TableRows } from './TableRows';
 
 export type TableStore = Writable<{
-	selectedRowId: string;
-	categories: TableCategories;
-	rows: TableRows;
+  selectedRowId: string;
+  categories: TableCategories;
+  rows: TableRows;
 }>;
