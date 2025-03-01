@@ -44,8 +44,6 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
 		this.component = mount(Table, {
 			target: this.el,
 			props: {
-				categories: this.categories,
-				rows: this.rows,
 				store: this.createTableStore(),
 				onChange,
 			},
