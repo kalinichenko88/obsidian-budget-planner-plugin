@@ -24,9 +24,9 @@
 
 <script lang="ts">
 	import { getContext } from 'svelte';
+	import { debounce } from 'obsidian';
 
 	import type { TableStore } from '../../../../models';
-	import { debounce } from '../../../helpers/debounce';
 	import { STORE_CONTEXT_KEY } from '../constants';
 
 	type Props = {
