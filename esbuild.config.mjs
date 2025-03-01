@@ -20,53 +20,53 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const copyFiles = () => {
-	const files = ['manifest.json', 'styles.css'];
-	const outDir = 'dist';
+  const files = ['manifest.json', 'styles.css'];
+  const outDir = 'dist';
 
-	files.forEach((file) => {
-		fs.copyFileSync(path.join(__dirname, file), path.join(outDir, file));
-	});
+  files.forEach((file) => {
+    fs.copyFileSync(path.join(__dirname, file), path.join(outDir, file));
+  });
 };
 
 const context = await esbuild.context({
-	banner: {
-		js: banner,
-	},
-	entryPoints: ['src/main.ts'],
-	bundle: true,
-	plugins: [
-		esbuildSvelte({
-			compilerOptions: { css: 'injected' },
-			preprocess: sveltePreprocess(),
-		}),
-	],
-	external: [
-		'obsidian',
-		'electron',
-		'@codemirror/autocomplete',
-		'@codemirror/collab',
-		'@codemirror/commands',
-		'@codemirror/language',
-		'@codemirror/lint',
-		'@codemirror/search',
-		'@codemirror/state',
-		'@codemirror/view',
-		'@lezer/common',
-		'@lezer/highlight',
-		'@lezer/lr',
-		...builtins,
-	],
-	format: 'cjs',
-	target: 'es2018',
-	logLevel: 'info',
-	sourcemap: prod ? false : 'inline',
-	treeShaking: true,
-	outfile: 'dist/main.js',
+  banner: {
+    js: banner,
+  },
+  entryPoints: ['src/main.ts'],
+  bundle: true,
+  plugins: [
+    esbuildSvelte({
+      compilerOptions: { css: 'injected' },
+      preprocess: sveltePreprocess(),
+    }),
+  ],
+  external: [
+    'obsidian',
+    'electron',
+    '@codemirror/autocomplete',
+    '@codemirror/collab',
+    '@codemirror/commands',
+    '@codemirror/language',
+    '@codemirror/lint',
+    '@codemirror/search',
+    '@codemirror/state',
+    '@codemirror/view',
+    '@lezer/common',
+    '@lezer/highlight',
+    '@lezer/lr',
+    ...builtins,
+  ],
+  format: 'cjs',
+  target: 'es2018',
+  logLevel: 'info',
+  sourcemap: prod ? false : 'inline',
+  treeShaking: true,
+  outfile: 'dist/main.js',
 });
 
 if (prod) {
-	await context.rebuild().then(() => copyFiles());
-	process.exit(0);
+  await context.rebuild().then(() => copyFiles());
+  process.exit(0);
 } else {
-	await context.watch().then(() => copyFiles());
+  await context.watch().then(() => copyFiles());
 }
