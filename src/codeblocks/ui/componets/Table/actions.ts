@@ -49,9 +49,11 @@ export function createStoreActions(store: TableStore) {
         };
 
         rows.set(selectedCategoryId, [...categoryRows, newRow]);
-        state.selectedRowId = rowId;
 
-        return state;
+        return {
+          ...state,
+          selectedRowId: rowId,
+        };
       });
     },
     deleteSelectedRow: () => {
@@ -73,9 +75,10 @@ export function createStoreActions(store: TableStore) {
       store.update((state) => {
         const { categories, rows } = state;
         const newCategory = generateId();
+        const newRowId = generateId();
 
         const newRow: TableRow = {
-          id: generateId(),
+          id: newRowId,
           checked: false,
           name: '',
           amount: 0,
@@ -85,7 +88,10 @@ export function createStoreActions(store: TableStore) {
         categories.set(newCategory, 'New Category');
         rows.set(newCategory, [newRow]);
 
-        return state;
+        return {
+          ...state,
+          selectedRowId: newRowId,
+        };
       });
     },
     deleteCategory: (categoryId: CategoryId) => {
