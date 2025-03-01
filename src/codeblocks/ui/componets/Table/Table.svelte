@@ -5,11 +5,11 @@
   import { STORE_CONTEXT_KEY, STORE_ACTIONS_CONTEXT_KEY } from './constants';
   import { createStoreActions } from './actions';
 
-  import TableHead from './Head/TableHead.svelte';
+  import Head from './Head/Head.svelte';
   import CategoryRow from './CategoryRow/CategoryRow.svelte';
   import Row from './Row/Row.svelte';
   import CategoryFooter from './CategoryFooter/CategoryFooter.svelte';
-  import TableFooter from './Footer/TableFooter.svelte';
+  import Footer from './Footer/Footer.svelte';
   import AddRow from './AddRow/AddRow.svelte';
 
   type Props = {
@@ -41,7 +41,7 @@
 </script>
 
 <table class="table">
-  <TableHead />
+  <Head />
 
   <tbody>
     {#each $tableStore.categories.entries() as [categoryId, categoryName] (categoryId)}
@@ -59,7 +59,7 @@
 
   <AddRow text="New Category" onClick={handleAddCategory} />
 
-  <TableFooter />
+  <Footer />
 </table>
 
 <style>
