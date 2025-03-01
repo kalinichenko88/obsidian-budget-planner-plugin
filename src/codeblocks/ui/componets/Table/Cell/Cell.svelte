@@ -75,7 +75,7 @@
 	.input, .input:focus {
 		margin: 0;
 		padding: 0;
-		border: 1px solid red;
+		border: none;
 		outline: none;
 		background: transparent;
 		font: inherit;

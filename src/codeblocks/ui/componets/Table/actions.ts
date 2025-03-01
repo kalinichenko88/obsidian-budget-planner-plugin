@@ -16,14 +16,14 @@ export function createStoreActions(store: TableStore) {
 
 			return '';
 		},
-		selectRow: (rowId: RowId) => {
+		selectRow: (rowId: RowId | null) => {
 			store.update((data) => {
-				data.selectedRowId = rowId;
+				data.selectedRowId = rowId ? rowId : '';
 
 				return data;
 			});
 		},
-		newRow: (categoryId: CategoryId | undefined) => {
+		newRow: (categoryId?: CategoryId) => {
 			let selectedCategoryId = categoryId;
 			if (!selectedCategoryId) {
 				const rowId = get(store).selectedRowId;
@@ -79,6 +79,16 @@ export function createStoreActions(store: TableStore) {
 
 				categories.set(newCategory, '');
 				rows.set(newCategory, [newRow]);
+
+				return state;
+			});
+		},
+		deleteCategory: (categoryId: CategoryId) => {
+			store.update((state) => {
+				const { categories, rows } = state;
+
+				categories.delete(categoryId);
+				rows.delete(categoryId);
 
 				return state;
 			});
