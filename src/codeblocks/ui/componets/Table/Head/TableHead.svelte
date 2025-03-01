@@ -44,19 +44,16 @@
   <tr>
     <th
       class="check"
-      data-field="check"
       oncontextmenu={(event) => handleOnContextMenu.apply(undefined, [event, SortColumn.CHECK])}
       >#</th
     >
     <th
       class="name"
-      data-field="name"
       oncontextmenu={(event) => handleOnContextMenu.apply(undefined, [event, SortColumn.NAME])}
       >Name</th
     >
     <th
       class="amount"
-      data-field="amount"
       oncontextmenu={(event) => handleOnContextMenu.apply(undefined, [event, SortColumn.AMOUNT])}
       >Amount</th
     >
