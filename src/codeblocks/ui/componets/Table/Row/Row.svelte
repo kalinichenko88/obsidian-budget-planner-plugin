@@ -28,14 +28,14 @@
 
   const menu = new Menu()
     .addItem((item) => {
-      item.setTitle('New category');
-      item.setIcon('table-rows-split');
-      item.onClick(() => newCategory());
-    })
-    .addItem((item) => {
       item.setTitle('New row');
       item.setIcon('between-horizontal-end');
       item.onClick(() => newRow());
+    })
+    .addItem((item) => {
+      item.setTitle('New category');
+      item.setIcon('table-rows-split');
+      item.onClick(() => newCategory());
     })
     .addSeparator()
     .addItem((item) => {
