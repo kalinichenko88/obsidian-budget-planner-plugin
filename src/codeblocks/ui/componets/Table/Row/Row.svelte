@@ -1,6 +1,7 @@
 <tr
 	class="row"
 	class:selected={selectedRowId === row.id}
+    onclick={handleOnRowClick}
 	oncontextmenu={handleOnMenu}
 >
 	<td class="check-wrapper">
@@ -79,6 +80,10 @@
 		selectRow(row.id);
 		menu.showAtMouseEvent(event);
 	}
+
+    export const handleOnRowClick = () => {
+        selectRow(null);
+    }
 </script>
 
 <style>

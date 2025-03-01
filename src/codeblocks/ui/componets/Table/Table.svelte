@@ -1,97 +1,65 @@
-<div class="budget-block-wrapper">
-	<table class="table" onclick={handleOnTableClick}>
-		<TableHead />
+<table class="table">
+    <TableHead />
 
-		<tbody>
-		{#each categories.entries() as [categoryId, categoryName] (categoryId)}
-			<CategoryRow categoryId={categoryId} categoryName={categoryName} onChange={handleCategoryChange} />
+    <tbody>
+        {#each $tableStore.categories.entries() as [categoryId, categoryName] (categoryId)}
+            <CategoryRow categoryId={categoryId} categoryName={categoryName} onChange={handleCategoryChange} />
 
-			{#each rows.get(categoryId) || [] as row (row.id)}
-				<TableRow row={row} />
-			{/each}
+            {#each $tableStore.rows.get(categoryId) || [] as row (row.id)}
+                <Row row={row} />
+            {/each}
 
+			<AddRow onClick={() => handleAddRow(categoryId)} />
+
+			<CategoryFooter categoryId={categoryId} />
 		{/each}
-		</tbody>
+    </tbody>
 
-		<TableFooter />
-	</table>
-</div>
+    <AddCategory onClick={handleAddCategory} />
+    <TableFooter />
+</table>
 
 <script lang="ts">
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 
-	import type { CategoryId, TableStore } from '../../../models';
-	import { generateId } from '../../../helpers/generateId';
-
-	import TableHead from './Head/TableHead.svelte';
-	import CategoryRow from './CategoryRow/CategoryRow.svelte';
-	import TableRow from './Row/Row.svelte';
-	import CategoryFooter from './CategoryFooter/CategoryFooter.svelte';
-	import TableFooter from './Footer/TableFooter.svelte';
-	import AddRow from './AddRow/AddRow.svelte';
+    import type { CategoryId, TableStore } from '../../../models';
 	import { STORE_CONTEXT_KEY, STORE_ACTIONS_CONTEXT_KEY } from './constants';
 	import { createStoreActions } from './actions';
 
+	import TableHead from './Head/TableHead.svelte';
+	import CategoryRow from './CategoryRow/CategoryRow.svelte';
+	import Row from './Row/Row.svelte';
+	import CategoryFooter from './CategoryFooter/CategoryFooter.svelte';
+	import TableFooter from './Footer/TableFooter.svelte';
+	import AddRow from './AddRow/AddRow.svelte';
+	import AddCategory from './AddCategory/AddCategory.svelte';
+
 	type Props = {
-		store: TableStore;
+        store: TableStore;
 		onChange: (data: any) => void;
 	}
 
-	const { store }: Props = $props();
+	const { store, onChange }: Props = $props();
 
 	const tableStore = setContext(STORE_CONTEXT_KEY, store);
-
-	const categories = $derived($tableStore.categories);
-	const rows = $derived($tableStore.rows);
 
 	const storeActions = createStoreActions(tableStore);
 	setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
-	// onMount(() => {
-	// 	store.set({
-	// 		selectedRowId: '',
-	// 		rows: new Map(rows),
-	// 		categories: new Map(categories),
-	// 	});
-	// });
+	const { newCategory, selectRow, newRow } = storeActions;
 
-	// store.set({
-	// 	selectedRowId: '',
-	// 	categories: props.categories,
-	// 	rows: props.rows,
-	// });
-
-	// store.subscribe((value) => {
-	// 	console.log('subscribe', { value });
-	// });
+    tableStore.subscribe((value) => {
+        console.log({value});
+        // onChange(tableStore);
+    });
 
 	export const handleCategoryChange = (value: string) => {
 		// onChange(value);
 	};
 
-	export const handleOnTableClick = () => {
-		store.update((data) => {
-			data.selectedRowId = '';
-			return data;
-		});
-	}
+	export const handleAddCategory = () => newCategory();
 
-	// export const handleOnNewRowClick = (categoryId: CategoryId): void => {
-	// 	store.update((data) => {
-	// 		data.selectedRowId  = '';
-	// 		if (data.rows.has(categoryId)) {
-	// 			data.rows.get(categoryId)?.push({
-	// 				id: generateId(),
-	// 				checked: false,
-	// 				name: '',
-	// 				amount: 0,
-	// 				comment: '',
-	// 			})
-	// 		}
-	//
-	// 		return data;
-	// 	});
-	// }
+    export const handleAddRow = (categoryId: CategoryId) => newRow(categoryId);
 </script>
 
 <style>

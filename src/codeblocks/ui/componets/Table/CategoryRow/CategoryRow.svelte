@@ -1,4 +1,4 @@
-<tr class="category" oncontextmenu={handleOnMenu}>
+<tr class="category" onclick={handleOnRowClick} oncontextmenu={handleOnMenu}>
 	<td colspan={4}>
 		<Cell value={categoryName} onChange={handleOnChange} />
 	</td>
@@ -21,7 +21,7 @@
 
 	let { categoryId, categoryName, onChange }: Props = $props();
 
-	const { newCategory, deleteCategory } = getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
+	const { newCategory, deleteCategory, selectRow } = getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
 	const menu = new Menu();
 	menu
@@ -43,8 +43,13 @@
 
 	export const handleOnMenu = (event: MouseEvent) => {
 		event.preventDefault();
+        selectRow(null);
 		menu.showAtMouseEvent(event);
 	}
+
+    export const handleOnRowClick = () => {
+        selectRow(null);
+    }
 </script>
 
 <style>
