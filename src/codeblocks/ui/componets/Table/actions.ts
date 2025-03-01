@@ -4,96 +4,101 @@ import type { CategoryId, RowId, TableRow, TableStore } from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 
 export function createStoreActions(store: TableStore) {
-	return {
-		getCategoryByRowId: (rowId: RowId) => {
-			for (const [categoryId, categoryRows] of get(store).rows) {
-				const row = categoryRows.find((row) => row.id === rowId);
+  const getCategoryByRowId = (rowId: RowId) => {
+    for (const [categoryId, categoryRows] of get(store).rows) {
+      const row = categoryRows.find((row) => row.id === rowId);
 
-				if (row) {
-					return categoryId;
-				}
-			}
+      if (row) {
+        return categoryId;
+      }
+    }
 
-			return '';
-		},
-		selectRow: (rowId: RowId | null) => {
-			store.update((data) => {
-				data.selectedRowId = rowId ? rowId : '';
+    return '';
+  };
 
-				return data;
-			});
-		},
-		newRow: (categoryId?: CategoryId) => {
-			let selectedCategoryId = categoryId;
-			if (!selectedCategoryId) {
-				const rowId = get(store).selectedRowId;
-				selectedCategoryId = this.getCategoryByRowId(rowId);
-			}
+  return {
+    selectRow: (rowId: RowId | null) => {
+      store.update((data) => {
+        data.selectedRowId = rowId ? rowId : '';
 
-			console.log({ selectedCategoryId });
+        return data;
+      });
+    },
+    newRow: (categoryId?: CategoryId) => {
+      let selectedCategoryId: CategoryId | undefined = categoryId;
+      if (!selectedCategoryId) {
+        const rowId = get(store).selectedRowId;
+        selectedCategoryId = getCategoryByRowId(rowId);
+      }
 
-			store.update((state) => {
-				const { rows } = state;
-				const categoryRows = rows.get(selectedCategoryId) || [];
+      if (!selectedCategoryId) {
+        return;
+      }
 
-				const newRow: TableRow = {
-					id: generateId(),
-					checked: false,
-					name: '',
-					amount: 0,
-					comment: '',
-				};
+      store.update((state) => {
+        const { rows } = state;
+        const categoryRows = rows.get(selectedCategoryId) || [];
+        const rowId = generateId();
 
-				rows.set(categoryId, [...categoryRows, newRow]);
+        const newRow: TableRow = {
+          id: rowId,
+          checked: false,
+          name: '',
+          amount: 0,
+          comment: '',
+        };
 
-				return state;
-			});
-		},
-		deleteSelectedRow: () => {
-			const rowId = get(store).selectedRowId;
+        rows.set(selectedCategoryId, [...categoryRows, newRow]);
+        state.selectedRowId = rowId;
 
-			store.update((state) => {
-				const { rows } = state;
+        return state;
+      });
+    },
+    deleteSelectedRow: () => {
+      const rowId = get(store).selectedRowId;
 
-				for (const [categoryId, categoryRows] of rows) {
-					const newRows = categoryRows.filter((row) => row.id !== rowId);
+      store.update((state) => {
+        const { rows } = state;
 
-					rows.set(categoryId, newRows);
-				}
+        for (const [categoryId, categoryRows] of rows) {
+          const newRows = categoryRows.filter((row) => row.id !== rowId);
 
-				return state;
-			});
-		},
-		newCategory: () => {
-			store.update((state) => {
-				const { categories, rows } = state;
-				const newCategory = generateId();
+          rows.set(categoryId, newRows);
+        }
 
-				const newRow: TableRow = {
-					id: generateId(),
-					checked: false,
-					name: '',
-					amount: 0,
-					comment: '',
-				};
+        return state;
+      });
+    },
+    newCategory: () => {
+      store.update((state) => {
+        const { categories, rows } = state;
+        const newCategory = generateId();
 
-				categories.set(newCategory, '');
-				rows.set(newCategory, [newRow]);
+        const newRow: TableRow = {
+          id: generateId(),
+          checked: false,
+          name: '',
+          amount: 0,
+          comment: '',
+        };
 
-				return state;
-			});
-		},
-		deleteCategory: (categoryId: CategoryId) => {
-			store.update((state) => {
-				const { categories, rows } = state;
+        categories.set(newCategory, 'New Category');
+        rows.set(newCategory, [newRow]);
 
-				categories.delete(categoryId);
-				rows.delete(categoryId);
+        return state;
+      });
+    },
+    deleteCategory: (categoryId: CategoryId) => {
+      store.update((state) => {
+        const { categories, rows } = state;
 
-				return state;
-			});
-		},
-	};
+        categories.delete(categoryId);
+        rows.delete(categoryId);
+
+        return state;
+      });
+    },
+  };
 }
 
 export type StoreActions = ReturnType<typeof createStoreActions>;
