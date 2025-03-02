@@ -7,15 +7,15 @@ import { registerCommands } from './commands';
 class BudgetPlannerPlugin extends Plugin {
   settings: Settings;
 
-  private async loadSettings() {
+  private async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
-  public async saveSettings() {
+  public async saveSettings(): Promise<void> {
     await this.saveData(this.settings);
   }
 
-  public async onload() {
+  public async onload(): Promise<void> {
     await this.loadSettings();
 
     registerCommands(this);
