@@ -1,28 +1,33 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  import { debounce } from 'obsidian';
 
-  import type { TableStore } from '../../../../models';
-  import { STORE_CONTEXT_KEY } from '../constants';
+  import type { TableStateStore } from '../../../../models';
+  import type { StoreActions } from '../actions';
+  import { moneyFormatter } from '../../../helpers/moneyFormatter';
+  import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
 
   type Props = {
-    value: string;
-    type?: 'text' | 'number';
-    onChange: (value: string | number) => void;
+    value: string | number;
   };
 
-  const { value, type = 'text', onChange }: Props = $props();
+  let { value = $bindable() }: Props = $props();
+  const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
+  const valueDisplay = $derived(
+    valueType === 'number' ? moneyFormatter.format(value as number) : (value as string).trim()
+  );
 
-  const store = getContext<TableStore>(STORE_CONTEXT_KEY);
+  const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
+  const { selectRow } = getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
   let isEditing = $state(false);
   let inputElement: HTMLInputElement | null = $state(null);
 
-  const selectedRowId = $derived($store.selectedRowId);
+  const selectedRowId = $derived($tableState.selectedRowId);
 
   $effect(() => {
     if (isEditing && inputElement) {
       inputElement.focus();
+      selectRow(null);
     }
   });
 
@@ -31,10 +36,6 @@
       isEditing = false;
     }
   });
-
-  export const handleOnChange = debounce((event: Event) => {
-    onChange((event.target as HTMLInputElement).innerText);
-  }, 300);
 
   export const handleOnClick = (): void => {
     isEditing = true;
@@ -51,16 +52,14 @@
   <input
     class="input"
     bind:this={inputElement}
-    {value}
-    {type}
-    min={type === 'number' ? '0' : undefined}
-    step={type === 'number' ? '0.10' : undefined}
-    oninput={handleOnChange}
-    onkeydown={handleOnEnter}
+    bind:value
+    type={valueType}
+    min={valueType === 'number' ? '0' : undefined}
+    step={valueType === 'number' ? '0.10' : undefined}
   />
 {:else}
   <div class="text" role="button" tabindex="0" onclick={handleOnClick} onkeydown={handleOnEnter}>
-    {value}
+    {valueDisplay}
   </div>
 {/if}
 

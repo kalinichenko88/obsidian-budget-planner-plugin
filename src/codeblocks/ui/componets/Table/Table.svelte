@@ -51,7 +51,7 @@
       <CategoryRow {categoryId} {categoryName} />
 
       {#each $tableStore.rows.get(categoryId) || [] as row (row.id)}
-        <Row {row} rowId={row.id} />
+        <Row {row} />
       {/each}
 
       <AddRow text="New Row" onClick={() => newRow(categoryId)} />

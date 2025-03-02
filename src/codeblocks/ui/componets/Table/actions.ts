@@ -71,14 +71,12 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         };
       });
     },
-    updateRow: (rowId: RowId, data: Partial<TableRow>): void => {
+    updateRow: (data: TableRow): void => {
       return store.update((state) => {
         const { rows } = state;
 
         for (const [categoryId, categoryRows] of rows) {
-          const updatedRows = categoryRows.map((row) =>
-            row.id === rowId ? { ...row, ...data } : row
-          );
+          const updatedRows = categoryRows.map((row) => (row.id === data.id ? data : row));
 
           rows.set(categoryId, updatedRows);
         }

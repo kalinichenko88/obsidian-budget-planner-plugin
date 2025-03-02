@@ -1,11 +1,11 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  import { Menu, debounce } from 'obsidian';
+  import { Menu } from 'obsidian';
 
-  import type { TableRow, TableStore } from '../../../../models';
+  import type { TableRow, TableStateStore } from '../../../../models';
   import type { StoreActions } from '../actions';
-  import { moneyFormatter } from '../../../helpers/moneyFormatter';
-  import { STORE_ACTIONS_CONTEXT_KEY, STORE_CONTEXT_KEY } from '../constants';
+  import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
+  import { isRowsEqual } from './helpers';
 
   import Cell from '../Cell/Cell.svelte';
 
@@ -13,17 +13,31 @@
     row: TableRow;
   };
 
-  let { row }: Props = $props();
+  const { row }: Props = $props();
 
-  const store = getContext<TableStore>(STORE_CONTEXT_KEY);
-  const { selectRow, newCategory, newRow, deleteSelectedRow } =
+  const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
+  const { selectRow, newCategory, newRow, deleteSelectedRow, updateRow } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
-  const selectedRowId = $derived($store.selectedRowId);
-  let data = $state({ ...row });
+  let checked = $state(row.checked);
+  let name = $state(row.name);
+  let amount = $state(row.amount);
+  let comment = $state(row.comment);
 
   $effect(() => {
-    console.log({ data });
+    const updatingRow: TableRow = {
+      id: row.id,
+      checked,
+      name,
+      amount,
+      comment,
+    };
+
+    if (isRowsEqual(row, updatingRow)) {
+      return;
+    }
+
+    updateRow(updatingRow);
   });
 
   const menu = new Menu()
@@ -44,15 +58,6 @@
       item.onClick(deleteSelectedRow);
     });
 
-  export const onUpdate = debounce((event: Event) => {
-    console.log({ event });
-    console.log((event.target as HTMLTableCellElement).innerText);
-  }, 300);
-
-  export function handleOnChange(event: string) {
-    console.log({ event });
-  }
-
   export const handleOnMenu = (event: MouseEvent) => {
     event.preventDefault();
     selectRow(row.id);
@@ -66,34 +71,30 @@
 
 <tr
   class="row"
-  class:selected={selectedRowId === row.id}
+  class:selected={$tableState.selectedRowId === row.id}
   onclick={handleOnRowClick}
   oncontextmenu={handleOnMenu}
 >
   <td class="check-wrapper">
     <div class="check">
-      <input type="checkbox" name="checkbox" id="checkbox" value={data.checked} />
+      <input type="checkbox" name="checkbox" id="checkbox" bind:checked />
     </div>
   </td>
 
   <td>
-    <Cell value={data.name} onChange={handleOnChange} />
+    <Cell bind:value={name} />
   </td>
 
   <td class="amount">
-    <Cell value={moneyFormatter.format(data.amount)} onChange={handleOnChange} />
+    <Cell bind:value={amount} />
   </td>
 
   <td class="comment">
-    <Cell value={data.comment} onChange={handleOnChange} />
+    <Cell bind:value={comment} />
   </td>
 </tr>
 
 <style>
-  .row {
-    position: relative;
-  }
-
   tr.row.selected,
   tr.row.selected:hover {
     background: var(--table-selection);
