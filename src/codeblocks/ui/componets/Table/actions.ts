@@ -1,11 +1,15 @@
 import { get } from 'svelte/store';
 
-import type { CategoryId, RowId, TableRow, TableStore } from '../../../models';
+import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
-export function createStoreActions(store: TableStore) {
-  const getCategoryByRowId = (rowId: RowId): CategoryId => {
+export function createStoreActions(store: TableStore, tableState: TableStateStore) {
+  const getCategoryByRowId = (rowId: RowId | null): CategoryId | null => {
+    if (rowId === null) {
+      return null;
+    }
+
     for (const [categoryId, categoryRows] of get(store).rows) {
       const row = categoryRows.find((row) => row.id === rowId);
 
@@ -14,25 +18,26 @@ export function createStoreActions(store: TableStore) {
       }
     }
 
-    return '';
+    return null;
   };
 
   return {
     selectRow: (rowId: RowId | null): void => {
-      if (get(store).selectedRowId === rowId) {
+      if (get(tableState).selectedRowId === null && rowId === null) {
         return;
       }
 
-      return store.update((data) => {
-        data.selectedRowId = rowId ?? '';
-
-        return data;
+      return tableState.update((data) => {
+        return {
+          ...data,
+          selectedRowId: rowId ?? null,
+        };
       });
     },
-    newRow: (categoryId?: CategoryId): void => {
-      let selectedCategoryId: CategoryId | undefined = categoryId;
+    newRow: (categoryId: CategoryId | null = null): void => {
+      let selectedCategoryId: CategoryId | null = categoryId;
       if (!selectedCategoryId) {
-        const rowId = get(store).selectedRowId;
+        const rowId = get(tableState).selectedRowId;
         selectedCategoryId = getCategoryByRowId(rowId);
       }
 
@@ -40,10 +45,11 @@ export function createStoreActions(store: TableStore) {
         return;
       }
 
-      return store.update((state) => {
+      const rowId = generateId();
+
+      store.update((state) => {
         const { rows } = state;
         const categoryRows = rows.get(selectedCategoryId) || [];
-        const rowId = generateId();
 
         const newRow: TableRow = {
           id: rowId,
@@ -55,6 +61,10 @@ export function createStoreActions(store: TableStore) {
 
         rows.set(selectedCategoryId, [...categoryRows, newRow]);
 
+        return state;
+      });
+
+      tableState.update((state) => {
         return {
           ...state,
           selectedRowId: rowId,
@@ -77,7 +87,11 @@ export function createStoreActions(store: TableStore) {
       });
     },
     deleteSelectedRow: (): void => {
-      const rowId = get(store).selectedRowId;
+      const rowId = get(tableState).selectedRowId;
+
+      if (rowId === null) {
+        return;
+      }
 
       return store.update((state) => {
         const { rows } = state;
@@ -119,10 +133,11 @@ export function createStoreActions(store: TableStore) {
       });
     },
     newCategory: (): void => {
+      const newRowId = generateId();
+
       store.update((state) => {
         const { categories, rows } = state;
         const newCategory = generateId();
-        const newRowId = generateId();
 
         const newRow: TableRow = {
           id: newRowId,
@@ -132,9 +147,13 @@ export function createStoreActions(store: TableStore) {
           comment: '',
         };
 
-        categories.set(newCategory, 'New Category');
+        categories.set(newCategory, `New Category ${categories.size + 1}`);
         rows.set(newCategory, [newRow]);
 
+        return state;
+      });
+
+      tableState.update((state) => {
         return {
           ...state,
           selectedRowId: newRowId,

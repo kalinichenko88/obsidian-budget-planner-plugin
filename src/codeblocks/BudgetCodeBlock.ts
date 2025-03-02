@@ -2,7 +2,7 @@ import { MarkdownRenderChild } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import { writable } from 'svelte/store';
 
-import type { TableCategories, TableRows, TableStore } from './models';
+import type { TableCategories, TableRows, TableStore, TableStateStore } from './models';
 import { BudgetCodeParser } from './BudgetCodeParser';
 
 import Table from './ui/componets/Table/Table.svelte';
@@ -28,12 +28,16 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
     this.rows = rows;
   }
 
-  private createTableStore(): TableStore {
-    return writable({
-      selectedRowId: '',
+  private createTableStore(): [TableStore, TableStateStore] {
+    const tableStore: TableStore = writable({
       rows: this.rows,
       categories: this.categories,
     });
+    const tableStateStore: TableStateStore = writable({
+      selectedRowId: null,
+    });
+
+    return [tableStore, tableStateStore];
   }
 
   public onload(): void {
@@ -41,10 +45,13 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
       console.log('onChange called', newData);
     };
 
+    const [tableStore, tableStateStore] = this.createTableStore();
+
     this.component = mount(Table, {
       target: this.el,
       props: {
-        store: this.createTableStore(),
+        tableStore,
+        tableStateStore,
         onChange,
       },
     });
