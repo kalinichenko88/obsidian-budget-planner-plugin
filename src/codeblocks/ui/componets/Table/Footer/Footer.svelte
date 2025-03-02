@@ -2,10 +2,15 @@
 </script>
 
 <tfoot>
-  <tr>
-    <td></td>
-    <td>Footer</td>
-    <td></td>
-    <td></td>
+  <tr class="summary">
+    <th colspan="2">Footer</th>
+    <th>100</th>
+    <th></th>
   </tr>
 </tfoot>
+
+<style>
+  .summary > th {
+    text-align: end;
+  }
+</style>
