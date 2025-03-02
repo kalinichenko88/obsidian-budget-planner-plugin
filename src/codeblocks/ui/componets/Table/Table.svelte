@@ -1,8 +1,12 @@
 <script lang="ts">
   import { setContext } from 'svelte';
 
-  import type { CategoryId, TableStore } from '../../../models';
-  import { STORE_CONTEXT_KEY, STORE_ACTIONS_CONTEXT_KEY } from './constants';
+  import type { TableStateStore, TableStore, TableStoreValue } from '../../../models';
+  import {
+    STORE_CONTEXT_KEY,
+    STORE_STATE_CONTEXT_KEY,
+    STORE_ACTIONS_CONTEXT_KEY,
+  } from './constants';
   import { createStoreActions } from './actions';
 
   import Head from './Head/Head.svelte';
@@ -13,31 +17,30 @@
   import AddRow from './AddRow/AddRow.svelte';
 
   type Props = {
-    store: TableStore;
-    onChange: (data: any) => void;
+    tableStore: TableStore;
+    tableStateStore: TableStateStore;
+    onChange: (data: TableStoreValue) => void;
   };
 
-  const { store, onChange }: Props = $props();
+  const { tableStore, tableStateStore, onChange }: Props = $props();
 
-  const tableStore = setContext(STORE_CONTEXT_KEY, store);
+  setContext(STORE_CONTEXT_KEY, tableStore);
+  setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
 
-  const storeActions = createStoreActions(tableStore);
+  const storeActions = createStoreActions(tableStore, tableStateStore);
   setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
-  const { newCategory, selectRow, newRow } = storeActions;
+  const { newCategory, newRow } = storeActions;
+
+  let isFirstRun = true;
 
   tableStore.subscribe((value) => {
-    console.log({ value });
-    // onChange(tableStore);
+    if (isFirstRun) {
+      isFirstRun = false;
+      return;
+    }
+    onChange(value);
   });
-
-  export const handleCategoryChange = (value: string) => {
-    // onChange(value);
-  };
-
-  export const handleAddCategory = () => newCategory();
-
-  export const handleAddRow = (categoryId: CategoryId) => newRow(categoryId);
 </script>
 
 <table class="table">
@@ -45,19 +48,19 @@
 
   <tbody>
     {#each $tableStore.categories.entries() as [categoryId, categoryName] (categoryId)}
-      <CategoryRow {categoryId} {categoryName} onChange={handleCategoryChange} />
+      <CategoryRow {categoryId} {categoryName} />
 
       {#each $tableStore.rows.get(categoryId) || [] as row (row.id)}
-        <Row {row} />
+        <Row {row} rowId={row.id} />
       {/each}
 
-      <AddRow text="New Row" onClick={() => handleAddRow(categoryId)} />
+      <AddRow text="New Row" onClick={() => newRow(categoryId)} />
 
       <CategoryFooter {categoryId} />
     {/each}
   </tbody>
 
-  <AddRow text="New Category" onClick={handleAddCategory} />
+  <AddRow text="New Category" onClick={newCategory} />
 
   <Footer />
 </table>

@@ -1,8 +1,14 @@
-import { MarkdownRenderChild } from 'obsidian';
+import { MarkdownRenderChild, debounce } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import { writable } from 'svelte/store';
 
-import type { TableCategories, TableRows, TableStore, TableStateStore } from './models';
+import type {
+  TableCategories,
+  TableRows,
+  TableStore,
+  TableStateStore,
+  TableStoreValue,
+} from './models';
 import { BudgetCodeParser } from './BudgetCodeParser';
 
 import Table from './ui/componets/Table/Table.svelte';
@@ -12,7 +18,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
   private readonly parser: BudgetCodeParser;
   private readonly categories: TableCategories;
   private readonly rows: TableRows;
-  private component: any;
+  private component: Record<string, unknown>;
 
   constructor(
     private readonly el: HTMLElement,
@@ -40,11 +46,12 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
     return [tableStore, tableStateStore];
   }
 
-  public onload(): void {
-    const onChange = (newData: any) => {
-      console.log('onChange called', newData);
-    };
+  private onTableChange(newData: TableStoreValue): void {
+    console.log('onTableChange called', newData);
+  }
 
+  public onload(): void {
+    const onChange = debounce(this.onTableChange, 500, true);
     const [tableStore, tableStateStore] = this.createTableStore();
 
     this.component = mount(Table, {
