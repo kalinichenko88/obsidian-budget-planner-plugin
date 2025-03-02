@@ -19,6 +19,10 @@ export function createStoreActions(store: TableStore) {
 
   return {
     selectRow: (rowId: RowId | null): void => {
+      if (get(store).selectedRowId === rowId) {
+        return;
+      }
+
       return store.update((data) => {
         data.selectedRowId = rowId ?? '';
 
@@ -55,6 +59,21 @@ export function createStoreActions(store: TableStore) {
           ...state,
           selectedRowId: rowId,
         };
+      });
+    },
+    updateRow: (rowId: RowId, data: Partial<TableRow>): void => {
+      return store.update((state) => {
+        const { rows } = state;
+
+        for (const [categoryId, categoryRows] of rows) {
+          const updatedRows = categoryRows.map((row) =>
+            row.id === rowId ? { ...row, ...data } : row
+          );
+
+          rows.set(categoryId, updatedRows);
+        }
+
+        return state;
       });
     },
     deleteSelectedRow: (): void => {
@@ -120,6 +139,15 @@ export function createStoreActions(store: TableStore) {
           ...state,
           selectedRowId: newRowId,
         };
+      });
+    },
+    updateCategory: (categoryId: CategoryId, name: string): void => {
+      return store.update((state) => {
+        const { categories } = state;
+
+        categories.set(categoryId, name);
+
+        return state;
       });
     },
     deleteCategory: (categoryId: CategoryId): void => {
