@@ -7,3 +7,5 @@ export type { RowId } from './RowId';
 
 export type { TableStore, TableStoreValue } from './TableStore';
 export type { TableStateStore } from './TableStateStore';
+
+export type { EditableCell } from './EditableCell';

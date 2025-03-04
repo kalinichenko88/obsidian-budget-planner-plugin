@@ -1,6 +1,13 @@
 import { get } from 'svelte/store';
 
-import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '../../../models';
+import type {
+  CategoryId,
+  EditableCell,
+  RowId,
+  TableRow,
+  TableStateStore,
+  TableStore,
+} from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
@@ -23,6 +30,7 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
 
   return {
     selectRow: (rowId: RowId | null): void => {
+      console.log({ rowId });
       if (get(tableState).selectedRowId === null && rowId === null) {
         return;
       }
@@ -175,6 +183,20 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         rows.delete(categoryId);
 
         return state;
+      });
+    },
+    updateEditingCell: (rowId: RowId | null, cell: EditableCell | null): void => {
+      return tableState.update((state) => {
+        // let selectedRowId = state.selectedRowId;
+        // if (rowId !== null) {
+        //   selectedRowId = null;
+        // }
+
+        return {
+          ...state,
+          editingRowId: rowId,
+          editingCell: cell,
+        };
       });
     },
   };
