@@ -30,7 +30,6 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
 
   return {
     selectRow: (rowId: RowId | null): void => {
-      console.log({ rowId });
       if (get(tableState).selectedRowId === null && rowId === null) {
         return;
       }
@@ -185,16 +184,11 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         return state;
       });
     },
-    updateEditingCell: (rowId: RowId | null, cell: EditableCell | null): void => {
+    updateEditingCell: (rowId: RowId | CategoryId | null, cell: EditableCell | null): void => {
       return tableState.update((state) => {
-        // let selectedRowId = state.selectedRowId;
-        // if (rowId !== null) {
-        //   selectedRowId = null;
-        // }
-
         return {
           ...state,
-          editingRowId: rowId,
+          editingId: rowId,
           editingCell: cell,
         };
       });
