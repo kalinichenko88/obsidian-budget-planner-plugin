@@ -41,7 +41,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
     });
     const tableStateStore: TableStateStore = writable({
       selectedRowId: null,
-      editingRowId: null,
+      editingId: null,
       editingCell: null,
     });
 
