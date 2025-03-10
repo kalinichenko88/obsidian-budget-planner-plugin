@@ -1,13 +1,6 @@
 import { get } from 'svelte/store';
 
-import type {
-  CategoryId,
-  EditableCell,
-  RowId,
-  TableRow,
-  TableStateStore,
-  TableStore,
-} from '../../../models';
+import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
@@ -182,15 +175,6 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         rows.delete(categoryId);
 
         return state;
-      });
-    },
-    updateEditingCell: (rowId: RowId | CategoryId | null, cell: EditableCell | null): void => {
-      return tableState.update((state) => {
-        return {
-          ...state,
-          editingId: rowId,
-          editingCell: cell,
-        };
       });
     },
   };

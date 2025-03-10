@@ -7,7 +7,7 @@
   import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
   import { isRowsEqual } from './helpers';
 
-  import Cell from '../Cell/Cell.svelte';
+  import Editable from '../Editable/Editable.svelte';
 
   type Props = {
     row: TableRow;
@@ -82,15 +82,15 @@
   </td>
 
   <td>
-    <Cell bind:value={name} />
+    <Editable value={row.name} onChange={(value) => (name = String(value))} />
   </td>
 
   <td class="amount">
-    <Cell bind:value={amount} />
+    <Editable value={row.amount} onChange={(value) => (amount = Number(value))} />
   </td>
 
   <td class="comment">
-    <Cell bind:value={comment} />
+    <Editable value={row.comment} onChange={(value) => (comment = String(value))} />
   </td>
 </tr>
 
