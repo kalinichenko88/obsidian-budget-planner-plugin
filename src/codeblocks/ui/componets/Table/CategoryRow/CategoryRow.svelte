@@ -2,9 +2,9 @@
   import { Menu } from 'obsidian';
   import { getContext } from 'svelte';
 
-  import type { CategoryId, TableStateStore } from '../../../../models';
+  import type { CategoryId } from '../../../../models';
   import type { StoreActions } from '../actions';
-  import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
+  import { STORE_ACTIONS_CONTEXT_KEY } from '../constants';
 
   import Editable from '../Editable/Editable.svelte';
 
@@ -16,13 +16,8 @@
   const { categoryId, categoryName }: Props = $props();
   let name = $state(categoryName);
 
-  const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
-  const { newCategory, deleteCategory, selectRow, updateCategory, updateEditingCell } =
+  const { newCategory, deleteCategory, selectRow, updateCategory } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
-
-  const isEditing = $derived(
-    $tableState.editingCell === 'category' && $tableState.editingId === categoryId
-  );
 
   $effect(() => {
     if (name !== categoryName) {
@@ -51,15 +46,14 @@
     menu.showAtMouseEvent(event);
   };
 
-  export const handleOnClick = (): void => {
-    updateEditingCell(categoryId, 'category');
-    selectRow(null);
+  export const handleOnChange = (value: string): void => {
+    name = value;
   };
 </script>
 
 <tr class="category" oncontextmenu={handleOnMenu}>
   <td colspan={4}>
-    <Editable value={name} {isEditing} onClick={handleOnClick} />
+    <Editable value={name} onChange={handleOnChange} />
   </td>
 </tr>
 

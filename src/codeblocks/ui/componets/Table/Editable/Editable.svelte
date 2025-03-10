@@ -3,15 +3,17 @@
 
   type Props = {
     value: string | number;
+    onChange: (value: string | number) => void;
   };
 
-  let { value = $bindable('') }: Props = $props();
+  let { value, onChange }: Props = $props();
 
   const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
   const valueDisplay = $derived(
     valueType === 'number' ? moneyFormatter.format(value as number) : (value as string).trim()
   );
 
+  let editingValue = $state(value);
   let isEditing = $state(false);
   let inputElement: HTMLInputElement | null = $state(null);
 
@@ -34,13 +36,19 @@
       inputElement.focus();
     }
   });
+
+  $effect(() => {
+    if (editingValue !== value) {
+      onChange(editingValue);
+    }
+  });
 </script>
 
 {#if isEditing}
   <input
     class="input"
     bind:this={inputElement}
-    bind:value
+    bind:value={editingValue}
     type={valueType}
     min={valueType === 'number' ? '0' : undefined}
     step={valueType === 'number' ? '0.10' : undefined}
