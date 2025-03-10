@@ -3,27 +3,30 @@
 
   type Props = {
     value: string | number;
-    isEditing: boolean;
-    onClick: () => void;
   };
 
-  let { value = $bindable(), isEditing = $bindable(false), onClick }: Props = $props();
+  let { value = $bindable('') }: Props = $props();
 
   const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
   const valueDisplay = $derived(
     valueType === 'number' ? moneyFormatter.format(value as number) : (value as string).trim()
   );
 
+  let isEditing = $state(false);
   let inputElement: HTMLInputElement | null = $state(null);
 
   const handleOnClick = (): void => {
-    onClick();
+    isEditing = true;
   };
 
   const handleOnEnter = (event: KeyboardEvent): void => {
     if (event.key === 'Enter') {
-      onClick();
+      isEditing = true;
     }
+  };
+
+  const handleOnLeave = (): void => {
+    isEditing = false;
   };
 
   $effect(() => {
@@ -41,6 +44,7 @@
     type={valueType}
     min={valueType === 'number' ? '0' : undefined}
     step={valueType === 'number' ? '0.10' : undefined}
+    onblur={handleOnLeave}
   />
 {:else}
   <div class="text" role="button" tabindex="0" onclick={handleOnClick} onkeydown={handleOnEnter}>
