@@ -1,7 +1,7 @@
 <script lang="ts">
   import { setContext } from 'svelte';
 
-  import type { TableStateStore, TableStore, TableStoreValue } from '../../../models';
+  import type { TableStateStore, TableStore, TableStoreValues } from '../../../models';
   import {
     STORE_CONTEXT_KEY,
     STORE_STATE_CONTEXT_KEY,
@@ -19,7 +19,7 @@
   type Props = {
     tableStore: TableStore;
     tableStateStore: TableStateStore;
-    onChange: (data: TableStoreValue) => void;
+    onChange: (data: TableStoreValues) => void;
   };
 
   const { tableStore, tableStateStore, onChange }: Props = $props();
