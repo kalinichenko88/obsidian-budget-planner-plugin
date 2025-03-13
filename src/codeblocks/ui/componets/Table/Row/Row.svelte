@@ -72,6 +72,7 @@
 <tr
   class="row"
   class:selected={$tableState.selectedRowId === row.id}
+  class:checked={row.checked}
   onclick={handleOnRowClick}
   oncontextmenu={handleOnMenu}
 >
@@ -98,6 +99,11 @@
   tr.row.selected,
   tr.row.selected:hover {
     background: var(--table-selection);
+  }
+
+  tr.row.checked,
+  tr.row.checked:hover {
+    background: var(--background-secondary);
   }
 
   .check-wrapper {
