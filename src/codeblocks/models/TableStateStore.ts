@@ -1,5 +1,7 @@
 import type { Writable } from 'svelte/store';
 
-export type TableStateStore = Writable<{
+export type TableStateValues = {
   selectedRowId: string | null;
-}>;
+};
+
+export type TableStateStore = Writable<TableStateValues>;

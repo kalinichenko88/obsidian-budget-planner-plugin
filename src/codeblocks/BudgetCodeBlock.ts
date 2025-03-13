@@ -7,7 +7,8 @@ import type {
   TableRows,
   TableStore,
   TableStateStore,
-  TableStoreValue,
+  TableStoreValues,
+  TableStateValues,
 } from './models';
 import { BudgetCodeParser } from './BudgetCodeParser';
 
@@ -35,20 +36,18 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
   }
 
   private createTableStore(): [TableStore, TableStateStore] {
-    const tableStore: TableStore = writable({
+    const tableStore = writable<TableStoreValues>({
       rows: this.rows,
       categories: this.categories,
     });
-    const tableStateStore: TableStateStore = writable({
+    const tableStateStore = writable<TableStateValues>({
       selectedRowId: null,
-      editingId: null,
-      editingCell: null,
     });
 
     return [tableStore, tableStateStore];
   }
 
-  private onTableChange(newData: TableStoreValue): void {
+  private onTableChange(newData: TableStoreValues): void {
     console.log('onTableChange called', newData);
   }
 
