@@ -56,7 +56,9 @@
 
       <AddRow text="New Row" onClick={() => newRow(categoryId)} />
 
-      <CategoryFooter {categoryId} />
+      {#if $tableStore.categories.size > 1}
+        <CategoryFooter {categoryId} />
+      {/if}
     {/each}
   </tbody>
 
