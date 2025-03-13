@@ -71,7 +71,7 @@
   }
 
   .amount {
-    width: 18%;
+    width: 20%;
   }
 
   .comment {
