@@ -86,7 +86,7 @@
     <Editable value={row.name} onChange={(value) => (name = String(value))} />
   </td>
 
-  <td class="amount">
+  <td>
     <Editable value={row.amount} onChange={(value) => (amount = Number(value))} />
   </td>
 
@@ -118,9 +118,5 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .amount {
-    text-align: right;
   }
 </style>

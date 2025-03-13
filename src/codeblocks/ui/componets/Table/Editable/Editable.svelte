@@ -55,7 +55,14 @@
     onblur={handleOnLeave}
   />
 {:else}
-  <div class="text" role="button" tabindex="0" onclick={handleOnClick} onkeydown={handleOnEnter}>
+  <div
+    class="text"
+    class:end={valueType === 'number'}
+    role="button"
+    tabindex="0"
+    onclick={handleOnClick}
+    onkeydown={handleOnEnter}
+  >
     {valueDisplay}
   </div>
 {/if}
@@ -79,5 +86,9 @@
     align-items: center;
     height: var(--input-height);
     line-height: normal;
+  }
+
+  .end {
+    justify-content: end;
   }
 </style>
