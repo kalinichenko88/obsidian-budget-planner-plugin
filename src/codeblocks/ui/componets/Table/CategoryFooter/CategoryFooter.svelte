@@ -67,7 +67,7 @@
     }
 
     .label {
-      font-size: var(--font-smallest);
+      font-size: calc(var(--font-smallest) - 5%);
     }
   }
 </style>

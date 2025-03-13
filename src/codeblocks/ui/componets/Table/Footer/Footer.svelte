@@ -38,17 +38,26 @@
 <tfoot>
   <tr class="summary">
     <th colspan="2">
-      <span>COUNT:</span>{rowsCount}
-      {#if isUnselectedShown}
-        <br />
-        <span>UNCHECKED:</span>{unselectedRowsCount}
-      {/if}
+      <div class="wrapper">
+        <span class="label">COUNT:</span>
+        <div>
+          {rowsCount}
+        </div>
+        {#if isUnselectedShown}
+          <span class="label">UNCHECKED:</span>
+          <div>{unselectedRowsCount}</div>
+        {/if}
+      </div>
     </th>
     <th
-      ><span>SUM:</span>{moneyFormatter.format(rowsSum)}
-      {#if isUnselectedSumShown}
-        <br />{moneyFormatter.format(unselectedRowsSum)}
-      {/if}
+      ><div class="wrapper">
+        <span class="label">SUM:</span>
+        <div>{moneyFormatter.format(rowsSum)}</div>
+        {#if isUnselectedSumShown}
+          <span class="label">UNCHECKED:</span>
+          <div>{moneyFormatter.format(unselectedRowsSum)}</div>
+        {/if}
+      </div>
     </th>
     <th></th>
   </tr>
@@ -56,13 +65,20 @@
 
 <style>
   .summary > th {
-    text-align: end;
+    font-size: var(--font-smallest);
+  }
 
-    & > span {
-      font-size: var(--font-smallest);
-      color: var(--text-faint);
-      font-weight: var(--font-normal);
-      margin-right: 0.2rem;
-    }
+  .wrapper {
+    display: grid;
+    grid-template-columns: auto max-content;
+    text-align: end;
+    align-items: center;
+    justify-items: end;
+    gap: 0 0.5rem;
+  }
+
+  .label {
+    font-size: calc(var(--font-smallest) - 5%);
+    font-weight: var(--font-normal);
   }
 </style>
