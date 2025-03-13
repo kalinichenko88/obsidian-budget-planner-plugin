@@ -31,6 +31,10 @@
     isEditing = false;
   };
 
+  const handleOnWheel = (event: MouseEvent): void => {
+    event.preventDefault();
+  };
+
   $effect(() => {
     if (isEditing && inputElement) {
       inputElement.focus();
@@ -47,12 +51,14 @@
 {#if isEditing}
   <input
     class="input"
+    class:input-number={valueType === 'number'}
     bind:this={inputElement}
     bind:value={editingValue}
     type={valueType}
     min={valueType === 'number' ? '0' : undefined}
     step={valueType === 'number' ? '0.10' : undefined}
     onblur={handleOnLeave}
+    onwheel={handleOnWheel}
   />
 {:else}
   <div
@@ -79,6 +85,10 @@
     color: inherit;
     box-shadow: none;
     width: 100%;
+  }
+
+  .input-number {
+    text-align: right;
   }
 
   .text {
