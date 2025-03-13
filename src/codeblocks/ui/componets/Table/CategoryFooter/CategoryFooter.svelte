@@ -13,14 +13,16 @@
 
   const store = getContext<TableStore>(STORE_CONTEXT_KEY);
   const rows = $derived($store.rows.get(categoryId) || []);
+  const unselectedRows = $derived(rows.filter((row) => !row.checked));
 
-  let rowsCount: number = $state(0);
-  let rowsSum: number = $state(0);
+  const rowsCount = $derived(rows.length);
+  const rowsSum = $derived(rows.reduce((acc, value) => acc + value.amount, 0));
 
-  $effect(() => {
-    rowsCount = rows.length;
-    rowsSum = rows.reduce((acc, value) => acc + value.amount, 0);
-  });
+  const uncheckedRowsCount = $derived(unselectedRows.length);
+  const uncheckedRowsSum = $derived(unselectedRows.reduce((acc, value) => acc + value.amount, 0));
+
+  const isUnselectedShown = $derived(uncheckedRowsCount > 0 && uncheckedRowsCount !== rowsCount);
+  const isUnselectedSumShown = $derived(uncheckedRowsSum > 0 && uncheckedRowsSum !== rowsSum);
 </script>
 
 <tr class="meta">
@@ -28,10 +30,18 @@
   <td class="cell">
     <span>COUNT:</span>
     {rowsCount}
+    {#if isUnselectedShown}
+      <br />
+      <span>UNCHECKED:</span>{uncheckedRowsCount}
+    {/if}
   </td>
   <td class="cell">
     <span>SUM:</span>
     {moneyFormatter.format(rowsSum)}
+    {#if isUnselectedSumShown}
+      <br />
+      <span>UNCHECKED:</span>{moneyFormatter.format(uncheckedRowsSum)}
+    {/if}
   </td>
   <td></td>
 </tr>
@@ -39,6 +49,7 @@
 <style>
   .cell {
     text-align: end;
+    white-space: nowrap;
     font-size: var(--font-smallest);
   }
 
