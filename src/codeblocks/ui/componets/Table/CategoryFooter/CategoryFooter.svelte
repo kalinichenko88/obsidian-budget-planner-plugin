@@ -27,33 +27,47 @@
 
 <tr class="meta">
   <td></td>
+
   <td class="cell">
-    <span>COUNT:</span>
-    {rowsCount}
-    {#if isUnselectedShown}
-      <br />
-      <span>UNCHECKED:</span>{uncheckedRowsCount}
-    {/if}
+    <div class="wrapper">
+      <span class="label">COUNT:</span>
+      <div>{rowsCount}</div>
+      {#if isUnselectedShown}
+        <span class="label">UNCHECKED:</span>
+        <div>{uncheckedRowsCount}</div>
+      {/if}
+    </div>
   </td>
+
   <td class="cell">
-    <span>SUM:</span>
-    {moneyFormatter.format(rowsSum)}
-    {#if isUnselectedSumShown}
-      <br />
-      <span>UNCHECKED:</span>{moneyFormatter.format(uncheckedRowsSum)}
-    {/if}
+    <div class="wrapper">
+      <span class="label">SUM:</span>
+      <div>{moneyFormatter.format(rowsSum)}</div>
+      {#if isUnselectedSumShown}
+        <span class="label">UNCHECKED:</span>
+        <div>{moneyFormatter.format(uncheckedRowsSum)}</div>
+      {/if}
+    </div>
   </td>
+
   <td></td>
 </tr>
 
 <style>
   .cell {
-    text-align: end;
-    white-space: nowrap;
     font-size: var(--font-smallest);
-  }
 
-  .cell > span {
-    font-size: var(--font-smallest);
+    > .wrapper {
+      display: grid;
+      grid-template-columns: auto max-content;
+      text-align: end;
+      align-items: center;
+      justify-items: end;
+      gap: 0 0.5rem;
+    }
+
+    .label {
+      font-size: var(--font-smallest);
+    }
   }
 </style>
