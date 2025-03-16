@@ -4,6 +4,7 @@ import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '.
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createStoreActions(store: TableStore, tableState: TableStateStore) {
   const getCategoryByRowId = (rowId: RowId | null): CategoryId | null => {
     if (rowId === null) {
