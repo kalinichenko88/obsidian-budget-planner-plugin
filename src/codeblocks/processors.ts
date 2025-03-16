@@ -2,11 +2,11 @@ import { type MarkdownPostProcessorContext, Plugin } from 'obsidian';
 
 import { BudgetCodeBlock } from './BudgetCodeBlock';
 
-export const registerCodeBlocks = (plugin: Plugin) => {
+export const registerCodeBlocks = (plugin: Plugin): void => {
   plugin.registerMarkdownCodeBlockProcessor(
     'budget',
     (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-      ctx.addChild(new BudgetCodeBlock(el, source));
+      ctx.addChild(new BudgetCodeBlock(el, source, plugin.app, ctx));
     }
   );
 };

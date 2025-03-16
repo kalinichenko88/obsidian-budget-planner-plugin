@@ -29,10 +29,23 @@ export class BudgetCodeParser {
     return cell === '[x]' || cell === '[X]';
   }
 
+  protected parseAmount(value: string): number {
+    if (!value || value.trim() === '') return 0;
+
+    const sanitized = value.replace(/[^\d.-]/g, '');
+    const amount = parseFloat(sanitized);
+
+    return isNaN(amount) ? 0 : amount;
+  }
+
   public parse(): ParseReturn {
     let categoryId: CategoryId = '';
 
     for (const line of this.rawData) {
+      if (!line.trim()) {
+        continue;
+      }
+
       if (this.isCategoryRow(line)) {
         categoryId = generateId();
         this.categories.set(categoryId, line.replace(/:$/, ''));
@@ -51,9 +64,9 @@ export class BudgetCodeParser {
       const row: TableRow = {
         id: generateId(),
         checked,
-        name,
-        amount: parseFloat(amount) || 0,
-        comment: comment || '',
+        name: name.trim(),
+        amount: this.parseAmount(amount),
+        comment: (comment || '').trim(),
       };
 
       const rows = this.rows.get(categoryId) || [];
