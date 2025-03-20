@@ -21,6 +21,13 @@ export default [
         sourceType: 'module',
         project: './tsconfig.json',
         extraFileExtensions: ['.svelte'],
+        lib: ['DOM', 'ES5', 'ES6', 'ES7', 'ES2017'],
+      },
+      globals: {
+        window: 'readonly',
+        document: 'readonly',
+        setTimeout: 'readonly',
+        console: 'readonly',
       },
     },
     rules: {
