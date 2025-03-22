@@ -7,13 +7,14 @@
     "target": "ES6",
     "allowJs": true,
     "noImplicitAny": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "isolatedModules": true,
     "strictNullChecks": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "lib": ["DOM", "ES5", "ES6", "ES7", "ES2017"]
+    "lib": ["DOM", "ES5", "ES6", "ES7", "ES2017"],
+    "types": ["svelte"]
   },
   "include": ["**/*.ts", "**/*.svelte"]
 }
