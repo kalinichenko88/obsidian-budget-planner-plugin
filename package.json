@@ -20,7 +20,8 @@
         "lint:fix": "eslint . --ext .js,.ts,.svelte --fix",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "typecheck": "svelte-check --tsconfig ./tsconfig.json"
+        "typecheck": "svelte-check --tsconfig ./tsconfig.json",
+        "test": "vitest run"
     },
     "author": "Ivan Kalinichenko <joker.bsg@gmail.com>",
     "license": "MIT",
@@ -53,6 +54,7 @@
         "svelte-eslint-parser": "^1.1.0",
         "svelte-preprocess": "^6.0.3",
         "tslib": "2.8.1",
-        "typescript": "^5.7.3"
+        "typescript": "^5.7.3",
+        "vitest": "^3.0.9"
     }
 }
