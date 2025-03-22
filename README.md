@@ -1,5 +1,7 @@
 # Obsidian Budget Planner Plugin
 
+![Code Quality](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/quality.yml/badge.svg)
+
 Welcome to the Obsidian Budget Planner Plugin! This plugin provides an easy way to planing your budget within
 Obsidian using a markdown code block named budget.
 
