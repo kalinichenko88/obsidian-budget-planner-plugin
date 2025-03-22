@@ -16,7 +16,7 @@
   const { row }: Props = $props();
 
   const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
-  const { selectRow, newCategory, newRow, deleteSelectedRow, updateRow } =
+  const { selectRow, newCategory, newRow, deleteSelectedRow, updateRow, toggleEditing } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
   let checked = $state(row.checked);
@@ -78,20 +78,32 @@
 >
   <td class="check-wrapper">
     <div class="check">
-      <input type="checkbox" name="checkbox" id="checkbox" bind:checked />
+      <input type="checkbox" name="checkbox" id={`checkbox-${row.id}`} bind:checked />
     </div>
   </td>
 
-  <td>
-    <Editable value={row.name} onChange={(value) => (name = String(value))} />
+  <td class="cell">
+    <Editable
+      value={row.name}
+      onChange={(value) => (name = String(value))}
+      onEditingChange={toggleEditing}
+    />
   </td>
 
-  <td>
-    <Editable value={row.amount} onChange={(value) => (amount = Number(value))} />
+  <td class="cell">
+    <Editable
+      value={row.amount}
+      onChange={(value) => (amount = Number(value))}
+      onEditingChange={toggleEditing}
+    />
   </td>
 
-  <td class="comment">
-    <Editable value={row.comment} onChange={(value) => (comment = String(value))} />
+  <td class="cell">
+    <Editable
+      value={row.comment}
+      onChange={(value) => (comment = String(value))}
+      onEditingChange={toggleEditing}
+    />
   </td>
 </tr>
 
@@ -118,5 +130,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .cell {
+    position: relative;
   }
 </style>

@@ -11,12 +11,13 @@
   type Props = {
     categoryId: CategoryId;
     categoryName: string;
+    isDeletingEnabled: boolean;
   };
 
-  const { categoryId, categoryName }: Props = $props();
+  const { categoryId, categoryName, isDeletingEnabled }: Props = $props();
   let name = $state(categoryName);
 
-  const { newCategory, deleteCategory, selectRow, updateCategory } =
+  const { newCategory, deleteCategory, selectRow, updateCategory, toggleEditing } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
   $effect(() => {
@@ -37,6 +38,7 @@
       item
         .setTitle('Delete category and all rows')
         .setIcon('list-x')
+        .setDisabled(!isDeletingEnabled)
         .onClick(() => deleteCategory(categoryId));
     });
 
@@ -52,8 +54,8 @@
 </script>
 
 <tr class="category" oncontextmenu={handleOnMenu}>
-  <td colspan={4}>
-    <Editable value={name} onChange={handleOnChange} />
+  <td colspan={4} class="cell">
+    <Editable value={name} onChange={handleOnChange} onEditingChange={toggleEditing} />
   </td>
 </tr>
 
@@ -61,5 +63,10 @@
   .category {
     font-size: 0.9em;
     font-weight: bold;
+
+    & > .cell {
+      position: relative;
+      height: 38.9px;
+    }
   }
 </style>

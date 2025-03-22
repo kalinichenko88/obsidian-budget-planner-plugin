@@ -85,6 +85,14 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         return state;
       });
     },
+    toggleEditing: (isEditing: boolean): void => {
+      return tableState.update((state) => {
+        return {
+          ...state,
+          isEditing,
+        };
+      });
+    },
     deleteSelectedRow: (): void => {
       const rowId = get(tableState).selectedRowId;
 

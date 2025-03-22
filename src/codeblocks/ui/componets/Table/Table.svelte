@@ -1,13 +1,14 @@
 <script lang="ts">
   import { setContext } from 'svelte';
+  import { debounce } from 'obsidian';
 
   import type { TableStateStore, TableStore, TableStoreValues } from '../../../models';
+  import { createStoreActions } from './actions';
   import {
     STORE_CONTEXT_KEY,
     STORE_STATE_CONTEXT_KEY,
     STORE_ACTIONS_CONTEXT_KEY,
   } from './constants';
-  import { createStoreActions } from './actions';
 
   import Head from './Head/Head.svelte';
   import CategoryRow from './CategoryRow/CategoryRow.svelte';
@@ -19,10 +20,10 @@
   type Props = {
     tableStore: TableStore;
     tableStateStore: TableStateStore;
-    onChange: (data: TableStoreValues) => void;
+    onSave: (data: TableStoreValues) => void;
   };
 
-  const { tableStore, tableStateStore, onChange }: Props = $props();
+  const { tableStore, tableStateStore, onSave }: Props = $props();
 
   setContext(STORE_CONTEXT_KEY, tableStore);
   setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
@@ -34,13 +35,22 @@
 
   let isFirstRun = true;
 
-  tableStore.subscribe((value) => {
-    if (isFirstRun) {
-      isFirstRun = false;
-      return;
-    }
-    onChange(value);
-  });
+  const hadleOnTableUpdate = debounce(
+    (value: TableStoreValues) => {
+      if (isFirstRun) {
+        isFirstRun = false;
+        return;
+      }
+      if ($tableStateStore.isEditing) {
+        return;
+      }
+      onSave(value);
+    },
+    500,
+    true
+  );
+
+  tableStore.subscribe(hadleOnTableUpdate);
 </script>
 
 <table class="table">
@@ -48,7 +58,11 @@
 
   <tbody>
     {#each $tableStore.categories.entries() as [categoryId, categoryName] (categoryId)}
-      <CategoryRow {categoryId} {categoryName} />
+      <CategoryRow
+        {categoryId}
+        {categoryName}
+        isDeletingEnabled={$tableStore.categories.size > 1}
+      />
 
       {#each $tableStore.rows.get(categoryId) || [] as row (row.id)}
         <Row {row} />
