@@ -4,7 +4,7 @@
 
 A simple, powerful budget planning tool for Obsidian. This plugin allows you to create and manage budgets directly in your notes using markdown code blocks. Track expenses, organize by categories, and keep your financial planning within your knowledge base.
 
-![screenshot](assets/screenshot.jpeg)
+![screenshot](assets/screenshot.jpg)
 
 ## Examples:
 
