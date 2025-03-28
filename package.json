@@ -13,8 +13,8 @@
   "main": "dist/main.js",
   "type": "module",
   "scripts": {
-    "dev": "node esbuild.config.js",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.js production",
+    "dev": "vite build --watch",
+    "build": "NODE_ENV=production vite build",
     "version": "node version-bump.js && git add manifest.json versions.json",
     "lint": "eslint --config eslint.config.js .",
     "lint:fix": "eslint . --ext .js,.ts,.svelte --fix",
@@ -34,13 +34,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@types/node": "^20.17.24",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.26.0",
     "@typescript-eslint/type-utils": "^8.26.0",
     "builtin-modules": "^5.0.0",
-    "esbuild": "^0.25.1",
-    "esbuild-svelte": "^0.9.0",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.3",
@@ -55,6 +54,7 @@
     "svelte-preprocess": "^6.0.3",
     "tslib": "2.8.1",
     "typescript": "^5.7.3",
+    "vite": "^6.2.3",
     "vitest": "^3.0.9"
   }
 }

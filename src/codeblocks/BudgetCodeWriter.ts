@@ -1,4 +1,4 @@
-import { type MarkdownSectionInformation, App, MarkdownView } from 'obsidian';
+import { type MarkdownSectionInformation, type App, MarkdownView } from 'obsidian';
 
 import type { TableStoreValues, TableRow } from './models';
 

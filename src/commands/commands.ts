@@ -1,4 +1,4 @@
-import { Editor, Plugin } from 'obsidian';
+import type { Editor, Plugin } from 'obsidian';
 
 import type { Settings } from '../settings';
 
