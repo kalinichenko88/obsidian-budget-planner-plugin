@@ -1,9 +1,4 @@
-import {
-  MarkdownRenderChild,
-  debounce,
-  type App,
-  type MarkdownPostProcessorContext,
-} from 'obsidian';
+import { MarkdownRenderChild, type App, type MarkdownPostProcessorContext } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import { writable } from 'svelte/store';
 
@@ -83,14 +78,13 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
 
   public onload(): void {
     const [tableStore, tableStateStore] = this.createTableStore();
-    const handleSave = debounce(this.saveTable, 2_000, true).bind(this);
 
     this.component = mount(Table, {
       target: this.el,
       props: {
         tableStore,
         tableStateStore,
-        onSave: handleSave,
+        onSave: this.saveTable.bind(this),
       },
     });
   }
