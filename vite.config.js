@@ -34,12 +34,19 @@ if (isProd) {
   copyFiles();
 }
 
+const alias = {
+  '@': path.resolve(__dirname, 'src'),
+};
+
 export default defineConfig({
   resolve: process.env.VITEST
     ? {
         conditions: ['browser'],
+        alias,
       }
-    : undefined,
+    : {
+        alias,
+      },
   plugins: [
     svelte({
       compilerOptions: { css: 'injected' },

@@ -14,7 +14,10 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "lib": ["DOM", "ES5", "ES6", "ES7", "ES2017", "ES2018"],
-    "types": ["svelte"]
+    "types": ["svelte"],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["**/*.ts", "**/*.svelte"]
 }
