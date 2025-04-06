@@ -68,10 +68,8 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
       await new BudgetCodeWriter().write(newData, sectionInfo, this.app);
 
       if (cmScroller) {
-        setTimeout(() => {
-          cmScroller.scrollTop = scrollPosition.top;
-          cmScroller.scrollLeft = scrollPosition.left;
-        });
+        cmScroller.scrollTop = scrollPosition.top;
+        cmScroller.scrollLeft = scrollPosition.left;
       }
     } catch (error) {
       logError('Error saving table.', error);
