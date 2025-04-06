@@ -1,5 +1,7 @@
 import { type MarkdownSectionInformation, type App, MarkdownView } from 'obsidian';
 
+import { logError, logWarning } from '@/shared/helpers/log';
+
 import type { TableStoreValues, TableRow } from './models';
 
 export class BudgetCodeWriter {
@@ -121,7 +123,7 @@ export class BudgetCodeWriter {
     const currentSection = lines.slice(sectionInfo.lineStart, sectionInfo.lineEnd + 1);
 
     if (!currentSection[0]?.includes('```budget')) {
-      console.warn('Budget section was modified, canceling update');
+      logWarning('Budget section was modified, canceling update');
       return;
     }
 
@@ -149,7 +151,8 @@ export class BudgetCodeWriter {
     app: App
   ): Promise<void> {
     if (this.isWriting) {
-      console.warn('Writing is already in progress, skipping');
+      logWarning('Writing is already in progress, skipping');
+
       return;
     }
 
@@ -163,7 +166,7 @@ export class BudgetCodeWriter {
       const formattedCode = this.formatCode(newCode);
       await this.updateFileContent(app, sectionInfo, formattedCode);
     } catch (error) {
-      console.error('Error writing to file:', error);
+      logError('Error writing to file', error);
     } finally {
       this.isWriting = false;
     }

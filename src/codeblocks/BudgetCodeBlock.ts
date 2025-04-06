@@ -2,6 +2,8 @@ import { MarkdownRenderChild, type App, type MarkdownPostProcessorContext } from
 import { mount, unmount } from 'svelte';
 import { writable } from 'svelte/store';
 
+import { logInfo, logError, logWarning } from '@/shared/helpers/log';
+
 import type {
   TableCategories,
   TableRows,
@@ -52,7 +54,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
   private async saveTable(newData: TableStoreValues): Promise<void> {
     const sectionInfo = this.context.getSectionInfo(this.el);
     if (!sectionInfo) {
-      console.warn('Section info not found');
+      logWarning('Section info not found');
       return;
     }
 
@@ -62,7 +64,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
       : { top: 0, left: 0 };
 
     try {
-      console.log('SAVE TABLE');
+      logInfo('The table data is being saved');
       await new BudgetCodeWriter().write(newData, sectionInfo, this.app);
 
       if (cmScroller) {
@@ -72,7 +74,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
         });
       }
     } catch (error) {
-      console.error('Error saving table:', error);
+      logError('Error saving table.', error);
     }
   }
 

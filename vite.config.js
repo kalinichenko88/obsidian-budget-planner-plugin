@@ -47,6 +47,9 @@ export default defineConfig({
     : {
         alias,
       },
+  define: {
+    'process.env.IS_PRODUCTION': isProd,
+  },
   plugins: [
     svelte({
       compilerOptions: { css: 'injected' },
