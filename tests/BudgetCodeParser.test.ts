@@ -1,7 +1,7 @@
 import { expect, test, describe } from 'vitest';
 
 import type { TableRow } from '@/codeblocks/models';
-import { BudgetCodeParser } from '@/codeblocks/BudgetCodeParser';
+import { BudgetCodeParser, NO_CATEGORY_ID } from '@/codeblocks/BudgetCodeParser';
 
 describe('BudgetCodeParser', () => {
   test('should parse empty code', () => {
@@ -109,12 +109,15 @@ describe('BudgetCodeParser', () => {
     expect(result.rows.size).toBe(2);
   });
 
-  // test('should handle rows without catgories', () => {
-  //   const code = 'Salary | 5000 | Monthly\nRent | 1500 | Housing';
-  //   const parser = new BudgetCodeParser(code);
-  //   const result = parser.parse();
+  test('should handle rows without catgories', () => {
+    const code = 'Salary | 5000 | Monthly\nRent | 1500 | Housing';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
 
-  //   expect(result.categories.size).toBe(2);
-  //   expect(result.rows.size).toBe(2);
-  // });
+    expect(result.categories.size).toBe(1);
+
+    const rows = result.rows.get(NO_CATEGORY_ID) as TableRow[];
+    expect(rows).toBeInstanceOf(Array);
+    expect(rows).toHaveLength(2);
+  });
 });

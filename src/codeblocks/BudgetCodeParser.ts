@@ -6,6 +6,9 @@ type ParseReturn = {
   rows: TableRows;
 };
 
+export const NO_CATEGORY_ID = 'no-category-id';
+export const NO_CATEGORY_NAME = 'no-category-name';
+
 export class BudgetCodeParser {
   protected readonly rawData: string[];
   protected readonly categories: TableCategories;
@@ -39,7 +42,7 @@ export class BudgetCodeParser {
   }
 
   public parse(): ParseReturn {
-    let categoryId: CategoryId = '';
+    let categoryId: CategoryId = NO_CATEGORY_ID;
 
     for (const line of this.rawData) {
       if (!line.trim()) {
@@ -73,6 +76,10 @@ export class BudgetCodeParser {
       rows.push(row);
 
       this.rows.set(categoryId, rows);
+    }
+
+    if (this.rows.size > 0 && this.categories.size === 0) {
+      this.categories.set(NO_CATEGORY_ID, NO_CATEGORY_NAME);
     }
 
     return {
