@@ -1,91 +1,96 @@
-import type { MarkdownPostProcessorContext } from 'obsidian';
+import { MarkdownRenderChild, type App, type MarkdownPostProcessorContext } from 'obsidian';
+import { mount, unmount } from 'svelte';
+import { writable } from 'svelte/store';
 
-import { CodeParser } from './CodeParser';
+import { logInfo, logError, logWarning } from '@/shared/helpers/log';
 
-export class BudgetCodeBlock {
-	private readonly source: string;
-	private readonly parser: CodeParser;
-	private readonly moneyFormatter: Intl.NumberFormat;
+import type {
+  TableCategories,
+  TableRows,
+  TableStore,
+  TableStateStore,
+  TableStoreValues,
+  TableStateValues,
+} from './models';
+import { BudgetCodeParser } from './BudgetCodeParser';
+import { BudgetCodeWriter } from './BudgetCodeWriter';
 
-	constructor(
-		source: string,
-		private readonly el: HTMLElement,
-		private readonly ctx: MarkdownPostProcessorContext,
-	) {
-		this.source = source || '';
-		this.parser = new CodeParser(this.source);
-		this.moneyFormatter = new Intl.NumberFormat('en-US', {
-			style: 'decimal',
-		});
-	}
+import Table from './ui/componets/Table/Table.svelte';
 
-	private createWrapper(): HTMLDivElement {
-		const wrapper = this.el.createEl('div');
-		wrapper.className = 'budget-wrapper';
+export class BudgetCodeBlock extends MarkdownRenderChild {
+  private readonly categories: TableCategories;
+  private readonly rows: TableRows;
+  private component: Record<string, unknown>;
 
-		return wrapper;
-	}
+  constructor(
+    markdownSource: string,
+    private readonly el: HTMLElement,
+    private readonly app: App,
+    private readonly context: MarkdownPostProcessorContext
+  ) {
+    super(el);
 
-	private createTableCell(row: HTMLTableRowElement, value: string, className = ''): HTMLTableCellElement {
-		const cell = row.createEl('td');
-		cell.className = className;
-		const wrapper = cell.createEl('div', { attr: { class: 'budget-table-cell' } });
-		wrapper.innerHTML = value;
+    const source = markdownSource || '';
+    const parser = new BudgetCodeParser(source);
+    const { categories, rows } = parser.parse();
 
-		return cell;
-	}
+    this.categories = categories;
+    this.rows = rows;
+  }
 
-	private createTableHeader(table: HTMLTableElement, text: string): void {
-		const categoryRow = table.createEl('tr', { attr: { class: 'budget-category' } });
-		const cell = categoryRow.createEl('td', { attr: { colspan: 3 } });
-		cell.innerHTML = `<span class="budget-table-cell budget-table-title">${text}</span>`;
-	}
+  private createTableStore(): [TableStore, TableStateStore] {
+    const tableStore = writable<TableStoreValues>({
+      rows: this.rows,
+      categories: this.categories,
+    });
+    const tableStateStore = writable<TableStateValues>({
+      selectedRowId: null,
+      isEditing: false,
+    });
 
-	private createTableCategorySummary(table: HTMLTableElement, sum: number): void {
-		const summaryRow = table.createEl('tr', { attr: { class: 'budget-category-summary' } });
-		summaryRow.createEl('td');
+    return [tableStore, tableStateStore];
+  }
 
-		this.createTableCell(summaryRow, this.moneyFormatter.format(sum), 'text-right budget-amount');
-		this.createTableCell(summaryRow, '');
-	}
+  private async saveTable(newData: TableStoreValues): Promise<void> {
+    const sectionInfo = this.context.getSectionInfo(this.el);
+    if (!sectionInfo) {
+      logWarning('Section info not found');
+      return;
+    }
 
-	private createTableSummary(table: HTMLTableElement, sum: number): void {
-		const summaryRow = table.createEl('tr', { attr: { class: 'budget-summary' } });
-		summaryRow.createEl('td');
+    const cmScroller = document.querySelector('.cm-scroller');
+    const scrollPosition = cmScroller
+      ? { top: cmScroller.scrollTop, left: cmScroller.scrollLeft }
+      : { top: 0, left: 0 };
 
-		this.createTableCell(summaryRow, this.moneyFormatter.format(sum), 'text-right budget-amount');
-		this.createTableCell(summaryRow, '');
-	}
+    try {
+      logInfo('The table data is being saved');
+      await new BudgetCodeWriter().write(newData, sectionInfo, this.app);
 
-	public render() {
-		const data = this.parser.parseCode();
-		const categories = Array.from(data.keys());
+      if (cmScroller) {
+        cmScroller.scrollTop = scrollPosition.top;
+        cmScroller.scrollLeft = scrollPosition.left;
+      }
+    } catch (error) {
+      logError('Error saving table.', error);
+    }
+  }
 
-		const wrapper = this.createWrapper();
-		const table = this.el.createEl('table', { attr: { class: 'budget-table' } });
+  public onload(): void {
+    const [tableStore, tableStateStore] = this.createTableStore();
 
-		categories.forEach((category) => {
-			this.createTableHeader(table, category);
+    this.component = mount(Table, {
+      target: this.el,
+      props: {
+        tableStore,
+        tableStateStore,
+        onSave: this.saveTable.bind(this),
+      },
+    });
+  }
 
-			const dataValue = data.get(category) || { rows: [], meta: { sum: 0 } };
-			dataValue.rows.forEach((row) => {
-				const rowEl = table.createEl('tr');
-				this.createTableCell(rowEl, row.name, 'budget-name');
-				this.createTableCell(rowEl, this.moneyFormatter.format(row.amount), 'text-right budget-amount');
-				this.createTableCell(rowEl, row.comment, 'budget-comment');
-			});
-
-			if (dataValue.meta.sum > 0) {
-				this.createTableCategorySummary(table, dataValue.meta.sum);
-			}
-		});
-
-		const sum = Array.from(data.values()).reduce((acc, value) => acc + value.meta.sum, 0);
-		if (sum > 0) {
-			this.createTableSummary(table, sum);
-		}
-
-		wrapper.appendChild(table);
-		this.el.appendChild(wrapper);
-	}
+  public async onunload(): Promise<void> {
+    await unmount(this.component);
+    super.unload();
+  }
 }

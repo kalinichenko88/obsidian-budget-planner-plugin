@@ -1,3 +1,3 @@
 export type Settings = {
-	defaultBudgetBlock: string;
+  defaultBudgetBlock: string;
 };

@@ -1,30 +1,33 @@
 # Obsidian Budget Planner Plugin
 
-Welcome to the Obsidian Budget Planner Plugin! This plugin provides an easy way to planing your budget within 
-Obsidian using a markdown code block named budget.
+![Test Status](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/quality.yml/badge.svg)
+
+A simple, powerful budget planning tool for Obsidian. This plugin allows you to create and manage budgets directly in your notes using markdown code blocks. Track expenses, organize by categories, and keep your financial planning within your knowledge base.
+
+![screenshot](assets/screenshot.jpg)
 
 ## Examples:
 
 ### Without category
 
-```
+````
 ```budget
-Spotify    | $4.99
-Youtube    | $16.99
-1Password  | 6.95
-```
+[x] Spotify    | $4.99
+[] Youtube    | $16.99
+[] 1Password  | 6.95
+````
 
 ### With category
 
-```
+````
 ```budget
 Online services:
-	Spotify    | $4.99
-	Youtube    | $16.99
-	1Password  | 6.95
+	[] Spotify    | $4.99
+	[] Youtube    | $16.99
+	[] 1Password  | 6.95
 Others:
-	Netflix    | $12.99
-```
+	[] Netflix    | $12.99
+````
 
 ## Contributing
 
