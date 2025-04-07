@@ -23,7 +23,7 @@
     "typecheck": "svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run"
   },
-  "author": "Ivan Kalinichenko <joker.bsg@gmail.com>",
+  "author": "Ivan Kalinichenko <ivan@kalinichenko.dev>",
   "license": "MIT",
   "engines": {
     "node": ">=22",
