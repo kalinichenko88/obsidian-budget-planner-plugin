@@ -72,7 +72,7 @@
     display: grid;
     grid-template-columns: auto max-content;
     text-align: end;
-    align-items: center;
+    align-items: baseline;
     justify-items: end;
     gap: 0 0.5rem;
   }
