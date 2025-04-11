@@ -2,9 +2,9 @@
   "id": "obsidian-budget-planner-plugin",
   "name": "Budget Planner",
   "version": "1.0.0",
-  "minAppVersion": "0.15.0",
-  "description": "A custom code block plugin for Obsidian that provides a table for budget planning.",
-  "author": "Ivan Kalinichenko <joker.bsg@gmail.com>",
+  "minAppVersion": "0.16.0",
+  "description": "A minimalist budget planning tool for Obsidian. Create, track, and manage budgets using markdown code blocks directly in your notes.",
+  "author": "Ivan Kalinichenko <ivan@kalinichenko.dev>",
   "authorUrl": "https://github.com/kalinichenko88/obsidian-budget-planner-plugin",
   "isDesktopOnly": false
 }
