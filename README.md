@@ -1,6 +1,7 @@
 # Obsidian Budget Planner Plugin
 
-![Test Status](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/quality.yml/badge.svg)
+[![Testing](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/testing.yml/badge.svg)](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/testing.yml)
+[![Release](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/release.yml/badge.svg)](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/release.yml)
 
 A simple, powerful budget planning tool for Obsidian. This plugin allows you to create and manage budgets directly in your notes using markdown code blocks. Track expenses, organize by categories, and keep your financial planning within your knowledge base.
 
