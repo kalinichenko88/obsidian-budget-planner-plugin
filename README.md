@@ -59,9 +59,10 @@ Others:
 
 Contributions are welcome! Please follow these steps:
 
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Submit a pull request with a clear description of your changes.
+1. Fork the repository
+2. Create a new branch for your feature or bugfix
+3. Make your changes and test them thoroughly
+4. Submit a pull request with a clear description of your changes
 
 ## License
 
@@ -70,3 +71,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Support
 
 If you encounter any issues or have feature requests, please open an issue on the [GitHub repository](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/issues).
+
+## How to release
+
+1. Run `./scripts/release <VERSION>` to create a new version
+2. Go to GitHub Actions to monitor the build process
+3. Once complete, update and publish the release on GitHub
