@@ -2,25 +2,24 @@
 
 echo "Release starting..."
 
-DIST_DIR=dist
+VERSION=$1
 
-echo "Dist directory clearing"
-if [ -d $DIST_DIR ]; then
-	rm -rf $DIST_DIR
-	mkdir $DIST_DIR
+if [ -z "$VERSION" ]; then
+  echo "Error: Version argument is required"
+  echo "Usage: ./scripts/release <version>"
+  exit 1
 fi
 
-npm run build
-
-if [ -d main.js ]; then
-	echo "main.js not found. Build failed."
-	exit 1
+node ./scripts/version-bump.js "$VERSION"
+if [ $? -ne 0 ]; then
+  echo "Error: Version bump failed"
+  exit 1
 fi
 
-echo "Copying files to dist directory"
+git add package.json package-lock.json manifest.json versions.json
+git commit -m "Release version $VERSION"
 
-mv main.js $DIST_DIR
-cp manifest.json $DIST_DIR
-cp versions.json $DIST_DIR
+git tag -a "$VERSION" -m "$VERSION"
+git push origin "$VERSION"
 
-echo "Release complete."
+echo "Releasing version: $VERSION"
