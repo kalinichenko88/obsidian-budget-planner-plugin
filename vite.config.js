@@ -17,7 +17,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 // Copy static files function
 const copyFiles = () => {
-  const files = ['manifest.json', 'styles.css'];
+  const files = ['manifest.json'];
   const outDir = 'dist';
 
   if (!fs.existsSync(outDir)) {
