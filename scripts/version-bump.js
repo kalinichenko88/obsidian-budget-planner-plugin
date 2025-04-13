@@ -29,8 +29,7 @@ if (validateVersion(targetVersion) === false) {
   // update versions.json with target version and minAppVersion from manifest.json
   let versions = JSON.parse(readFileSync('versions.json', 'utf8'));
   if (Object.keys(versions).includes(targetVersion)) {
-    console.error('Version already exists in versions.json');
-    process.exit(0);
+    console.warn('Version already exists in versions.json');
   }
   versions[targetVersion] = minAppVersion;
   writeProcesses.push(writeFile('versions.json', JSON.stringify(versions, null, '  ') + '\n'));
