@@ -1,6 +1,6 @@
 {
   "name": "obsidian-budget-planner-plugin",
-  "version": "1.0.10",
+  "version": "1.0.0",
   "description": "A custom code block plugin for Obsidian that provides a user-friendly table for budget planning.",
   "keywords": [
     "obsidian",
