@@ -5,6 +5,9 @@ on:
     workflows: ['Linting']
     types:
       - completed
+  push:
+    tags:
+      - '*'
 
 jobs:
   release:
@@ -30,3 +33,14 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+
+          gh release create "$tag" \
+            --title="$tag" \
+            --draft \
+            dist/main.js dist/manifest.json
