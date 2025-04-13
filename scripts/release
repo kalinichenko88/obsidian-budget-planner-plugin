@@ -20,6 +20,6 @@ git add package.json package-lock.json manifest.json versions.json
 git commit -m "Release version $VERSION"
 
 git tag -a "$VERSION" -m "$VERSION"
-git push origin "$VERSION"
+git push origin master --tags
 
 echo "Releasing version: $VERSION"
