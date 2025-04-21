@@ -60,10 +60,7 @@ MIT License - see [LICENSE](LICENSE) for details
 ## 💬 Support
 
 - [Open an issue](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/issues)
-- [GitHub Discussions](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/discussions)
 
-## How to release
+## 🔖 Docs
 
-1. Run `./scripts/release <VERSION>` to create a new version
-2. Go to GitHub Actions to monitor the build process
-3. Once complete, update and publish the release on GitHub
+- [How to Release](docs/release-process.md)
