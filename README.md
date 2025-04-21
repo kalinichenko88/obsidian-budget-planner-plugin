@@ -5,7 +5,7 @@
 
 > A minimalist budget planning plugin for Obsidian that lets you manage finances directly in your notes using markdown code blocks.
 
-![screenshot](docs/assets/screenshot.jpg)
+![screenshot](docs/assets/screenshot.png)
 
 ## ✨ Features
 
