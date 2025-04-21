@@ -17,6 +17,8 @@
 - 💰 Automatic category and total summations
 - 🔧 Seamless Obsidian integration
 
+[Features docs.](docs/features.md)
+
 ## 📖 Usage
 
 ### Quick Start
