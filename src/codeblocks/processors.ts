@@ -1,4 +1,4 @@
-import { type MarkdownPostProcessorContext, Plugin } from 'obsidian';
+import type { MarkdownPostProcessorContext, Plugin } from 'obsidian';
 
 import { BudgetCodeBlock } from './BudgetCodeBlock';
 
