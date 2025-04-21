@@ -2,11 +2,11 @@
 
 ## Adding a new code block
 
-![adding-block](docs/assets/adding-block.gif)
+![adding-block](assets/adding-block.gif)
 
 ## Adding a new row
 
-![adding-row](docs/assets/adding-row.gif)
+![adding-row](assets/adding-row.gif)
 
 ## Adding a new category
 
