@@ -2,7 +2,7 @@
 
 ## Adding a new code block
 
-![screenshot](docs/assets/adding-block.gif)
+![screenshot](assets/adding-block.gif)
 
 ## Adding a new row
 
