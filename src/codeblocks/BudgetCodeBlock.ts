@@ -21,6 +21,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
   private readonly categories: TableCategories;
   private readonly rows: TableRows;
   private component: Record<string, unknown>;
+  private readonly budgetCodeWriter: BudgetCodeWriter;
 
   constructor(
     markdownSource: string,
@@ -36,6 +37,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
 
     this.categories = categories;
     this.rows = rows;
+    this.budgetCodeWriter = new BudgetCodeWriter(this.app);
   }
 
   private createTableStore(): [TableStore, TableStateStore] {
@@ -65,7 +67,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
 
     try {
       logInfo('The table data is being saved');
-      await new BudgetCodeWriter().write(newData, sectionInfo, this.app);
+      await this.budgetCodeWriter.write(newData, sectionInfo);
 
       if (cmScroller) {
         cmScroller.scrollTop = scrollPosition.top;

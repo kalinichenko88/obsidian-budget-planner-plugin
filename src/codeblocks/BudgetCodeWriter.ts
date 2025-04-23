@@ -8,7 +8,7 @@ export class BudgetCodeWriter {
   private values: TableStoreValues;
   private isWriting = false;
 
-  constructor() {
+  constructor(protected readonly app: App) {
     this.values = {
       categories: new Map(),
       rows: new Map(),
@@ -109,16 +109,15 @@ export class BudgetCodeWriter {
   }
 
   private async updateFileContent(
-    app: App,
     sectionInfo: MarkdownSectionInformation,
     formattedCode: string
   ): Promise<void> {
-    const activeFile = app.workspace.getActiveFile();
+    const activeFile = this.app.workspace.getActiveFile();
     if (!activeFile) {
       throw new Error('Active file not found');
     }
 
-    const editor = await app.vault.read(activeFile);
+    const editor = await this.app.vault.read(activeFile);
     const lines = editor.split('\n');
     const currentSection = lines.slice(sectionInfo.lineStart, sectionInfo.lineEnd + 1);
 
@@ -133,7 +132,7 @@ export class BudgetCodeWriter {
     // Make sure we're only using exactly one closing code block
     const newContent = [codeBlockStart, formattedCode.trim(), '```'].join('\n');
 
-    const view = app.workspace.getActiveViewOfType(MarkdownView);
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
     if (!view) {
       throw new Error('Active markdown view not found');
     }
@@ -147,8 +146,7 @@ export class BudgetCodeWriter {
 
   public async write(
     values: TableStoreValues,
-    sectionInfo: MarkdownSectionInformation,
-    app: App
+    sectionInfo: MarkdownSectionInformation
   ): Promise<void> {
     if (this.isWriting) {
       logWarning('Writing is already in progress, skipping');
@@ -164,7 +162,7 @@ export class BudgetCodeWriter {
     try {
       this.values = values;
       const formattedCode = this.formatCode(newCode);
-      await this.updateFileContent(app, sectionInfo, formattedCode);
+      await this.updateFileContent(sectionInfo, formattedCode);
     } catch (error) {
       logError('Error writing to file', error);
     } finally {
