@@ -58,14 +58,19 @@
       item.onClick(deleteSelectedRow);
     });
 
-  export const handleOnMenu = (event: MouseEvent) => {
+  export const handleOnMenu = (event: MouseEvent): void => {
     event.preventDefault();
     selectRow(row.id);
     menu.showAtMouseEvent(event);
   };
 
-  export const handleOnRowClick = () => {
+  export const handleOnRowClick = (): void => {
     selectRow(null);
+  };
+
+  export const handleOnCheckboxClick = (): void => {
+    selectRow(null);
+    checked = !checked;
   };
 </script>
 
@@ -77,8 +82,22 @@
   oncontextmenu={handleOnMenu}
 >
   <td class="check-wrapper">
-    <div class="check">
-      <input type="checkbox" name="checkbox" id={`checkbox-${row.id}`} bind:checked />
+    <div
+      class="check"
+      role="button"
+      tabindex="0"
+      onclick={handleOnCheckboxClick}
+      onkeydown={handleOnCheckboxClick}
+    >
+      <input
+        type="checkbox"
+        name="checkbox"
+        id={`checkbox-${row.id}`}
+        checked={row.checked}
+        onchange={(value: Event) => {
+          checked = (value.target as HTMLInputElement).checked;
+        }}
+      />
     </div>
   </td>
 
@@ -127,6 +146,7 @@
     width: 100%;
     height: 100%;
     position: absolute;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
