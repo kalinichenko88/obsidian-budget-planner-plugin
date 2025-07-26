@@ -93,6 +93,7 @@ export class BudgetCodeBlock extends MarkdownRenderChild {
 
   public async onunload(): Promise<void> {
     await unmount(this.component);
-    super.unload();
+    // Call the base class cleanup without triggering a recursion
+    super.onunload();
   }
 }
