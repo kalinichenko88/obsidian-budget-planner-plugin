@@ -53,7 +53,6 @@ export default defineConfig({
   plugins: [
     svelte({
       compilerOptions: { css: 'injected' },
-      preprocess: true,
     }),
     {
       name: 'copy-files',
@@ -99,7 +98,6 @@ export default defineConfig({
         ...builtins,
       ],
       output: {
-        sourcemap: isProd ? false : 'inline',
         entryFileNames: 'main.js',
         dir: 'dist',
         format: 'cjs',
