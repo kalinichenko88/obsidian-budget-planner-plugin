@@ -1,11 +1,11 @@
 import { type App, PluginSettingTab, Setting } from 'obsidian';
 
-import Plugin from '../Plugin';
+import type BudgetPlannerPlugin from '@/Plugin';
 
 export class SettingTab extends PluginSettingTab {
-  plugin: Plugin;
+  plugin: BudgetPlannerPlugin;
 
-  constructor(app: App, plugin: Plugin) {
+  constructor(app: App, plugin: BudgetPlannerPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }

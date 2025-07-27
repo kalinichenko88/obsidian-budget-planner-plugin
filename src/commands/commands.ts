@@ -1,10 +1,8 @@
-import type { Editor, Plugin } from 'obsidian';
+import type { Editor } from 'obsidian';
 
-import type { Settings } from '../settings';
+import type BudgetPlannerPlugin from '@/Plugin';
 
-type BudgetPlugin = Plugin & { settings: Settings };
-
-export const registerCommands = (plugin: BudgetPlugin): void => {
+export const registerCommands = (plugin: BudgetPlannerPlugin): void => {
   plugin.addCommand({
     id: 'insert-budget-planner',
     name: 'Insert Budget Planner',
