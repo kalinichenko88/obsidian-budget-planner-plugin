@@ -67,6 +67,7 @@
     & > .cell {
       position: relative;
       height: 38.9px;
+      padding: var(--size-2-2) var(--size-4-2);
     }
   }
 </style>
