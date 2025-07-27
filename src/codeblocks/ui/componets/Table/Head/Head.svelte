@@ -40,7 +40,7 @@
   };
 </script>
 
-<thead>
+<thead class="head">
   <tr>
     <th
       class="check"
@@ -62,6 +62,15 @@
 </thead>
 
 <style>
+  .head {
+    background: var(--table-header-background);
+    color: var(--table-header-color);
+    font: var(--table-header-font);
+    font-size: var(--table-header-size);
+    font-weight: var(--table-header-weight);
+    border-width: var(--table-header-border-width);
+    border-color: var(--table-header-border-color);
+  }
   .check {
     width: 5%;
   }
