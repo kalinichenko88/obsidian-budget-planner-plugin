@@ -1,8 +1,52 @@
 import type { TableStoreValues, TableRow } from './models';
 
+type ParsedRow = {
+  checkbox: string;
+  name: string;
+  amount: string;
+  comment: string;
+  isCategory: boolean;
+};
+
 export class BudgetCodeFormatter {
+  private readonly CHECKBOX_PATTERN = /^\[[xX ]\]$/;
+  private readonly CELL_SEPARATOR = '|';
+
   private isCategoryRow(line: string): boolean {
     return line.endsWith(':') && !line.startsWith('\t');
+  }
+
+  private parseRow(row: string): ParsedRow {
+    if (this.isCategoryRow(row)) {
+      return {
+        checkbox: '',
+        name: row.trim(),
+        amount: '',
+        comment: '',
+        isCategory: true,
+      };
+    }
+
+    if (!row.startsWith('\t')) {
+      return {
+        checkbox: '[ ]',
+        name: row.trim(),
+        amount: '',
+        comment: '',
+        isCategory: false,
+      };
+    }
+
+    const cells = row.split(this.CELL_SEPARATOR).map((cell) => cell.trim());
+    const isCheckbox = this.CHECKBOX_PATTERN.test(cells[0]);
+
+    return {
+      checkbox: isCheckbox ? cells[0] : '[ ]',
+      name: isCheckbox ? cells[1] || '' : cells[0] || '',
+      amount: isCheckbox ? cells[2] || '' : cells[1] || '',
+      comment: isCheckbox ? cells[3] || '' : cells[2] || '',
+      isCategory: false,
+    };
   }
 
   private formatRow(row: TableRow): string {
@@ -15,89 +59,62 @@ export class BudgetCodeFormatter {
   }
 
   private convertToString(values: TableStoreValues): string {
-    let result = '';
+    const parts: string[] = [];
 
     values.categories.forEach((categoryName, categoryId) => {
-      result += `${categoryName}:\n`;
+      parts.push(`${categoryName}:`);
       const rows = values.rows.get(categoryId) || [];
       rows.forEach((row) => {
-        result += this.formatRow(row);
+        parts.push(this.formatRow(row));
       });
     });
 
-    return result;
-  }
-
-  private calculateMaxLengths(rows: string[]): { maxNameLength: number; maxAmountLength: number } {
-    let maxNameLength = 0;
-    let maxAmountLength = 0;
-
-    for (const row of rows) {
-      if (!row.startsWith('\t')) continue;
-
-      const cells = row.split('|').map((cell) => cell.trim());
-      const isCheckbox = cells[0] === '[ ]' || cells[0] === '[x]' || cells[0] === '[X]';
-      const name = isCheckbox ? cells[1] : cells[0];
-      const amount = isCheckbox ? cells[2] || '' : cells[1] || '';
-
-      maxNameLength = Math.max(maxNameLength, name.length);
-      maxAmountLength = Math.max(maxAmountLength, amount.length);
-    }
-
-    return { maxNameLength, maxAmountLength };
-  }
-
-  private parseRowCells(row: string): {
-    checkbox: string;
-    name: string;
-    amount: string;
-    comment: string;
-  } {
-    const cells = row.split('|').map((cell) => cell.trim());
-    const isCheckbox = cells[0] === '[ ]' || cells[0] === '[x]' || cells[0] === '[X]';
-
-    return {
-      checkbox: isCheckbox ? cells[0] : '[ ]',
-      name: isCheckbox ? cells[1] : cells[0],
-      amount: isCheckbox ? cells[2] || '' : cells[1] || '',
-      comment: isCheckbox ? cells[3] || '' : cells[2] || '',
-    };
+    return parts.join('\n');
   }
 
   private formatCode(code: string): string {
     const rows = code.split('\n').filter((row) => row.trim());
-    const { maxNameLength, maxAmountLength } = this.calculateMaxLengths(rows);
-    let result = '';
+    const parsedRows: ParsedRow[] = [];
+
+    let maxNameLength = 0;
+    let maxAmountLength = 0;
 
     for (const row of rows) {
-      if (this.isCategoryRow(row)) {
-        result += row.trim() + '\n';
+      const parsed = this.parseRow(row);
+      parsedRows.push(parsed);
+
+      if (!parsed.isCategory && parsed.name && parsed.amount) {
+        maxNameLength = Math.max(maxNameLength, parsed.name.length);
+        maxAmountLength = Math.max(maxAmountLength, parsed.amount.length);
+      }
+    }
+
+    // Build result using array join for better performance
+    const resultParts: string[] = [];
+
+    for (const parsed of parsedRows) {
+      if (parsed.isCategory) {
+        resultParts.push(parsed.name);
         continue;
       }
 
-      if (!row.startsWith('\t')) continue;
+      if (!parsed.name || !parsed.amount) continue;
 
-      const { checkbox, name, amount, comment } = this.parseRowCells(row);
+      const paddedName = parsed.name.padEnd(maxNameLength, ' ');
+      const paddedAmount = parsed.amount.padEnd(maxAmountLength, ' ');
 
-      if (!name || !amount) continue;
-
-      const paddedName = name.padEnd(maxNameLength, ' ');
-      const paddedAmount = amount.padEnd(maxAmountLength, ' ');
-
-      let formattedRow = `\t${checkbox} | ${paddedName} | ${paddedAmount}`;
-      if (comment) {
-        formattedRow += ` | ${comment}`;
+      let formattedRow = `\t${parsed.checkbox} | ${paddedName} | ${paddedAmount}`;
+      if (parsed.comment) {
+        formattedRow += ` | ${parsed.comment}`;
       }
-      result += formattedRow + '\n';
+      resultParts.push(formattedRow);
     }
 
-    return `\`\`\`budget\n${result}\`\`\``;
+    return `\`\`\`budget\n${resultParts.join('\n')}\n\`\`\``;
   }
 
   public format(tableStoreValues: TableStoreValues): string {
     const code = this.convertToString(tableStoreValues);
-    const formattedCode = this.formatCode(code);
-
-    return formattedCode;
+    return this.formatCode(code);
   }
 }
