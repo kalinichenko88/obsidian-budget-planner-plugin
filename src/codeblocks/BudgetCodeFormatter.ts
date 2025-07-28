@@ -110,7 +110,8 @@ export class BudgetCodeFormatter {
       resultParts.push(formattedRow);
     }
 
-    return `\`\`\`budget\n${resultParts.join('\n')}\n\`\`\``;
+    const content = resultParts.join('\n');
+    return `\`\`\`budget\n${content}${content ? '\n' : ''}\`\`\``;
   }
 
   public format(tableStoreValues: TableStoreValues): string {
