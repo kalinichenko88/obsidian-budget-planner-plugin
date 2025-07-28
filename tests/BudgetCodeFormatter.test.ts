@@ -1,6 +1,6 @@
 import { expect, test, describe, beforeEach } from 'vitest';
 
-import type { TableStoreValues, TableRow } from '@/codeblocks/models';
+import type { TableStoreValues } from '@/codeblocks/models';
 import { BudgetCodeFormatter } from '@/codeblocks/BudgetCodeFormatter';
 
 describe('BudgetCodeFormatter', () => {
@@ -18,8 +18,6 @@ describe('BudgetCodeFormatter', () => {
       };
 
       const result = formatter.format(tableStoreValues);
-
-      console.log('result', result);
 
       expect(result).toBe('```budget\n```');
     });
