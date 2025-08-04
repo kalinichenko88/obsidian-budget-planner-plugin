@@ -33,6 +33,7 @@
     gap: var(--size-2-2);
     color: var(--text-faint);
     margin: var(--size-2-2) 0 var(--size-2-2) 0.55rem;
+    padding: var(--size-2-2) var(--size-4-2) var(--size-2-2) 0;
   }
 
   .button > span {
