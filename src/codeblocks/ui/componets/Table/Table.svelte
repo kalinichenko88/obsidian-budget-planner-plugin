@@ -32,12 +32,10 @@
     (categories: TableCategories, rows: TableRows) => {
       if ($tableStateStore.isEditing) return;
 
-      // Block interactions while saving
       tableStateStore.update((s) => ({ ...s, isSaving: true }));
       try {
         onTableChange(categories, rows);
       } finally {
-        // Release saving lock on next tick to allow CM dispatch to finish
         setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
       }
     },
@@ -83,7 +81,11 @@
           <Row {row} />
         {/each}
 
-        <AddRow text="New Row" onClick={() => newRow(categoryId)} disabled={$tableStateStore.isSaving} />
+        <AddRow
+          text="New Row"
+          onClick={() => newRow(categoryId)}
+          disabled={$tableStateStore.isSaving}
+        />
 
         {#if $tableStore.categories.size > 1}
           <CategoryFooter {categoryId} />
