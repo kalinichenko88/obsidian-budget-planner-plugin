@@ -1,1 +1,1 @@
-export { registerCodeBlocks } from './processors';
+export { tableExtension } from './tableExtension';

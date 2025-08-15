@@ -1,11 +1,12 @@
 import { Plugin } from 'obsidian';
 
 import { DEFAULT_SETTINGS, SettingTab, type Settings } from './settings';
-import { registerCodeBlocks } from './codeblocks';
+import { tableExtension } from './codeblocks';
 import { registerCommands } from './commands';
 
 class BudgetPlannerPlugin extends Plugin {
-  settings: Settings;
+  public settings: Settings;
+  // Removed unused UiStateStore
 
   private async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
@@ -18,8 +19,9 @@ class BudgetPlannerPlugin extends Plugin {
   public async onload(): Promise<void> {
     await this.loadSettings();
 
+    this.registerEditorExtension(tableExtension);
+
     registerCommands(this);
-    registerCodeBlocks(this);
 
     this.addSettingTab(new SettingTab(this.app, this));
   }

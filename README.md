@@ -1,6 +1,6 @@
 # Obsidian Budget Planner Plugin
 
-[![Testing](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/testing.yml/badge.svg)](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/testing.yml)
+[![Code Quality](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/quality.yml/badge.svg)](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/quality.yml)
 [![Release](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/release.yml/badge.svg)](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions/workflows/release.yml)
 
 > A minimalist budget planning plugin for Obsidian that lets you manage finances directly in your notes using markdown code blocks.

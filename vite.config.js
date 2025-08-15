@@ -29,10 +29,7 @@ const copyFiles = () => {
   });
 };
 
-// Copy files after build
-if (isProd) {
-  copyFiles();
-}
+// Copy files only via the Vite plugin hook
 
 const alias = {
   '@': path.resolve(__dirname, 'src'),
@@ -53,10 +50,10 @@ export default defineConfig({
   plugins: [
     svelte({
       compilerOptions: { css: 'injected' },
-      preprocess: true,
     }),
     {
       name: 'copy-files',
+      apply: 'build',
       writeBundle() {
         copyFiles();
       },
@@ -99,7 +96,6 @@ export default defineConfig({
         ...builtins,
       ],
       output: {
-        sourcemap: isProd ? false : 'inline',
         entryFileNames: 'main.js',
         dir: 'dist',
         format: 'cjs',
@@ -111,8 +107,6 @@ export default defineConfig({
     outDir: 'dist',
   },
   server: {
-    watch: {
-      ignored: ['!**/node_modules/**'],
-    },
+    // use default watch settings
   },
 });
