@@ -1,11 +1,23 @@
 import { get } from 'svelte/store';
 
-import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '../../../models';
+import type {
+  CategoryId,
+  RowId,
+  TableCategories,
+  TableRow,
+  TableRows,
+  TableStateStore,
+  TableStore,
+} from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function createStoreActions(store: TableStore, tableState: TableStateStore) {
+export function createStoreActions(
+  store: TableStore,
+  tableState: TableStateStore,
+  onTableChange: (categories: TableCategories, rows: TableRows) => void
+) {
   const getCategoryByRowId = (rowId: RowId | null): CategoryId | null => {
     if (rowId === null) {
       return null;
@@ -73,7 +85,7 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
       });
     },
     updateRow: (data: TableRow): void => {
-      return store.update((state) => {
+      store.update((state) => {
         const { rows } = state;
 
         for (const [categoryId, categoryRows] of rows) {
@@ -84,6 +96,7 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
 
         return state;
       });
+      // Do not commit on each keystroke; commit via debounced handler
     },
     toggleEditing: (isEditing: boolean): void => {
       return tableState.update((state) => {
@@ -100,7 +113,7 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         return;
       }
 
-      return store.update((state) => {
+      store.update((state) => {
         const { rows } = state;
 
         for (const [categoryId, categoryRows] of rows) {
@@ -111,9 +124,11 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
 
         return state;
       });
+
+      onTableChange(get(store).categories, get(store).rows);
     },
     sortRows: (sortOrder: SortOrder, column: SortColumn): void => {
-      return store.update((state) => {
+      store.update((state) => {
         const { rows } = state;
 
         for (const [categoryId, categoryRows] of rows) {
@@ -138,6 +153,8 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
 
         return state;
       });
+
+      onTableChange(get(store).categories, get(store).rows);
     },
     newCategory: (): void => {
       const newRowId = generateId();
@@ -149,7 +166,7 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
         const newRow: TableRow = {
           id: newRowId,
           checked: false,
-          name: '',
+          name: 'New Row',
           amount: 0,
           comment: '',
         };
@@ -166,18 +183,22 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
           selectedRowId: newRowId,
         };
       });
+
+      onTableChange(get(store).categories, get(store).rows);
     },
     updateCategory: (categoryId: CategoryId, name: string): void => {
-      return store.update((state) => {
+      store.update((state) => {
         const { categories } = state;
 
         categories.set(categoryId, name);
 
         return state;
       });
+
+      onTableChange(get(store).categories, get(store).rows);
     },
     deleteCategory: (categoryId: CategoryId): void => {
-      return store.update((state) => {
+      store.update((state) => {
         const { categories, rows } = state;
 
         categories.delete(categoryId);
@@ -185,6 +206,8 @@ export function createStoreActions(store: TableStore, tableState: TableStateStor
 
         return state;
       });
+
+      onTableChange(get(store).categories, get(store).rows);
     },
   };
 }

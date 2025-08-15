@@ -2,9 +2,9 @@
   import { Menu } from 'obsidian';
   import { getContext } from 'svelte';
 
-  import type { CategoryId } from '../../../../models';
+  import type { CategoryId, TableStateStore } from '../../../../models';
   import type { StoreActions } from '../actions';
-  import { STORE_ACTIONS_CONTEXT_KEY } from '../constants';
+  import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
 
   import Editable from '../Editable/Editable.svelte';
 
@@ -17,6 +17,7 @@
   const { categoryId, categoryName, isDeletingEnabled }: Props = $props();
   let name = $state(categoryName);
 
+  const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
   const { newCategory, deleteCategory, selectRow, updateCategory, toggleEditing } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
@@ -55,7 +56,12 @@
 
 <tr class="category" oncontextmenu={handleOnMenu}>
   <td colspan={4} class="cell">
-    <Editable value={name} onChange={handleOnChange} onEditingChange={toggleEditing} />
+    <Editable
+      value={name}
+      onChange={handleOnChange}
+      onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
+    />
   </td>
 </tr>
 
@@ -67,6 +73,7 @@
     & > .cell {
       position: relative;
       height: 38.9px;
+      padding: var(--size-2-2) var(--size-4-2);
     }
   }
 </style>

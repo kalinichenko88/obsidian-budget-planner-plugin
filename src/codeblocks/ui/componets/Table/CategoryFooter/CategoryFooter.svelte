@@ -64,6 +64,7 @@
       align-items: center;
       justify-items: end;
       gap: 0 0.5rem;
+      padding: var(--size-2-2) var(--size-4-2);
     }
 
     .label {

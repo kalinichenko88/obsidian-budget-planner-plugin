@@ -58,14 +58,21 @@
       item.onClick(deleteSelectedRow);
     });
 
-  export const handleOnMenu = (event: MouseEvent) => {
+  export const handleOnMenu = (event: MouseEvent): void => {
     event.preventDefault();
     selectRow(row.id);
     menu.showAtMouseEvent(event);
   };
 
-  export const handleOnRowClick = () => {
+  export const handleOnRowClick = (): void => {
+    if ($tableState.isSaving) return;
     selectRow(null);
+  };
+
+  export const handleOnCheckboxClick = (): void => {
+    if ($tableState.isSaving) return;
+    selectRow(null);
+    checked = !checked;
   };
 </script>
 
@@ -77,8 +84,23 @@
   oncontextmenu={handleOnMenu}
 >
   <td class="check-wrapper">
-    <div class="check">
-      <input type="checkbox" name="checkbox" id={`checkbox-${row.id}`} bind:checked />
+    <div
+      class="check"
+      role="button"
+      tabindex={$tableState.isSaving ? -1 : 0}
+      onclick={handleOnCheckboxClick}
+      onkeydown={handleOnCheckboxClick}
+    >
+      <input
+        type="checkbox"
+        name="checkbox"
+        id={`checkbox-${row.id}`}
+        checked={row.checked}
+        disabled={$tableState.isSaving}
+        onchange={(value: Event) => {
+          checked = (value.target as HTMLInputElement).checked;
+        }}
+      />
     </div>
   </td>
 
@@ -87,6 +109,7 @@
       value={row.name}
       onChange={(value) => (name = String(value))}
       onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
     />
   </td>
 
@@ -95,6 +118,7 @@
       value={row.amount}
       onChange={(value) => (amount = Number(value))}
       onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
     />
   </td>
 
@@ -103,6 +127,7 @@
       value={row.comment}
       onChange={(value) => (comment = String(value))}
       onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
     />
   </td>
 </tr>
@@ -115,24 +140,28 @@
 
   tr.row.checked,
   tr.row.checked:hover {
-    background: var(--background-secondary);
+    background: var(--color-base-20);
+    color: var(--color-base-60);
   }
 
   .check-wrapper {
     padding: 0;
-    position: relative;
   }
 
   .check {
-    width: 100%;
-    height: 100%;
-    position: absolute;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: var(--size-2-2);
+
+    & > input {
+      margin: 0;
+    }
   }
 
   .cell {
     position: relative;
+    padding: var(--size-2-2) var(--size-4-2);
   }
 </style>
