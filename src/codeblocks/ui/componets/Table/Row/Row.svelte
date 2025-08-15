@@ -85,7 +85,6 @@
     <div
       class="check"
       role="button"
-      tabindex="0"
       onclick={handleOnCheckboxClick}
       onkeydown={handleOnCheckboxClick}
     >
@@ -134,25 +133,28 @@
 
   tr.row.checked,
   tr.row.checked:hover {
-    background: var(--background-secondary);
+    background: var(--color-base-20);
+    color: var(--color-base-60);
   }
 
   .check-wrapper {
     padding: 0;
-    position: relative;
   }
 
   .check {
-    width: 100%;
-    height: 100%;
-    position: absolute;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: var(--size-2-2);
+
+    & > input {
+      margin: 0;
+    }
   }
 
   .cell {
     position: relative;
+    padding: var(--size-2-2) var(--size-4-2);
   }
 </style>

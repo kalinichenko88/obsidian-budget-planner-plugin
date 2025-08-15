@@ -1,1 +1,3 @@
-export { registerCodeBlocks } from './processors';
+export { tableExtension } from './tableExtension';
+
+export { UiStateStore } from './UiStateStore';
