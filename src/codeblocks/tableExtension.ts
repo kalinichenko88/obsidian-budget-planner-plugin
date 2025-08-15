@@ -17,7 +17,7 @@ const tableField = StateField.define<DecorationSet>({
 function buildDeco(state: EditorState): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
   const docText = state.doc.toString();
-  const budgetBlockRE = /```budget\n([\s\S]*?)```/g;
+  const budgetBlockRE = /```budget\s*\r?\n([\s\S]*?)```/g;
 
   for (const m of docText.matchAll(budgetBlockRE)) {
     const [full, inner] = m;

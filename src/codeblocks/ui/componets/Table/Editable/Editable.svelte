@@ -85,6 +85,7 @@
     class="text"
     class:end={valueType === 'number'}
     role="button"
+    tabindex={disabled ? -1 : 0}
     aria-disabled={disabled}
     onclick={handleOnClick}
     onkeydown={handleOnKeyDown}

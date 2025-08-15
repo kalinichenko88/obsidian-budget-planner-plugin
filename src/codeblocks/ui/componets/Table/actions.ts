@@ -96,8 +96,7 @@ export function createStoreActions(
 
         return state;
       });
-
-      onTableChange(get(store).categories, get(store).rows);
+      // Do not commit on each keystroke; commit via debounced handler
     },
     toggleEditing: (isEditing: boolean): void => {
       return tableState.update((state) => {
