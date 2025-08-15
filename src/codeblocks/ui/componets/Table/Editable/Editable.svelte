@@ -81,7 +81,6 @@
     class="text"
     class:end={valueType === 'number'}
     role="button"
-    tabindex="0"
     onclick={handleOnClick}
     onkeydown={handleOnKeyDown}
   >
