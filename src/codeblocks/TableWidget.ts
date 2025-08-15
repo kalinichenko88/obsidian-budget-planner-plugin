@@ -32,6 +32,7 @@ export class TableWidget extends WidgetType {
     const tableStateStore = writable<TableStateValues>({
       selectedRowId: null,
       isEditing: false,
+      isSaving: false,
     });
 
     return [tableStore, tableStateStore];

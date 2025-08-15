@@ -4,13 +4,14 @@
   type Props = {
     text: string;
     onClick: () => void;
+    disabled?: boolean;
   };
 
-  const { text, onClick }: Props = $props();
+  const { text, onClick, disabled = false }: Props = $props();
 </script>
 
-<tr class="add-row">
-  <td colspan="4" onclick={onClick}>
+<tr class="add-row" class:disabled={disabled}>
+  <td colspan="4" onclick={() => (disabled ? undefined : onClick())}>
     <div class="button">
       <Icon name="circle-plus" />
       <span>{text}</span>
@@ -25,6 +26,14 @@
 
   .add-row:hover {
     background-color: var(--table-header-background-hover);
+  }
+
+  .add-row.disabled,
+  .add-row.disabled:hover {
+    pointer-events: none;
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: inherit;
   }
 
   .button {
