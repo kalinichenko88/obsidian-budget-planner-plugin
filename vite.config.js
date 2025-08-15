@@ -29,10 +29,7 @@ const copyFiles = () => {
   });
 };
 
-// Copy files after build
-if (isProd) {
-  copyFiles();
-}
+// Copy files only via the Vite plugin hook
 
 const alias = {
   '@': path.resolve(__dirname, 'src'),
@@ -56,6 +53,7 @@ export default defineConfig({
     }),
     {
       name: 'copy-files',
+      apply: 'build',
       writeBundle() {
         copyFiles();
       },
@@ -109,8 +107,6 @@ export default defineConfig({
     outDir: 'dist',
   },
   server: {
-    watch: {
-      ignored: ['!**/node_modules/**'],
-    },
+    // use default watch settings
   },
 });

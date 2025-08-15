@@ -1,5 +1,8 @@
 import type { TableRow } from '../../../../models';
 
-export const isRowsEqual = (sourceRow: TableRow, descRow: TableRow): boolean => {
-  return Object.keys(sourceRow).every((key: keyof TableRow) => sourceRow[key] === descRow[key]);
-};
+export const isRowsEqual = (a: TableRow, b: TableRow): boolean =>
+  a.id === b.id &&
+  a.checked === b.checked &&
+  a.name === b.name &&
+  a.amount === b.amount &&
+  a.comment === b.comment;

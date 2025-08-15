@@ -87,6 +87,7 @@
     <div
       class="check"
       role="button"
+      tabindex={$tableState.isSaving ? -1 : 0}
       onclick={handleOnCheckboxClick}
       onkeydown={handleOnCheckboxClick}
     >
