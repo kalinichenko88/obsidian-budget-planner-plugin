@@ -30,8 +30,15 @@
 
   const commitTableChange = debounce(
     (categories: TableCategories, rows: TableRows) => {
-      if (!$tableStateStore.isEditing) {
+      if ($tableStateStore.isEditing) return;
+
+      // Block interactions while saving
+      tableStateStore.update((s) => ({ ...s, isSaving: true }));
+      try {
         onTableChange(categories, rows);
+      } finally {
+        // Release saving lock on next tick to allow CM dispatch to finish
+        setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
       }
     },
     300,
@@ -76,7 +83,7 @@
           <Row {row} />
         {/each}
 
-        <AddRow text="New Row" onClick={() => newRow(categoryId)} />
+        <AddRow text="New Row" onClick={() => newRow(categoryId)} disabled={$tableStateStore.isSaving} />
 
         {#if $tableStore.categories.size > 1}
           <CategoryFooter {categoryId} />
@@ -84,7 +91,7 @@
       {/each}
     </tbody>
 
-    <AddRow text="New Category" onClick={newCategory} />
+    <AddRow text="New Category" onClick={newCategory} disabled={$tableStateStore.isSaving} />
 
     <Footer />
   </table>

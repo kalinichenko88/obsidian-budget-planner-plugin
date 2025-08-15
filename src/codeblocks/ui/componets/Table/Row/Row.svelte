@@ -65,10 +65,12 @@
   };
 
   export const handleOnRowClick = (): void => {
+    if ($tableState.isSaving) return;
     selectRow(null);
   };
 
   export const handleOnCheckboxClick = (): void => {
+    if ($tableState.isSaving) return;
     selectRow(null);
     checked = !checked;
   };
@@ -93,6 +95,7 @@
         name="checkbox"
         id={`checkbox-${row.id}`}
         checked={row.checked}
+        disabled={$tableState.isSaving}
         onchange={(value: Event) => {
           checked = (value.target as HTMLInputElement).checked;
         }}
@@ -105,6 +108,7 @@
       value={row.name}
       onChange={(value) => (name = String(value))}
       onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
     />
   </td>
 
@@ -113,6 +117,7 @@
       value={row.amount}
       onChange={(value) => (amount = Number(value))}
       onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
     />
   </td>
 
@@ -121,6 +126,7 @@
       value={row.comment}
       onChange={(value) => (comment = String(value))}
       onEditingChange={toggleEditing}
+      disabled={$tableState.isSaving}
     />
   </td>
 </tr>
