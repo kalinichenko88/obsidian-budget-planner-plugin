@@ -10,7 +10,7 @@
   const { text, onClick, disabled = false }: Props = $props();
 </script>
 
-<tr class="add-row" class:disabled={disabled}>
+<tr class="add-row" class:disabled>
   <td colspan="4" onclick={() => (disabled ? undefined : onClick())}>
     <div class="button">
       <Icon name="circle-plus" />

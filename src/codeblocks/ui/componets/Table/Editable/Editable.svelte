@@ -74,7 +74,7 @@
       type={valueType}
       min={valueType === 'number' ? '0' : undefined}
       step={valueType === 'number' ? '0.10' : undefined}
-      disabled={disabled}
+      {disabled}
       onblur={handleOnLeave}
       onwheel={handleOnWheel}
       onkeydown={handleOnInputKeyDown}
