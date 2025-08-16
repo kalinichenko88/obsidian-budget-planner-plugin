@@ -10,6 +10,12 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ "$CURRENT_BRANCH" != "master" ]; then
+  echo "Error: Releases are only allowed from 'master' (current: '$CURRENT_BRANCH')"
+  exit 1
+fi
+
 node ./scripts/version-bump.js "$VERSION"
 if [ $? -ne 0 ]; then
   echo "Error: Version bump failed"
