@@ -39,7 +39,7 @@
         setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
       }
     },
-    300,
+    100,
     true
   );
 
