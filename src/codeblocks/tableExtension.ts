@@ -19,9 +19,11 @@ function buildDeco(state: EditorState): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
   const docText = state.doc.toString();
 
-  for (const m of docText.matchAll(BUDGET_BLOCK_REGEX)) {
+  const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(docText)) !== null) {
     const [full, inner] = m;
-    const from = m.index!;
+    const from = m.index;
     const to = from + full.length;
 
     const parser = new BudgetCodeParser(inner);
