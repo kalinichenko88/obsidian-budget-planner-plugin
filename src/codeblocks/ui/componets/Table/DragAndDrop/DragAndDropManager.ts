@@ -2,6 +2,7 @@ import Sortable, { type SortableEvent } from 'sortablejs';
 
 import type { CategoryId, RowId } from '../../../../models';
 import type { StoreActions } from '../actions';
+import { generateId } from '../../../../helpers/generateId';
 
 export class DragAndDropManager {
   private tableEl: HTMLTableElement;
@@ -10,10 +11,12 @@ export class DragAndDropManager {
   private rowSortables: Sortable[] = [];
   private dragOriginalParent: HTMLElement | null = null;
   private dragOriginalNextSibling: Node | null = null;
+  private readonly rowGroupName: string;
 
   constructor(tableEl: HTMLTableElement, actions: StoreActions) {
     this.tableEl = tableEl;
     this.actions = actions;
+    this.rowGroupName = `rows-${generateId()}`;
   }
 
   init(): void {
@@ -97,7 +100,7 @@ export class DragAndDropManager {
       const sortable = Sortable.create(tbody, {
         handle: '.row-drag-handle',
         draggable: 'tr.row',
-        group: 'rows',
+        group: this.rowGroupName,
         animation: 150,
         ghostClass: 'sortable-ghost-row',
         chosenClass: 'sortable-chosen-row',
