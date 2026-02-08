@@ -98,7 +98,7 @@ export class BudgetCodeFormatter {
         continue;
       }
 
-      if (!parsed.name || !parsed.amount) continue;
+      if (!parsed.name && !parsed.amount) continue;
 
       const paddedName = parsed.name.padEnd(maxNameLength, ' ');
       const paddedAmount = parsed.amount.padEnd(maxAmountLength, ' ');

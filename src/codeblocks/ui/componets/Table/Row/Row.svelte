@@ -16,8 +16,15 @@
   const { row }: Props = $props();
 
   const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
-  const { selectRow, newCategory, newRow, deleteSelectedRow, updateRow, toggleEditing } =
-    getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
+  const {
+    selectRow,
+    newCategory,
+    newRow,
+    deleteSelectedRow,
+    updateRow,
+    toggleEditing,
+    commitChange,
+  } = getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
   let checked = $state(untrack(() => row.checked));
   let name = $state(untrack(() => row.name));
@@ -73,6 +80,8 @@
     if ($tableState.isSaving) return;
     selectRow(null);
     checked = !checked;
+    updateRow({ id: row.id, checked, name, amount, comment });
+    commitChange();
   };
 </script>
 
