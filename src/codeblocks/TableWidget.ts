@@ -4,6 +4,7 @@ import { get, writable } from 'svelte/store';
 
 import type {
   TableCategories,
+  TableRow,
   TableRows,
   TableStateStore,
   TableStore,
@@ -12,8 +13,7 @@ import type {
 } from './models';
 import { Table } from './ui/componets';
 import { BudgetCodeFormatter } from './BudgetCodeFormatter';
-
-const BUDGET_BLOCK_REGEX = /```budget\s*\r?\n([\s\S]*?)```/g;
+import { BUDGET_BLOCK_REGEX } from './constants';
 
 export class TableWidget extends WidgetType {
   private component: Record<string, unknown> | null = null;
@@ -25,11 +25,40 @@ export class TableWidget extends WidgetType {
 
   constructor(
     public categories: TableCategories,
-    public rows: TableRows,
-    _from: number,
-    _to: number
+    public rows: TableRows
   ) {
     super();
+  }
+
+  eq(other: TableWidget): boolean {
+    if (this.categories.size !== other.categories.size) return false;
+    if (this.rows.size !== other.rows.size) return false;
+
+    const otherCatValues = other.categories.values();
+    for (const thisValue of this.categories.values()) {
+      const otherValue = otherCatValues.next().value;
+      if (thisValue !== otherValue) return false;
+    }
+
+    const otherRowArrays = other.rows.values();
+    for (const thisRows of this.rows.values()) {
+      const otherRows = otherRowArrays.next().value as TableRow[];
+      if (thisRows.length !== otherRows.length) return false;
+      for (let j = 0; j < thisRows.length; j++) {
+        if (!this.isRowEqual(thisRows[j], otherRows[j])) return false;
+      }
+    }
+
+    return true;
+  }
+
+  private isRowEqual(a: TableRow, b: TableRow): boolean {
+    return (
+      a.checked === b.checked &&
+      a.name === b.name &&
+      a.amount === b.amount &&
+      a.comment === b.comment
+    );
   }
 
   private createTableStore(): [TableStore, TableStateStore] {
@@ -62,8 +91,10 @@ export class TableWidget extends WidgetType {
       const domPos = view.posAtDOM(this.container);
       const docText = view.state.doc.toString();
 
-      for (const match of docText.matchAll(BUDGET_BLOCK_REGEX)) {
-        const matchFrom = match.index!;
+      const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
+      let match: RegExpExecArray | null;
+      while ((match = regex.exec(docText)) !== null) {
+        const matchFrom = match.index;
         const matchTo = matchFrom + match[0].length;
 
         if (domPos >= matchFrom && domPos <= matchTo) {
@@ -114,8 +145,8 @@ export class TableWidget extends WidgetType {
     this.component = mount(Table, {
       target: container,
       props: {
-        tableStore: tableStore,
-        tableStateStore: tableStateStore,
+        tableStore,
+        tableStateStore,
         onTableChange: (categories: TableCategories, rows: TableRows) => {
           this.dispatchChanges(categories, rows);
         },

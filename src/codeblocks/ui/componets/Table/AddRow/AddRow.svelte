@@ -11,7 +11,19 @@
 </script>
 
 <tr class="add-row" class:disabled>
-  <td colspan="4" onclick={() => (disabled ? undefined : onClick())}>
+  <td
+    colspan="4"
+    role="button"
+    tabindex={disabled ? -1 : 0}
+    aria-label={text}
+    onclick={() => (disabled ? undefined : onClick())}
+    onkeydown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!disabled) onClick();
+      }
+    }}
+  >
     <div class="button">
       <Icon name="circle-plus" />
       <span>{text}</span>

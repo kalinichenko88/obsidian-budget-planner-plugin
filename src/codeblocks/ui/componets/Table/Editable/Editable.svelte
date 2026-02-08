@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { moneyFormatter } from '../../../helpers/moneyFormatter';
 
   type Props = {
@@ -15,7 +16,7 @@
     valueType === 'number' ? moneyFormatter.format(value as number) : (value as string).trim()
   );
 
-  let editingValue = $state(value);
+  let editingValue = $state(untrack(() => value));
   let isEditing = $state(false);
   let inputElement: HTMLInputElement | null = $state(null);
 
