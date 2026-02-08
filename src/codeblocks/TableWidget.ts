@@ -91,10 +91,8 @@ export class TableWidget extends WidgetType {
       const domPos = view.posAtDOM(this.container);
       const docText = view.state.doc.toString();
 
-      const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
-      let match: RegExpExecArray | null;
-      while ((match = regex.exec(docText)) !== null) {
-        const matchFrom = match.index;
+      for (const match of docText.matchAll(BUDGET_BLOCK_REGEX)) {
+        const matchFrom = match.index!;
         const matchTo = matchFrom + match[0].length;
 
         if (domPos >= matchFrom && domPos <= matchTo) {
