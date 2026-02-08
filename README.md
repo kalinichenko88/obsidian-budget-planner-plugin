@@ -33,11 +33,11 @@ Create budgets using the `budget` code block:
 
 ```budget
 Online Services:
-    [x] Spotify    | $4.99
-    [] Youtube     | $16.99
-    [] 1Password   | $6.95
+	[x] | Spotify   | 4.99
+	[ ] | Youtube   | 16.99
+	[ ] | 1Password | 6.95
 Entertainment:
-    [] Netflix     | $12.99
+	[ ] | Netflix   | 12.99
 ```
 
 ## 🚀 Installation
