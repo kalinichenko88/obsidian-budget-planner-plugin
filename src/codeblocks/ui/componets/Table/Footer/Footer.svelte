@@ -1,38 +1,25 @@
 <script lang="ts">
   import { getContext } from 'svelte';
 
-  import type { TableStore } from '../../../../models';
+  import type { TableRow, TableStore } from '../../../../models';
   import { moneyFormatter } from '../../../helpers/moneyFormatter';
   import { STORE_CONTEXT_KEY } from '../constants';
 
   const store = getContext<TableStore>(STORE_CONTEXT_KEY);
 
-  const rowsCount = $derived.by(() => {
-    return Array.from($store.rows.values()).reduce((acc, rows) => acc + rows.length, 0);
-  });
-  const rowsSum = $derived.by(() => {
-    return Array.from($store.rows.values()).reduce(
-      (acc, rows) => acc + rows.reduce((acc, row) => acc + row.amount, 0),
-      0
-    );
-  });
+  const allRows = $derived(
+    Array.from($store.rows.values()).reduce<TableRow[]>((acc, rows) => acc.concat(rows), [])
+  );
+  const uncheckedRows = $derived(allRows.filter((row) => !row.checked));
 
-  const unselectedRowsCount = $derived.by(() => {
-    return Array.from($store.rows.values()).reduce(
-      (acc, rows) => acc + rows.filter((row) => !row.checked).length,
-      0
-    );
-  });
-  const unselectedRowsSum = $derived.by(() => {
-    return Array.from($store.rows.values()).reduce(
-      (acc, rows) =>
-        acc + rows.filter((row) => !row.checked).reduce((acc, row) => acc + row.amount, 0),
-      0
-    );
-  });
+  const rowsCount = $derived(allRows.length);
+  const rowsSum = $derived(allRows.reduce((acc, row) => acc + row.amount, 0));
 
-  const isUnselectedShown = $derived(unselectedRowsCount > 0 && unselectedRowsCount !== rowsCount);
-  const isUnselectedSumShown = $derived(unselectedRowsSum > 0 && unselectedRowsSum !== rowsSum);
+  const uncheckedRowsCount = $derived(uncheckedRows.length);
+  const uncheckedRowsSum = $derived(uncheckedRows.reduce((acc, row) => acc + row.amount, 0));
+
+  const isUncheckedShown = $derived(uncheckedRowsCount > 0 && uncheckedRowsCount !== rowsCount);
+  const isUncheckedSumShown = $derived(uncheckedRowsSum > 0 && uncheckedRowsSum !== rowsSum);
 </script>
 
 <tfoot>
@@ -43,9 +30,9 @@
         <div>
           {rowsCount}
         </div>
-        {#if isUnselectedShown}
+        {#if isUncheckedShown}
           <span class="label">UNCHECKED:</span>
-          <div>{unselectedRowsCount}</div>
+          <div>{uncheckedRowsCount}</div>
         {/if}
       </div>
     </th>
@@ -53,9 +40,9 @@
       ><div class="wrapper">
         <span class="label">SUM:</span>
         <div>{moneyFormatter.format(rowsSum)}</div>
-        {#if isUnselectedSumShown}
+        {#if isUncheckedSumShown}
           <span class="label">UNCHECKED:</span>
-          <div>{moneyFormatter.format(unselectedRowsSum)}</div>
+          <div>{moneyFormatter.format(uncheckedRowsSum)}</div>
         {/if}
       </div>
     </th>

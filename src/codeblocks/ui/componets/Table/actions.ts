@@ -24,9 +24,7 @@ export function createStoreActions(
     }
 
     for (const [categoryId, categoryRows] of get(store).rows) {
-      const row = categoryRows.find((row) => row.id === rowId);
-
-      if (row) {
+      if (categoryRows.some((row) => row.id === rowId)) {
         return categoryId;
       }
     }
@@ -40,12 +38,10 @@ export function createStoreActions(
         return;
       }
 
-      return tableState.update((data) => {
-        return {
-          ...data,
-          selectedRowId: rowId ?? null,
-        };
-      });
+      tableState.update((data) => ({
+        ...data,
+        selectedRowId: rowId,
+      }));
     },
     newRow: (categoryId: CategoryId | null = null): void => {
       let selectedCategoryId: CategoryId | null = categoryId;
@@ -77,12 +73,12 @@ export function createStoreActions(
         return state;
       });
 
-      tableState.update((state) => {
-        return {
-          ...state,
-          selectedRowId: rowId,
-        };
-      });
+      tableState.update((state) => ({
+        ...state,
+        selectedRowId: rowId,
+      }));
+
+      onTableChange(get(store).categories, get(store).rows);
     },
     updateRow: (data: TableRow): void => {
       store.update((state) => {
@@ -99,12 +95,13 @@ export function createStoreActions(
       // Do not commit on each keystroke; commit via debounced handler
     },
     toggleEditing: (isEditing: boolean): void => {
-      return tableState.update((state) => {
-        return {
-          ...state,
-          isEditing,
-        };
-      });
+      tableState.update((state) => ({
+        ...state,
+        isEditing,
+      }));
+    },
+    commitChange: (): void => {
+      onTableChange(get(store).categories, get(store).rows);
     },
     deleteSelectedRow: (): void => {
       const rowId = get(tableState).selectedRowId;
@@ -132,23 +129,25 @@ export function createStoreActions(
         const { rows } = state;
 
         for (const [categoryId, categoryRows] of rows) {
-          const sortedRows = categoryRows.sort((a, b) => {
-            if (column === SortColumn.CHECK) {
-              return a.checked === b.checked ? 0 : a.checked ? -1 : 1;
+          const sorted = [...categoryRows].sort((a, b) => {
+            let result = 0;
+
+            switch (column) {
+              case SortColumn.CHECK:
+                result = a.checked === b.checked ? 0 : a.checked ? -1 : 1;
+                break;
+              case SortColumn.NAME:
+                result = a.name.localeCompare(b.name);
+                break;
+              case SortColumn.AMOUNT:
+                result = a.amount - b.amount;
+                break;
             }
 
-            if (column === SortColumn.NAME) {
-              return a.name.localeCompare(b.name);
-            }
-
-            if (column === SortColumn.AMOUNT) {
-              return a.amount - b.amount;
-            }
-
-            return 0;
+            return sortOrder === SortOrder.ASC ? result : -result;
           });
 
-          rows.set(categoryId, sortOrder === SortOrder.ASC ? sortedRows : sortedRows.reverse());
+          rows.set(categoryId, sorted);
         }
 
         return state;
@@ -177,12 +176,10 @@ export function createStoreActions(
         return state;
       });
 
-      tableState.update((state) => {
-        return {
-          ...state,
-          selectedRowId: newRowId,
-        };
-      });
+      tableState.update((state) => ({
+        ...state,
+        selectedRowId: newRowId,
+      }));
 
       onTableChange(get(store).categories, get(store).rows);
     },

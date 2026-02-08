@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Menu } from 'obsidian';
-  import { getContext } from 'svelte';
+  import { getContext, untrack } from 'svelte';
 
   import type { CategoryId, TableStateStore } from '../../../../models';
   import type { StoreActions } from '../actions';
@@ -15,7 +15,7 @@
   };
 
   const { categoryId, categoryName, isDeletingEnabled }: Props = $props();
-  let name = $state(categoryName);
+  let name = $state(untrack(() => categoryName));
 
   const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
   const { newCategory, deleteCategory, selectRow, updateCategory, toggleEditing } =

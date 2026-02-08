@@ -3,6 +3,7 @@ import { EditorView, Decoration, type DecorationSet } from '@codemirror/view';
 
 import { TableWidget } from './TableWidget';
 import { BudgetCodeParser } from './BudgetCodeParser';
+import { BUDGET_BLOCK_REGEX } from './constants';
 
 const tableField = StateField.define<DecorationSet>({
   create(s) {
@@ -17,11 +18,12 @@ const tableField = StateField.define<DecorationSet>({
 function buildDeco(state: EditorState): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();
   const docText = state.doc.toString();
-  const budgetBlockRE = /```budget\s*\r?\n([\s\S]*?)```/g;
 
-  for (const m of docText.matchAll(budgetBlockRE)) {
+  const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(docText)) !== null) {
     const [full, inner] = m;
-    const from = m.index!;
+    const from = m.index;
     const to = from + full.length;
 
     const parser = new BudgetCodeParser(inner);
@@ -31,7 +33,7 @@ function buildDeco(state: EditorState): DecorationSet {
       from,
       to,
       Decoration.replace({
-        widget: new TableWidget(categories, rows, from, to),
+        widget: new TableWidget(categories, rows),
         block: true,
       })
     );

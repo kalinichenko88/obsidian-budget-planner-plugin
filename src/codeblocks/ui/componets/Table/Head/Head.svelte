@@ -42,19 +42,10 @@
 
 <thead class="head">
   <tr>
-    <th
-      class="check"
-      oncontextmenu={(event) => handleOnContextMenu.apply(undefined, [event, SortColumn.CHECK])}
-      >#</th
+    <th class="check" oncontextmenu={(event) => handleOnContextMenu(event, SortColumn.CHECK)}>#</th>
+    <th class="name" oncontextmenu={(event) => handleOnContextMenu(event, SortColumn.NAME)}>Name</th
     >
-    <th
-      class="name"
-      oncontextmenu={(event) => handleOnContextMenu.apply(undefined, [event, SortColumn.NAME])}
-      >Name</th
-    >
-    <th
-      class="amount"
-      oncontextmenu={(event) => handleOnContextMenu.apply(undefined, [event, SortColumn.AMOUNT])}
+    <th class="amount" oncontextmenu={(event) => handleOnContextMenu(event, SortColumn.AMOUNT)}
       >Amount</th
     >
     <th class="comment">Comment</th>

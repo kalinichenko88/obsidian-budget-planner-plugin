@@ -360,6 +360,7 @@ Debt:
 
       const expected = `\`\`\`budget
 Test:
+\t[ ] |           | 100 | Empty name
 \t[x] | Valid Row | 200 | Valid
 \`\`\``;
 
