@@ -42,6 +42,7 @@
 
 <thead class="head">
   <tr>
+    <th class="drag-handle-col"></th>
     <th class="check" oncontextmenu={(event) => handleOnContextMenu(event, SortColumn.CHECK)}>#</th>
     <th class="name" oncontextmenu={(event) => handleOnContextMenu(event, SortColumn.NAME)}>Name</th
     >
@@ -66,6 +67,11 @@
       padding: var(--size-2-2) var(--size-4-2);
     }
   }
+  .drag-handle-col {
+    width: 24px;
+    padding: 0;
+  }
+
   .check {
     width: 5%;
   }

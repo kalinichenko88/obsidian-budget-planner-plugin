@@ -27,6 +27,7 @@
 
 <tr class="meta">
   <td></td>
+  <td></td>
 
   <td class="cell">
     <div class="wrapper">
