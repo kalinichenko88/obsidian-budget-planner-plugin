@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
+  import { getContext, untrack } from 'svelte';
   import { Menu } from 'obsidian';
 
   import type { TableRow, TableStateStore } from '../../../../models';
@@ -19,10 +19,10 @@
   const { selectRow, newCategory, newRow, deleteSelectedRow, updateRow, toggleEditing } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
-  let checked = $state(row.checked);
-  let name = $state(row.name);
-  let amount = $state(row.amount);
-  let comment = $state(row.comment);
+  let checked = $state(untrack(() => row.checked));
+  let name = $state(untrack(() => row.name));
+  let amount = $state(untrack(() => row.amount));
+  let comment = $state(untrack(() => row.comment));
 
   $effect(() => {
     const updatingRow: TableRow = {
@@ -88,8 +88,14 @@
       class="check"
       role="button"
       tabindex={$tableState.isSaving ? -1 : 0}
+      aria-label="Toggle row checkbox"
       onclick={handleOnCheckboxClick}
-      onkeydown={handleOnCheckboxClick}
+      onkeydown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleOnCheckboxClick();
+        }
+      }}
     >
       <input
         type="checkbox"

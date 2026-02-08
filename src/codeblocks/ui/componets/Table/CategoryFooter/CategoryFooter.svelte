@@ -13,16 +13,16 @@
 
   const store = getContext<TableStore>(STORE_CONTEXT_KEY);
   const rows = $derived($store.rows.get(categoryId) || []);
-  const unselectedRows = $derived(rows.filter((row) => !row.checked));
+  const uncheckedRows = $derived(rows.filter((row) => !row.checked));
 
   const rowsCount = $derived(rows.length);
-  const rowsSum = $derived(rows.reduce((acc, value) => acc + value.amount, 0));
+  const rowsSum = $derived(rows.reduce((acc, row) => acc + row.amount, 0));
 
-  const uncheckedRowsCount = $derived(unselectedRows.length);
-  const uncheckedRowsSum = $derived(unselectedRows.reduce((acc, value) => acc + value.amount, 0));
+  const uncheckedRowsCount = $derived(uncheckedRows.length);
+  const uncheckedRowsSum = $derived(uncheckedRows.reduce((acc, row) => acc + row.amount, 0));
 
-  const isUnselectedShown = $derived(uncheckedRowsCount > 0 && uncheckedRowsCount !== rowsCount);
-  const isUnselectedSumShown = $derived(uncheckedRowsSum > 0 && uncheckedRowsSum !== rowsSum);
+  const isUncheckedShown = $derived(uncheckedRowsCount > 0 && uncheckedRowsCount !== rowsCount);
+  const isUncheckedSumShown = $derived(uncheckedRowsSum > 0 && uncheckedRowsSum !== rowsSum);
 </script>
 
 <tr class="meta">
@@ -32,7 +32,7 @@
     <div class="wrapper">
       <span class="label">COUNT:</span>
       <div>{rowsCount}</div>
-      {#if isUnselectedShown}
+      {#if isUncheckedShown}
         <span class="label">UNCHECKED:</span>
         <div>{uncheckedRowsCount}</div>
       {/if}
@@ -43,7 +43,7 @@
     <div class="wrapper">
       <span class="label">SUM:</span>
       <div>{moneyFormatter.format(rowsSum)}</div>
-      {#if isUnselectedSumShown}
+      {#if isUncheckedSumShown}
         <span class="label">UNCHECKED:</span>
         <div>{moneyFormatter.format(uncheckedRowsSum)}</div>
       {/if}

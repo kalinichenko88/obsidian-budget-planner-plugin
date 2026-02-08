@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount, setContext } from 'svelte';
+  import { onDestroy, onMount, setContext, untrack } from 'svelte';
 
   import type { TableCategories, TableRows, TableStateStore, TableStore } from '../../../models';
   import { createStoreActions } from './actions';
@@ -25,8 +25,10 @@
 
   const { tableStore, tableStateStore, onTableChange }: Props = $props();
 
-  setContext(STORE_CONTEXT_KEY, tableStore);
-  setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
+  untrack(() => {
+    setContext(STORE_CONTEXT_KEY, tableStore);
+    setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
+  });
 
   const commitTableChange = debounce(
     (categories: TableCategories, rows: TableRows) => {
@@ -39,11 +41,13 @@
         setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
       }
     },
-    300,
+    100,
     true
   );
 
-  const storeActions = createStoreActions(tableStore, tableStateStore, commitTableChange);
+  const storeActions = untrack(() =>
+    createStoreActions(tableStore, tableStateStore, commitTableChange)
+  );
   setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
   const { newCategory, newRow } = storeActions;
