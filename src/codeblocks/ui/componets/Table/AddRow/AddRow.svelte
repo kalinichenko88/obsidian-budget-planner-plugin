@@ -12,7 +12,7 @@
 
 <tr class="add-row" class:disabled>
   <td
-    colspan="4"
+    colspan="5"
     role="button"
     tabindex={disabled ? -1 : 0}
     aria-label={text}

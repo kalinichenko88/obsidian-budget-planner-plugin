@@ -7,6 +7,7 @@
   import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
 
   import Editable from '../Editable/Editable.svelte';
+  import Icon from '../AddRow/Icon/Icon.svelte';
 
   type Props = {
     categoryId: CategoryId;
@@ -55,6 +56,9 @@
 </script>
 
 <tr class="category" oncontextmenu={handleOnMenu}>
+  <td class="drag-handle category-drag-handle">
+    <Icon name="grip-vertical" />
+  </td>
   <td colspan={4} class="cell">
     <Editable
       value={name}
@@ -66,6 +70,19 @@
 </tr>
 
 <style>
+  .drag-handle {
+    cursor: grab;
+    color: var(--text-faint);
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
+  }
+
+  .drag-handle:hover {
+    color: var(--text-muted);
+  }
+
   .category {
     font-size: 0.9em;
     font-weight: bold;

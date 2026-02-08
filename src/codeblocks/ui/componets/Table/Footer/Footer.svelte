@@ -24,7 +24,7 @@
 
 <tfoot>
   <tr class="summary">
-    <th colspan="2">
+    <th colspan="3">
       <div class="wrapper">
         <span class="label">COUNT:</span>
         <div>

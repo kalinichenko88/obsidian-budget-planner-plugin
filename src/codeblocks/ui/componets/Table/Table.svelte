@@ -16,6 +16,7 @@
   import Footer from './Footer/Footer.svelte';
   import AddRow from './AddRow/AddRow.svelte';
   import { debounce } from 'obsidian';
+  import { DragAndDropManager } from './DragAndDrop/DragAndDropManager';
 
   type Props = {
     tableStore: TableStore;
@@ -51,7 +52,8 @@
   setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
   const { newCategory, newRow } = storeActions;
-  let tableEl: HTMLElement;
+  let tableEl: HTMLTableElement;
+  let dndManager: DragAndDropManager | null = null;
 
   const onBlur = (event: FocusEvent): void => {
     const newFocus = event.relatedTarget;
@@ -62,10 +64,29 @@
 
   onMount(() => {
     tableEl.addEventListener('focusout', onBlur);
+
+    dndManager = new DragAndDropManager(tableEl, storeActions);
+    dndManager.init();
   });
 
   onDestroy(() => {
     tableEl.removeEventListener('focusout', onBlur);
+    dndManager?.destroy();
+  });
+
+  $effect(() => {
+    // Track categories and rows to refresh DnD when they change
+    $tableStore.categories;
+    $tableStore.rows;
+
+    queueMicrotask(() => {
+      dndManager?.refresh();
+    });
+  });
+
+  $effect(() => {
+    const disabled = $tableStateStore.isSaving || $tableStateStore.isEditing;
+    dndManager?.setDisabled(disabled);
   });
 </script>
 
@@ -73,8 +94,8 @@
   <table class="table" border="1" bind:this={tableEl}>
     <Head />
 
-    <tbody>
-      {#each $tableStore.categories.entries() as [categoryId, categoryName] (categoryId)}
+    {#each $tableStore.categories.entries() as [categoryId, categoryName] (categoryId)}
+      <tbody class="category-group" data-category-id={categoryId}>
         <CategoryRow
           {categoryId}
           {categoryName}
@@ -94,10 +115,12 @@
         {#if $tableStore.categories.size > 1}
           <CategoryFooter {categoryId} />
         {/if}
-      {/each}
-    </tbody>
+      </tbody>
+    {/each}
 
-    <AddRow text="New Category" onClick={newCategory} disabled={$tableStateStore.isSaving} />
+    <tbody class="static-row">
+      <AddRow text="New Category" onClick={newCategory} disabled={$tableStateStore.isSaving} />
+    </tbody>
 
     <Footer />
   </table>
@@ -116,5 +139,23 @@
     border-spacing: 0;
     border-color: var(--table-border-color);
     border-width: var(--table-border-width);
+  }
+
+  :global(.sortable-ghost-row) {
+    opacity: 0.4;
+    background: var(--interactive-accent) !important;
+  }
+
+  :global(.sortable-ghost-category) {
+    opacity: 0.4;
+    background: var(--interactive-accent) !important;
+  }
+
+  :global(.sortable-chosen-row) {
+    background: var(--table-selection) !important;
+  }
+
+  :global(.sortable-chosen-category) {
+    background: var(--table-selection) !important;
   }
 </style>

@@ -206,6 +206,64 @@ export function createStoreActions(
 
       onTableChange(get(store).categories, get(store).rows);
     },
+    moveRow: (
+      rowId: RowId,
+      fromCategoryId: CategoryId,
+      toCategoryId: CategoryId,
+      newIndex: number
+    ): void => {
+      store.update((state) => {
+        const { rows } = state;
+
+        const sourceRows = rows.get(fromCategoryId);
+        if (!sourceRows) return state;
+
+        const rowIndex = sourceRows.findIndex((r) => r.id === rowId);
+        if (rowIndex === -1) return state;
+
+        const movedRow = sourceRows[rowIndex];
+        const newSourceRows = sourceRows.filter((_, i) => i !== rowIndex);
+
+        if (fromCategoryId === toCategoryId) {
+          const newRows = [...newSourceRows];
+          newRows.splice(newIndex, 0, movedRow);
+          rows.set(fromCategoryId, newRows);
+        } else {
+          rows.set(fromCategoryId, newSourceRows);
+          const targetRows = [...(rows.get(toCategoryId) || [])];
+          targetRows.splice(newIndex, 0, movedRow);
+          rows.set(toCategoryId, targetRows);
+        }
+
+        return state;
+      });
+
+      onTableChange(get(store).categories, get(store).rows);
+    },
+    moveCategory: (categoryId: CategoryId, newIndex: number): void => {
+      store.update((state) => {
+        const { categories, rows } = state;
+
+        const entries = Array.from(categories.entries());
+        const rowEntries = Array.from(rows.entries());
+
+        const oldIndex = entries.findIndex(([id]) => id === categoryId);
+        if (oldIndex === -1) return state;
+
+        const [catEntry] = entries.splice(oldIndex, 1);
+        entries.splice(newIndex, 0, catEntry);
+
+        const [rowEntry] = rowEntries.splice(oldIndex, 1);
+        rowEntries.splice(newIndex, 0, rowEntry);
+
+        state.categories = new Map(entries);
+        state.rows = new Map(rowEntries);
+
+        return state;
+      });
+
+      onTableChange(get(store).categories, get(store).rows);
+    },
   };
 }
 
