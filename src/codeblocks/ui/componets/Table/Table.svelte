@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { get } from 'svelte/store';
   import { onDestroy, onMount, setContext, untrack } from 'svelte';
 
   import type { TableCategories, TableRows, TableStateStore, TableStore } from '../../../models';
@@ -22,22 +23,25 @@
     tableStore: TableStore;
     tableStateStore: TableStateStore;
     onTableChange: (categories: TableCategories, rows: TableRows) => void;
+    markDirty?: () => void;
   };
 
-  const { tableStore, tableStateStore, onTableChange }: Props = $props();
+  const { tableStore, tableStateStore, onTableChange, markDirty }: Props = $props();
 
   untrack(() => {
     setContext(STORE_CONTEXT_KEY, tableStore);
     setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
   });
 
+  // Read from store at flush time so we never write a stale snapshot (fixes rollback on edit)
   const commitTableChange = debounce(
-    (categories: TableCategories, rows: TableRows) => {
-      if ($tableStateStore.isEditing) return;
+    (_categories?: TableCategories, _rows?: TableRows) => {
+      if (get(tableStateStore).isEditing) return;
 
       tableStateStore.update((s) => ({ ...s, isSaving: true }));
       try {
-        onTableChange(categories, rows);
+        const state = get(tableStore);
+        onTableChange(state.categories, state.rows);
       } finally {
         setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
       }
@@ -47,7 +51,7 @@
   );
 
   const storeActions = untrack(() =>
-    createStoreActions(tableStore, tableStateStore, commitTableChange)
+    createStoreActions(tableStore, tableStateStore, commitTableChange, markDirty)
   );
   setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
@@ -58,7 +62,7 @@
   const onBlur = (event: FocusEvent): void => {
     const newFocus = event.relatedTarget;
     if (!tableEl.contains(newFocus as Node)) {
-      commitTableChange($tableStore.categories, $tableStore.rows);
+      commitTableChange();
     }
   };
 

@@ -16,7 +16,8 @@ import { SortColumn, SortOrder } from './models';
 export function createStoreActions(
   store: TableStore,
   tableState: TableStateStore,
-  onTableChange: (categories: TableCategories, rows: TableRows) => void
+  onTableChange: (categories: TableCategories, rows: TableRows) => void,
+  markDirty?: () => void
 ) {
   const getCategoryByRowId = (rowId: RowId | null): CategoryId | null => {
     if (rowId === null) {
@@ -55,11 +56,11 @@ export function createStoreActions(
       }
 
       const rowId = generateId();
+      markDirty?.();
 
       store.update((state) => {
-        const { rows } = state;
-        const categoryRows = rows.get(selectedCategoryId) || [];
-
+        const newRows = new Map(state.rows);
+        const categoryRows = newRows.get(selectedCategoryId) || [];
         const newRow: TableRow = {
           id: rowId,
           checked: false,
@@ -67,10 +68,8 @@ export function createStoreActions(
           amount: 0,
           comment: '',
         };
-
-        rows.set(selectedCategoryId, [...categoryRows, newRow]);
-
-        return state;
+        newRows.set(selectedCategoryId, [...categoryRows, newRow]);
+        return { ...state, rows: newRows };
       });
 
       tableState.update((state) => ({
@@ -81,16 +80,16 @@ export function createStoreActions(
       onTableChange(get(store).categories, get(store).rows);
     },
     updateRow: (data: TableRow): void => {
+      markDirty?.();
       store.update((state) => {
-        const { rows } = state;
-
-        for (const [categoryId, categoryRows] of rows) {
-          const updatedRows = categoryRows.map((row) => (row.id === data.id ? data : row));
-
-          rows.set(categoryId, updatedRows);
+        const newRows = new Map<CategoryId, TableRow[]>();
+        for (const [categoryId, categoryRows] of state.rows) {
+          newRows.set(
+            categoryId,
+            categoryRows.map((row) => (row.id === data.id ? data : row))
+          );
         }
-
-        return state;
+        return { ...state, rows: newRows };
       });
       // Do not commit on each keystroke; commit via debounced handler
     },
@@ -109,29 +108,25 @@ export function createStoreActions(
       if (rowId === null) {
         return;
       }
+      markDirty?.();
 
       store.update((state) => {
-        const { rows } = state;
-
-        for (const [categoryId, categoryRows] of rows) {
-          const newRows = categoryRows.filter((row) => row.id !== rowId);
-
-          rows.set(categoryId, newRows);
+        const newRows = new Map<CategoryId, TableRow[]>();
+        for (const [categoryId, categoryRows] of state.rows) {
+          newRows.set(categoryId, categoryRows.filter((row) => row.id !== rowId));
         }
-
-        return state;
+        return { ...state, rows: newRows };
       });
 
       onTableChange(get(store).categories, get(store).rows);
     },
     sortRows: (sortOrder: SortOrder, column: SortColumn): void => {
+      markDirty?.();
       store.update((state) => {
-        const { rows } = state;
-
-        for (const [categoryId, categoryRows] of rows) {
+        const newRows = new Map<CategoryId, TableRow[]>();
+        for (const [categoryId, categoryRows] of state.rows) {
           const sorted = [...categoryRows].sort((a, b) => {
             let result = 0;
-
             switch (column) {
               case SortColumn.CHECK:
                 result = a.checked === b.checked ? 0 : a.checked ? -1 : 1;
@@ -143,25 +138,21 @@ export function createStoreActions(
                 result = a.amount - b.amount;
                 break;
             }
-
             return sortOrder === SortOrder.ASC ? result : -result;
           });
-
-          rows.set(categoryId, sorted);
+          newRows.set(categoryId, sorted);
         }
-
-        return state;
+        return { ...state, rows: newRows };
       });
 
       onTableChange(get(store).categories, get(store).rows);
     },
     newCategory: (): void => {
       const newRowId = generateId();
+      markDirty?.();
 
       store.update((state) => {
-        const { categories, rows } = state;
         const newCategory = generateId();
-
         const newRow: TableRow = {
           id: newRowId,
           checked: false,
@@ -169,11 +160,11 @@ export function createStoreActions(
           amount: 0,
           comment: '',
         };
-
-        categories.set(newCategory, `New Category ${categories.size + 1}`);
-        rows.set(newCategory, [newRow]);
-
-        return state;
+        const newCategories = new Map(state.categories);
+        const newRows = new Map(state.rows);
+        newCategories.set(newCategory, `New Category ${newCategories.size + 1}`);
+        newRows.set(newCategory, [newRow]);
+        return { categories: newCategories, rows: newRows };
       });
 
       tableState.update((state) => ({
@@ -184,24 +175,23 @@ export function createStoreActions(
       onTableChange(get(store).categories, get(store).rows);
     },
     updateCategory: (categoryId: CategoryId, name: string): void => {
+      markDirty?.();
       store.update((state) => {
-        const { categories } = state;
-
-        categories.set(categoryId, name);
-
-        return state;
+        const newCategories = new Map(state.categories);
+        newCategories.set(categoryId, name);
+        return { ...state, categories: newCategories };
       });
 
       onTableChange(get(store).categories, get(store).rows);
     },
     deleteCategory: (categoryId: CategoryId): void => {
+      markDirty?.();
       store.update((state) => {
-        const { categories, rows } = state;
-
-        categories.delete(categoryId);
-        rows.delete(categoryId);
-
-        return state;
+        const newCategories = new Map(state.categories);
+        const newRows = new Map(state.rows);
+        newCategories.delete(categoryId);
+        newRows.delete(categoryId);
+        return { categories: newCategories, rows: newRows };
       });
 
       onTableChange(get(store).categories, get(store).rows);
@@ -212,10 +202,9 @@ export function createStoreActions(
       toCategoryId: CategoryId,
       newIndex: number
     ): void => {
+      markDirty?.();
       store.update((state) => {
-        const { rows } = state;
-
-        const sourceRows = rows.get(fromCategoryId);
+        const sourceRows = state.rows.get(fromCategoryId);
         if (!sourceRows) return state;
 
         const rowIndex = sourceRows.findIndex((r) => r.id === rowId);
@@ -223,29 +212,28 @@ export function createStoreActions(
 
         const movedRow = sourceRows[rowIndex];
         const newSourceRows = sourceRows.filter((_, i) => i !== rowIndex);
+        const newRows = new Map(state.rows);
 
         if (fromCategoryId === toCategoryId) {
-          const newRows = [...newSourceRows];
-          newRows.splice(newIndex, 0, movedRow);
-          rows.set(fromCategoryId, newRows);
+          const reordered = [...newSourceRows];
+          reordered.splice(newIndex, 0, movedRow);
+          newRows.set(fromCategoryId, reordered);
         } else {
-          rows.set(fromCategoryId, newSourceRows);
-          const targetRows = [...(rows.get(toCategoryId) || [])];
+          newRows.set(fromCategoryId, newSourceRows);
+          const targetRows = [...(state.rows.get(toCategoryId) || [])];
           targetRows.splice(newIndex, 0, movedRow);
-          rows.set(toCategoryId, targetRows);
+          newRows.set(toCategoryId, targetRows);
         }
-
-        return state;
+        return { ...state, rows: newRows };
       });
 
       onTableChange(get(store).categories, get(store).rows);
     },
     moveCategory: (categoryId: CategoryId, newIndex: number): void => {
+      markDirty?.();
       store.update((state) => {
-        const { categories, rows } = state;
-
-        const entries = Array.from(categories.entries());
-        const rowEntries = Array.from(rows.entries());
+        const entries = Array.from(state.categories.entries());
+        const rowEntries = Array.from(state.rows.entries());
 
         const oldIndex = entries.findIndex(([id]) => id === categoryId);
         if (oldIndex === -1) return state;
@@ -256,10 +244,10 @@ export function createStoreActions(
         const [rowEntry] = rowEntries.splice(oldIndex, 1);
         rowEntries.splice(newIndex, 0, rowEntry);
 
-        state.categories = new Map(entries);
-        state.rows = new Map(rowEntries);
-
-        return state;
+        return {
+          categories: new Map(entries),
+          rows: new Map(rowEntries),
+        };
       });
 
       onTableChange(get(store).categories, get(store).rows);
