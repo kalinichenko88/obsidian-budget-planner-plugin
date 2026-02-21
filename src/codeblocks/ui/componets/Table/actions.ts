@@ -99,6 +99,7 @@ export function createStoreActions(
         isEditing,
       }));
     },
+    /** Schedules a flush; actual data is read from store when debounced callback runs. */
     commitChange: (): void => {
       onTableChange(get(store).categories, get(store).rows);
     },
@@ -113,7 +114,10 @@ export function createStoreActions(
       store.update((state) => {
         const newRows = new Map<CategoryId, TableRow[]>();
         for (const [categoryId, categoryRows] of state.rows) {
-          newRows.set(categoryId, categoryRows.filter((row) => row.id !== rowId));
+          newRows.set(
+            categoryId,
+            categoryRows.filter((row) => row.id !== rowId)
+          );
         }
         return { ...state, rows: newRows };
       });

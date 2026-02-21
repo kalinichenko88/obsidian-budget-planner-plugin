@@ -74,6 +74,7 @@
   });
 
   onDestroy(() => {
+    commitTableChange.cancel();
     tableEl.removeEventListener('focusout', onBlur);
     dndManager?.destroy();
   });

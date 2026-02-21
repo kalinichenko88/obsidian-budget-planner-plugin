@@ -163,12 +163,7 @@ export class TableWidget extends WidgetType {
 
   destroy(): void {
     // Flush only when there are uncommitted changes to avoid overwriting doc after replace
-    if (
-      this.dirty &&
-      this.tableStore &&
-      this.view &&
-      this.container?.isConnected
-    ) {
+    if (this.dirty && this.tableStore && this.view && this.container?.isConnected) {
       try {
         const state = get(this.tableStore);
         this.dispatchChanges(state.categories, state.rows, true);
