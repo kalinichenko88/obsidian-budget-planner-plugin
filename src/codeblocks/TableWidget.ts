@@ -22,6 +22,7 @@ export class TableWidget extends WidgetType {
   private view: EditorView | null = null;
   private tableStore: TableStore | null = null;
   private formatter: BudgetCodeFormatter | null = null;
+  private dirty = false;
 
   constructor(
     public categories: TableCategories,
@@ -149,6 +150,10 @@ export class TableWidget extends WidgetType {
         tableStateStore,
         onTableChange: (categories: TableCategories, rows: TableRows) => {
           this.dispatchChanges(categories, rows);
+          this.dirty = false;
+        },
+        markDirty: () => {
+          this.dirty = true;
         },
       },
     });
@@ -157,8 +162,8 @@ export class TableWidget extends WidgetType {
   }
 
   destroy(): void {
-    // Flush any pending changes before destroying
-    if (this.tableStore && this.view && this.container?.isConnected) {
+    // Flush only when there are uncommitted changes to avoid overwriting doc after replace
+    if (this.dirty && this.tableStore && this.view && this.container?.isConnected) {
       try {
         const state = get(this.tableStore);
         this.dispatchChanges(state.categories, state.rows, true);

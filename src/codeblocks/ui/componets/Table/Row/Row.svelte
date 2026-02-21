@@ -8,6 +8,7 @@
   import { isRowsEqual } from './helpers';
 
   import Editable from '../Editable/Editable.svelte';
+  import Icon from '../AddRow/Icon/Icon.svelte';
 
   type Props = {
     row: TableRow;
@@ -89,9 +90,14 @@
   class="row"
   class:selected={$tableState.selectedRowId === row.id}
   class:checked={row.checked}
+  data-row-id={row.id}
   onclick={handleOnRowClick}
   oncontextmenu={handleOnMenu}
 >
+  <td class="drag-handle row-drag-handle">
+    <Icon name="grip-vertical" />
+  </td>
+
   <td class="check-wrapper">
     <div
       class="check"
@@ -157,6 +163,19 @@
   tr.row.checked:hover {
     background: var(--color-base-20);
     color: var(--color-base-60);
+  }
+
+  .drag-handle {
+    cursor: grab;
+    color: var(--text-faint);
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
+  }
+
+  .drag-handle:hover {
+    color: var(--text-muted);
   }
 
   .check-wrapper {
