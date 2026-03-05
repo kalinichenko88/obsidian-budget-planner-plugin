@@ -101,7 +101,7 @@ describe('BudgetCodeParser', () => {
   });
 
   test('should ignore empty lines', () => {
-    const code = 'Category 1:\n\tItem 1 | 100\nCategory 2:\n\tItem 2 | 200';
+    const code = 'Category 1:\n\tItem 1 | 100\n\n\nCategory 2:\n\n\tItem 2 | 200\n';
     const parser = new BudgetCodeParser(code);
     const result = parser.parse();
 

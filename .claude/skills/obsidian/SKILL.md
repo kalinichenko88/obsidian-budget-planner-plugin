@@ -8,25 +8,6 @@ description: Comprehensive guidelines for Obsidian.md plugin development includi
 
 You are assisting with Obsidian plugin development. Follow these comprehensive guidelines derived from the official Obsidian ESLint plugin rules, submission requirements, and best practices.
 
-## Getting Started
-
-### Quick Start Tool
-
-For new plugin projects, an interactive boilerplate generator is available:
-- **Script**: `tools/create-plugin.js` in the skill repository
-- **Slash command**: `/create-plugin` for guided setup
-- Generates minimal, best-practice boilerplate with no sample code
-- Detects existing projects and only adds missing files
-- All generated code follows these guidelines automatically
-
-### When to Suggest the Tool
-
-Recommend the boilerplate generator when users:
-- Ask "how do I create a new Obsidian plugin?"
-- Want to start a new plugin project
-- Need help setting up the basic structure
-- Want to ensure they start with best practices
-
 ## Core Principles
 
 1. **Memory Safety**: Prevent memory leaks through proper resource management
@@ -304,7 +285,7 @@ if (file instanceof TFile) {
 ### Keyboard Accessible Button
 
 ```typescript
-// ✅ CORRECT
+// ✅ CORRECT - native <button> already handles Enter/Space via click event
 const button = containerEl.createEl('button', {
   attr: {
     'aria-label': 'Open settings',
@@ -313,11 +294,8 @@ const button = containerEl.createEl('button', {
 });
 button.setText('⚙️');
 
-button.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    performAction();
-  }
+button.addEventListener('click', () => {
+  performAction();
 });
 ```
 
