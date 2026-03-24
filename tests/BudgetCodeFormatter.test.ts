@@ -366,6 +366,24 @@ Test:
 
       expect(result).toBe(expected);
     });
+
+    test('should keep rows with empty name but non-zero amount', () => {
+      const categories = new Map();
+      categories.set('cat1', 'Test');
+
+      const rows = new Map();
+      rows.set('cat1', [
+        { id: 'row1', checked: false, name: '', amount: 0, comment: '' },
+        { id: 'row2', checked: false, name: 'Keep', amount: 500, comment: '' },
+      ]);
+
+      const tableStoreValues: TableStoreValues = { categories, rows };
+      const result = formatter.format(tableStoreValues);
+
+      // amount: 0 formats as "0" (truthy), so the row is kept
+      expect(result).toContain('| 0');
+      expect(result).toContain('| Keep');
+    });
   });
 
   describe('round-trip: category names with colons', () => {

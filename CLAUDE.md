@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Obsidian Budget Planner Plugin — transforms `budget` code blocks in Obsidian notes into interactive tables with categories, checkboxes, sorting, and auto-summation. Built with Svelte 5, Vite 7, TypeScript, and CodeMirror 6.
+Budget Planner — transforms `budget` code blocks in Obsidian notes into interactive tables with categories, checkboxes, sorting, and auto-summation. Built with Svelte 5, Vite 7, TypeScript, and CodeMirror 6. Plugin ID: `budget-planner`.
 
 ## Setup
 
@@ -34,15 +34,17 @@ npm run typecheck        # Svelte + TypeScript type checking
 
 ### CodeMirror Integration (Editor Layer)
 
-`src/codeblocks/tableExtension.ts` — StateField-based decoration that detects ` ```budget ``` ` blocks via regex and replaces them with `TableWidget` instances.
+`src/codeblocks/tableExtension.ts` — StateField-based decoration that detects ` ```budget ``` ` blocks via regex and replaces them with `TableWidget` instances. Uses incremental updates: widget-dispatched changes (tagged with `widgetChangeAnnotation`) and external changes without fence markers use `RangeSet.map()` instead of full rebuild.
 
-`src/codeblocks/TableWidget.ts` — CodeMirror `WidgetType` that mounts a Svelte `Table` component. Handles bidirectional sync between markdown text and the interactive UI with debounced writes (100ms).
+`src/codeblocks/TableWidget.ts` — CodeMirror `WidgetType` that mounts a Svelte `Table` component. Handles bidirectional sync between markdown text and the interactive UI with trailing-edge debounced writes (100ms). Position lookup uses decoration set iteration via `getTableField()` registry (avoids circular imports).
 
 ### Parser / Formatter (Data Layer)
 
-`src/codeblocks/BudgetCodeParser.ts` — Parses budget markdown into structured data (`Map<CategoryId, string>` for categories, `Map<CategoryId, TableRow[]>` for rows). Categories are lines ending with `:`, rows use `[x]/[ ] | name | amount | comment` syntax. IDs are generated at parse time with nanoid and not persisted.
+`src/codeblocks/BudgetCodeParser.ts` — Parses budget markdown into structured data (`Map<CategoryId, string>` for categories, `Map<CategoryId, TableRow[]>` for rows). Categories are lines ending with `:`, rows must contain `|` separator and use `[x]/[ ] | name | amount | comment` syntax. Lines without `|` are skipped. IDs are generated at parse time with nanoid and not persisted.
 
-`src/codeblocks/BudgetCodeFormatter.ts` — Converts structured data back to column-aligned markdown. Skips rows missing both name and amount.
+`src/codeblocks/BudgetCodeFormatter.ts` — Converts structured data back to column-aligned markdown. Strips trailing colons from category names before adding the `:` marker. Trims trailing whitespace from rows without comments. Skips rows missing both name and amount.
+
+`src/codeblocks/constants.ts` — Shared constants: `BUDGET_BLOCK_REGEX` (multiline, requires closing fence at line start), `widgetChangeAnnotation`, and `registerTableField`/`getTableField` registry for StateField access without circular imports.
 
 ### UI Components (Svelte 5)
 
@@ -81,10 +83,12 @@ All mutations go through `createStoreActions()` in `src/codeblocks/ui/componets/
 
 ## Testing
 
-Tests live in `tests/` (parser/formatter) and co-located with source (`*.test.ts`). Uses Vitest + Testing Library Svelte. Key test files:
+Tests live in `tests/` (parser/formatter/regex) and co-located with source (`*.test.ts`). Uses Vitest + Testing Library Svelte. Key test files:
 
 - `tests/BudgetCodeParser.test.ts`
 - `tests/BudgetCodeFormatter.test.ts`
+- `tests/BudgetBlockRegex.test.ts`
+- `tests/changesAffectBlockStructure.test.ts`
 - `src/codeblocks/helpers/generateId.test.ts`
 - `src/codeblocks/ui/componets/Table/Row/helpers.test.ts`
 
