@@ -217,7 +217,7 @@ Expenses:
 Income:
 \t[ ] | Short                              | 100    | Test
 \t[x] | Very Long Name That Exceeds Others | 999999 | Long Comment
-\t[ ] | Medium                             | 5000  
+\t[ ] | Medium                             | 5000
 \`\`\``;
 
       expect(result).toBe(expected);
