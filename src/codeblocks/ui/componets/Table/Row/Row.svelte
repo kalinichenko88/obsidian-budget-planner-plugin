@@ -33,6 +33,13 @@
   let comment = $state(untrack(() => row.comment));
 
   $effect(() => {
+    checked = row.checked;
+    name = row.name;
+    amount = row.amount;
+    comment = row.comment;
+  });
+
+  $effect(() => {
     const updatingRow: TableRow = {
       id: row.id,
       checked,
