@@ -40,7 +40,7 @@
     onChange(editingValue);
   };
 
-  const handleOnWheel = (event: MouseEvent): void => {
+  const handleOnWheel = (event: WheelEvent): void => {
     event.preventDefault();
   };
 
