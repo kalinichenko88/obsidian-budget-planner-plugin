@@ -28,26 +28,25 @@
     }
   });
 
-  const menu = new Menu()
-    .addItem((item) => {
-      item
-        .setTitle('New category')
-        .setIcon('table-rows-split')
-        .onClick(() => newCategory());
-    })
-    .addSeparator()
-    .addItem((item) => {
-      item
-        .setTitle('Delete category and all rows')
-        .setIcon('list-x')
-        .setDisabled(!isDeletingEnabled)
-        .onClick(() => deleteCategory(categoryId));
-    });
-
   export const handleOnMenu = (event: MouseEvent): void => {
     event.preventDefault();
     selectRow(null);
-    menu.showAtMouseEvent(event);
+    new Menu()
+      .addItem((item) => {
+        item
+          .setTitle('New category')
+          .setIcon('table-rows-split')
+          .onClick(() => newCategory());
+      })
+      .addSeparator()
+      .addItem((item) => {
+        item
+          .setTitle('Delete category and all rows')
+          .setIcon('list-x')
+          .setDisabled(!isDeletingEnabled)
+          .onClick(() => deleteCategory(categoryId));
+      })
+      .showAtMouseEvent(event);
   };
 
   export const handleOnChange = (value: string): void => {
