@@ -18,6 +18,7 @@
 
   let editingValue = $state(untrack(() => value));
   let isEditing = $state(false);
+  let cancelled = false;
   let inputElement: HTMLInputElement | null = $state(null);
 
   const handleOnClick = (): void => {
@@ -35,6 +36,10 @@
   };
 
   const handleOnLeave = (): void => {
+    if (cancelled) {
+      cancelled = false;
+      return;
+    }
     isEditing = false;
     onEditingChange(false);
     onChange(editingValue);
@@ -52,9 +57,10 @@
     }
 
     if (event.key === 'Escape') {
+      cancelled = true;
+      editingValue = value;
       isEditing = false;
       onEditingChange(false);
-      editingValue = value;
     }
   };
 
