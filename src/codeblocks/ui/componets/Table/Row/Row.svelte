@@ -84,7 +84,7 @@
 <tr
   class="row"
   class:selected={$tableState.selectedRowId === row.id}
-  class:checked={row.checked}
+  class:checked={checked}
   data-row-id={row.id}
   onclick={handleOnRowClick}
   oncontextmenu={handleOnMenu}
@@ -111,10 +111,7 @@
         type="checkbox"
         name="checkbox"
         id={`checkbox-${row.id}`}
-        checked={row.checked}
-        onchange={(value: Event) => {
-          checked = (value.target as HTMLInputElement).checked;
-        }}
+        bind:checked
       />
     </div>
   </td>
@@ -182,6 +179,7 @@
 
     & > input {
       margin: 0;
+      pointer-events: none;
     }
   }
 

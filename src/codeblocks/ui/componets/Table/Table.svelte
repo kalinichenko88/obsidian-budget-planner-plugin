@@ -55,14 +55,18 @@
     dndManager?.destroy();
   });
 
+  let prevStructure = '';
   $effect(() => {
-    // Track categories and rows to refresh DnD when they change
-    $tableStore.categories;
-    $tableStore.rows;
+    const cats = [...$tableStore.categories.keys()].join(',');
+    const rows = [...$tableStore.rows.values()].flatMap((rs) => rs.map((r) => r.id)).join(',');
+    const structure = cats + '|' + rows;
 
-    queueMicrotask(() => {
-      dndManager?.refresh();
-    });
+    if (structure !== prevStructure) {
+      prevStructure = structure;
+      queueMicrotask(() => {
+        dndManager?.refresh();
+      });
+    }
   });
 
   $effect(() => {
