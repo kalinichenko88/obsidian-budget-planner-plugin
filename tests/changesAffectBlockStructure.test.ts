@@ -3,7 +3,10 @@ import { EditorState } from '@codemirror/state';
 
 import { changesAffectBlockStructure } from '@/codeblocks/helpers/changesAffectBlockStructure';
 
-function createTr(doc: string, changes: { from: number; to?: number; insert?: string }) {
+function createTr(
+  doc: string,
+  changes: { from: number; to?: number; insert?: string }
+): ReturnType<EditorState['update']> {
   const state = EditorState.create({ doc });
   return state.update({ changes });
 }

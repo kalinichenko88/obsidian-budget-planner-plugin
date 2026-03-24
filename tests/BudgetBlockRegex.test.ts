@@ -2,7 +2,7 @@ import { expect, test, describe } from 'vitest';
 
 import { BUDGET_BLOCK_REGEX } from '@/codeblocks/constants';
 
-function matchAll(input: string) {
+function matchAll(input: string): { full: string; inner: string }[] {
   const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
   const matches: { full: string; inner: string }[] = [];
   let m: RegExpExecArray | null;
@@ -30,20 +30,16 @@ describe('BUDGET_BLOCK_REGEX', () => {
   });
 
   test('should not prematurely close on ``` inside row name', () => {
-    const input =
-      '```budget\nIncome:\n\tItem with ``` in name | 100 | comment\n```';
+    const input = '```budget\nIncome:\n\tItem with ``` in name | 100 | comment\n```';
     const matches = matchAll(input);
 
     expect(matches).toHaveLength(1);
     expect(matches[0].inner).toContain('Item with ``` in name');
-    expect(matches[0].inner).toBe(
-      'Income:\n\tItem with ``` in name | 100 | comment\n'
-    );
+    expect(matches[0].inner).toBe('Income:\n\tItem with ``` in name | 100 | comment\n');
   });
 
   test('should not prematurely close on ``` inside comment', () => {
-    const input =
-      '```budget\nExpenses:\n\tRent | 1500 | see ```config``` for details\n```';
+    const input = '```budget\nExpenses:\n\tRent | 1500 | see ```config``` for details\n```';
     const matches = matchAll(input);
 
     expect(matches).toHaveLength(1);
@@ -81,8 +77,7 @@ describe('BUDGET_BLOCK_REGEX', () => {
   });
 
   test('should not match ``` that is not at the start of a line', () => {
-    const input =
-      '```budget\nIncome:\n\tSalary | 5000\nsome text ``` more text\n```';
+    const input = '```budget\nIncome:\n\tSalary | 5000\nsome text ``` more text\n```';
     const matches = matchAll(input);
 
     expect(matches).toHaveLength(1);

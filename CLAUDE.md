@@ -60,6 +60,7 @@ Uses Svelte 5 runes (`$props()`, `$state()`) and context API for dependency inje
 ### State Management
 
 Two stores passed via Svelte context:
+
 - **TableStore** — data: categories map + rows map
 - **TableStateStore** — UI state: selected row, editing/saving flags
 
@@ -81,6 +82,7 @@ All mutations go through `createStoreActions()` in `src/codeblocks/ui/componets/
 ## Testing
 
 Tests live in `tests/` (parser/formatter) and co-located with source (`*.test.ts`). Uses Vitest + Testing Library Svelte. Key test files:
+
 - `tests/BudgetCodeParser.test.ts`
 - `tests/BudgetCodeFormatter.test.ts`
 - `src/codeblocks/helpers/generateId.test.ts`

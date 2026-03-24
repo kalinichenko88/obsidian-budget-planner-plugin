@@ -3,11 +3,7 @@ import { EditorView, Decoration, type DecorationSet } from '@codemirror/view';
 
 import { TableWidget } from './TableWidget';
 import { BudgetCodeParser } from './BudgetCodeParser';
-import {
-  BUDGET_BLOCK_REGEX,
-  widgetChangeAnnotation,
-  registerTableField,
-} from './constants';
+import { BUDGET_BLOCK_REGEX, widgetChangeAnnotation, registerTableField } from './constants';
 import { changesAffectBlockStructure } from './helpers/changesAffectBlockStructure';
 
 const tableField = StateField.define<DecorationSet>({

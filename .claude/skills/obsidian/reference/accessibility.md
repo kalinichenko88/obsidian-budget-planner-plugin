@@ -3,6 +3,7 @@
 Accessibility is MANDATORY for Obsidian plugins. All users, regardless of ability, must be able to use your plugin.
 
 ## Table of Contents
+
 - [Keyboard Navigation](#keyboard-navigation)
 - [ARIA Labels and Roles](#aria-labels-and-roles)
 - [Tooltips and Accessibility](#tooltips-and-accessibility)
@@ -17,11 +18,13 @@ Accessibility is MANDATORY for Obsidian plugins. All users, regardless of abilit
 ## Keyboard Navigation
 
 ### Keyboard Navigation
+
 Rule: Accessibility best practice - MANDATORY
 
 All interactive elements must be keyboard accessible. Users should be able to navigate and interact with your plugin using only the keyboard.
 
 ✅ **CORRECT**:
+
 ```typescript
 // Make custom interactive elements keyboard accessible
 element.setAttribute('tabindex', '0');
@@ -37,6 +40,7 @@ element.addEventListener('keydown', (e) => {
 ```
 
 **Key Requirements**:
+
 - Add `tabindex="0"` to make elements keyboard focusable
 - Support both Enter and Space keys for button-like elements
 - Use arrow keys for navigation within lists/menus
@@ -47,11 +51,13 @@ element.addEventListener('keydown', (e) => {
 ## ARIA Labels and Roles
 
 ### ARIA Labels and Roles
+
 Rule: Accessibility best practice - MANDATORY
 
 Provide proper ARIA labels and roles for all interactive elements, especially icons and buttons without visible text.
 
 ❌ **INCORRECT**:
+
 ```typescript
 // Icon button with no accessible label
 const button = containerEl.createEl('button');
@@ -59,18 +65,20 @@ button.innerHTML = '⚙️';
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 // Icon button with proper ARIA label
 const button = containerEl.createEl('button', {
   attr: {
     'aria-label': 'Open settings',
-    'type': 'button'
-  }
+    type: 'button',
+  },
 });
 button.setText('⚙️');
 ```
 
 **Common ARIA attributes**:
+
 - `aria-label`: Accessible name for elements without visible text
 - `aria-description`: Additional context beyond the label
 - `role`: Semantic role (button, dialog, menu, listbox, etc.)
@@ -83,17 +91,19 @@ button.setText('⚙️');
 ## Tooltips and Accessibility
 
 ### Tooltips and Accessibility
+
 Rule: Obsidian API best practice
 
 Use Obsidian's built-in tooltip system with proper positioning and accessibility attributes.
 
 ✅ **CORRECT**:
+
 ```typescript
 const button = containerEl.createEl('button', {
   attr: {
     'aria-label': 'Open settings',
-    'data-tooltip-position': 'top'  // Position tooltip above element
-  }
+    'data-tooltip-position': 'top', // Position tooltip above element
+  },
 });
 setTooltip(button, 'Open settings');
 
@@ -103,6 +113,7 @@ button.setAttr('data-tooltip-position', 'bottom');
 ```
 
 **Tooltip Position Options**:
+
 - `top`: Above the element (default for many cases)
 - `bottom`: Below the element
 - `left`: To the left of the element
@@ -115,11 +126,13 @@ button.setAttr('data-tooltip-position', 'bottom');
 ## Focus Management
 
 ### Focus Management
+
 Rule: Accessibility best practice - MANDATORY
 
 Manage focus appropriately when opening modals, menus, or changing context.
 
 ✅ **CORRECT**:
+
 ```typescript
 export class MyModal extends Modal {
   onOpen() {
@@ -127,7 +140,7 @@ export class MyModal extends Modal {
 
     // Create focusable content
     const input = contentEl.createEl('input', {
-      attr: { 'aria-label': 'Enter value' }
+      attr: { 'aria-label': 'Enter value' },
     });
 
     // Focus the first interactive element
@@ -143,6 +156,7 @@ export class MyModal extends Modal {
 ```
 
 **Focus Best Practices**:
+
 - Focus the first interactive element when opening modals
 - Trap focus within modals (prevent Tab from leaving modal)
 - Return focus to the trigger element when closing modals
@@ -153,11 +167,13 @@ export class MyModal extends Modal {
 ## Focus Visible Styles
 
 ### Focus Visible Styles
+
 Rule: Accessibility best practice - MANDATORY
 
 Define clear focus indicators using CSS `:focus-visible` pseudo-class.
 
 ✅ **CORRECT**:
+
 ```css
 /* Option 1: Using outline (standard approach) */
 .my-plugin-button:focus-visible {
@@ -180,6 +196,7 @@ Define clear focus indicators using CSS `:focus-visible` pseudo-class.
 ```
 
 **Focus Indicator Guidelines**:
+
 - Always provide visible focus indicators
 - Use `:focus-visible` (not `:focus`) to show only for keyboard navigation
 - Use Obsidian's CSS variables:
@@ -194,33 +211,36 @@ Define clear focus indicators using CSS `:focus-visible` pseudo-class.
 ## Screen Reader Support
 
 ### Screen Reader Support
+
 Rule: Accessibility best practice - MANDATORY
 
 Ensure your plugin works well with screen readers.
 
 ✅ **CORRECT**:
+
 ```typescript
 // Announce dynamic changes to screen readers
 const statusEl = containerEl.createEl('div', {
   attr: {
-    'role': 'status',
+    role: 'status',
     'aria-live': 'polite',
-    'aria-atomic': 'true'
-  }
+    'aria-atomic': 'true',
+  },
 });
 statusEl.setText('File saved successfully');
 
 // Use semantic HTML when possible
 const list = containerEl.createEl('ul', {
-  attr: { 'role': 'list' }
+  attr: { role: 'list' },
 });
 
 const item = list.createEl('li', {
-  attr: { 'role': 'listitem' }
+  attr: { role: 'listitem' },
 });
 ```
 
 **Screen Reader Considerations**:
+
 - Use `aria-live` regions for dynamic content updates
 - Provide meaningful `aria-label` for icons and images
 - Use semantic HTML roles when available
@@ -231,11 +251,13 @@ const item = list.createEl('li', {
 ## Mobile and Touch Accessibility
 
 ### Mobile and Touch Accessibility
+
 Rule: Platform compatibility - MANDATORY
 
 Ensure touch targets are appropriately sized and spaced for mobile users.
 
 ✅ **CORRECT**:
+
 ```css
 .my-plugin-button {
   /* Minimum touch target size: 44x44px */
@@ -251,6 +273,7 @@ Ensure touch targets are appropriately sized and spaced for mobile users.
 ```
 
 **Touch Target Guidelines**:
+
 - Minimum touch target size: 44×44 pixels (iOS), 48×48 pixels (Android)
 - Provide adequate spacing between interactive elements
 - Support both click and touch events

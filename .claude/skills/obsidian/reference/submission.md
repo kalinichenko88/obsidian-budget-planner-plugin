@@ -20,6 +20,7 @@ your-plugin/
 The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these rules:
 
 ### Plugin ID (Required)
+
 - **Cannot contain "obsidian"** (case-insensitive)
 - **Cannot end with "plugin"**
 - **Must use only**: lowercase alphanumeric characters, dashes (`-`), and underscores (`_`)
@@ -27,6 +28,7 @@ The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these
 - Keep it short and simple (used for plugin folder name)
 
 ### Plugin Name (Required)
+
 - **Cannot contain "Obsidian"** (case-insensitive)
 - **Cannot end with "Plugin"**
 - **Cannot start with "Obsi" or end with "dian"**
@@ -34,6 +36,7 @@ The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these
 - Use a clear, descriptive name
 
 ### Description (Required)
+
 - **Cannot include "Obsidian"** (case-insensitive)
 - **Cannot use phrases**: "This plugin", "This is a plugin", "This plugin allows"
 - **Must end with punctuation**: `.`, `?`, `!`, or `)`
@@ -41,15 +44,18 @@ The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these
 - Focus on what the plugin does, not what it is
 
 ### Author (Required)
+
 - Must be the repository owner or a public member of the organization
 - Repository must have issues enabled (warning)
 - Must include a valid open source license
 
 ### Repository (Required)
+
 - Format: `"owner/repo-name"`
 - Must match the actual GitHub repository
 
 ### Manifest Synchronization
+
 - Plugin `id`, `name`, and `description` must match `manifest.json` in the repository
 
 ---
@@ -57,6 +63,7 @@ The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these
 **Examples:**
 
 ✅ Good:
+
 ```json
 {
   "id": "daily-notes-helper",
@@ -68,9 +75,10 @@ The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these
 ```
 
 ❌ Bad:
+
 ```json
 {
-  "id": "obsidian-daily-notes-plugin",  // Contains "obsidian" and ends with "plugin"
+  "id": "obsidian-daily-notes-plugin", // Contains "obsidian" and ends with "plugin"
   "name": "Obsidian Daily Notes Plugin", // Contains "Obsidian" and ends with "Plugin"
   "description": "This is an Obsidian plugin that helps with daily notes" // Contains "Obsidian" and "This is...plugin", no punctuation
 }
@@ -113,6 +121,7 @@ Create pull request.
 ## Semantic Versioning
 
 Follow semantic versioning:
+
 - **MAJOR**: Breaking changes
 - **MINOR**: New features (backward compatible)
 - **PATCH**: Bug fixes

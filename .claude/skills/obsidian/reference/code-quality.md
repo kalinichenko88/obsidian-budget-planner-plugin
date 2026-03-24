@@ -3,6 +3,7 @@
 Code quality ensures maintainability, reliability, and better user experience.
 
 ## Table of Contents
+
 - [Remove Sample Code](#remove-sample-code)
 - [Security Best Practices](#security-best-practices)
 - [Platform Compatibility](#platform-compatibility)
@@ -16,9 +17,11 @@ Code quality ensures maintainability, reliability, and better user experience.
 ## Remove Sample Code
 
 ### Remove Sample Code
+
 Rule: `obsidianmd/no-sample-code`
 
 Remove all sample/template code before publishing:
+
 - Sample ribbon icons
 - Example status bar items
 - Template settings
@@ -27,22 +30,25 @@ Remove all sample/template code before publishing:
 ---
 
 ### Rename Sample Class Names
+
 Rule: `obsidianmd/sample-names`
 
 ❌ **INCORRECT**:
+
 ```typescript
-class MyPlugin extends Plugin { }
-interface MyPluginSettings { }
-class SampleSettingTab extends PluginSettingTab { }
-class SampleModal extends Modal { }
+class MyPlugin extends Plugin {}
+interface MyPluginSettings {}
+class SampleSettingTab extends PluginSettingTab {}
+class SampleModal extends Modal {}
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
-class TodoPlugin extends Plugin { }
-interface TodoPluginSettings { }
-class TodoSettingTab extends PluginSettingTab { }
-class TodoModal extends Modal { }
+class TodoPlugin extends Plugin {}
+interface TodoPluginSettings {}
+class TodoSettingTab extends PluginSettingTab {}
+class TodoModal extends Modal {}
 ```
 
 Rationale: Rename placeholder class names from the sample plugin template (`MyPlugin`, `MyPluginSettings`, `SampleSettingTab`, `SampleModal`) to meaningful names for your plugin.
@@ -52,15 +58,18 @@ Rationale: Rename placeholder class names from the sample plugin template (`MyPl
 ## Security Best Practices
 
 ### Avoid innerHTML and outerHTML
+
 Rule: Security best practice
 
 ❌ **INCORRECT**:
+
 ```typescript
 element.innerHTML = '<div>' + userContent + '</div>';
 element.outerHTML = '<p>' + text + '</p>';
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 // Use DOM API
 const div = element.createDiv();
@@ -78,14 +87,17 @@ Rationale: Using `innerHTML`/`outerHTML` is a security risk (XSS vulnerability).
 ## Platform Compatibility
 
 ### Avoid Regex Lookbehind
+
 Rule: `obsidianmd/regex-lookbehind`
 
 ❌ **INCORRECT**:
+
 ```typescript
-const pattern = /(?<=@)\w+/;  // Not supported on some iOS versions
+const pattern = /(?<=@)\w+/; // Not supported on some iOS versions
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 const pattern = /@(\w+)/;
 const match = text.match(pattern);
@@ -97,26 +109,39 @@ Rationale: Regex lookbehind not supported on iOS versions before 16.4.
 ---
 
 ### Use Platform API for OS Detection
+
 Rule: `obsidianmd/platform`
 
 ❌ **INCORRECT**:
+
 ```typescript
-if (navigator.platform.includes('Mac')) { }
-if (navigator.userAgent.includes('Windows')) { }
-if (window.navigator.platform === 'Linux') { }
+if (navigator.platform.includes('Mac')) {
+}
+if (navigator.userAgent.includes('Windows')) {
+}
+if (window.navigator.platform === 'Linux') {
+}
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 import { Platform } from 'obsidian';
 
-if (Platform.isMacOS) { }
-if (Platform.isWin) { }
-if (Platform.isLinux) { }
-if (Platform.isMobile) { }
-if (Platform.isIosApp) { }
-if (Platform.isAndroidApp) { }
-if (Platform.isDesktopApp) { }
+if (Platform.isMacOS) {
+}
+if (Platform.isWin) {
+}
+if (Platform.isLinux) {
+}
+if (Platform.isMobile) {
+}
+if (Platform.isIosApp) {
+}
+if (Platform.isAndroidApp) {
+}
+if (Platform.isDesktopApp) {
+}
 ```
 
 Rationale: Avoid using the `navigator` API to detect the operating system. Use Obsidian's Platform API instead for better reliability and mobile support.
@@ -124,9 +149,11 @@ Rationale: Avoid using the `navigator` API to detect the operating system. Use O
 ---
 
 ### Use window.setTimeout and window.setInterval
+
 Rule: Platform compatibility
 
 ❌ **INCORRECT**:
+
 ```typescript
 const timer: NodeJS.Timeout = setTimeout(() => {
   // do something
@@ -138,6 +165,7 @@ const interval = setInterval(() => {
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 const timer: number = window.setTimeout(() => {
   // do something
@@ -159,9 +187,11 @@ Rationale: Use `window.setTimeout/setInterval` with `number` type instead of `No
 ## API Usage Best Practices
 
 ### Don't Use Global `app` Object
+
 Rule: Best practice from official guidelines
 
 ❌ **INCORRECT**:
+
 ```typescript
 // Don't use global app
 const vault = app.vault;
@@ -169,6 +199,7 @@ const workspace = app.workspace;
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 // Use the plugin instance reference
 const vault = this.app.vault;
@@ -180,9 +211,11 @@ Rationale: Always use `this.app` from your plugin instance instead of the global
 ---
 
 ### Use requestUrl() Instead of fetch()
+
 Rule: Best practice from official guidelines
 
 ❌ **INCORRECT**:
+
 ```typescript
 // Don't use fetch()
 const response = await fetch('https://api.example.com/data');
@@ -190,6 +223,7 @@ const data = await response.json();
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 import { requestUrl } from 'obsidian';
 
@@ -203,9 +237,11 @@ Rationale: Don't use `fetch()`. Use Obsidian's `requestUrl()` instead to bypass 
 ---
 
 ### Minimize Console Logging
+
 Rule: Best practice from official guidelines
 
 ❌ **INCORRECT**:
+
 ```typescript
 async onload() {
   console.log('Plugin loaded');
@@ -219,6 +255,7 @@ onunload() {
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 async onload() {
   // Only log errors by default
@@ -240,9 +277,11 @@ Rationale: The developer console should display errors by default, not debug mes
 ---
 
 ### Prefer AbstractInputSuggest
+
 Rule: `obsidianmd/prefer-abstract-input-suggest`
 
 ❌ **INCORRECT**:
+
 ```typescript
 // Don't use the custom TextInputSuggest implementation
 // (frequently copied from Liam's code)
@@ -252,6 +291,7 @@ class MyTextInputSuggest extends TextInputSuggest<string> {
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 import { AbstractInputSuggest } from 'obsidian';
 
@@ -275,6 +315,7 @@ Rationale: Use the built-in `AbstractInputSuggest` API instead of copying custom
 ---
 
 ### Use updateOptions() for Editor Extensions
+
 Rule: Official guidelines
 
 ```typescript
@@ -289,9 +330,11 @@ Rationale: When reconfiguring editor extensions, use `updateOptions()` to flush 
 ## Async/Await Patterns
 
 ### Prefer async/await over Promise chains
+
 Rule: Code readability and maintainability
 
 ❌ **INCORRECT**:
+
 ```typescript
 function loadData() {
   return new Promise((resolve) => {
@@ -300,16 +343,17 @@ function loadData() {
 }
 
 getData()
-  .then(result => processResult(result))
-  .then(processed => saveData(processed))
-  .catch(error => console.error(error))
+  .then((result) => processResult(result))
+  .then((processed) => saveData(processed))
+  .catch((error) => console.error(error))
   .finally(() => cleanup());
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 async function loadData() {
-  await sleep(1000);  // Use Obsidian's sleep() helper
+  await sleep(1000); // Use Obsidian's sleep() helper
   return data;
 }
 
@@ -331,9 +375,11 @@ Rationale: async/await is more readable and maintainable. Use Obsidian's `sleep(
 ## DOM Helpers
 
 ### Use Obsidian DOM Helpers
+
 Rule: Prefer Obsidian API over vanilla DOM
 
 ❌ **INCORRECT**:
+
 ```typescript
 const div = document.createElement('div');
 const span = document.createElement('span');
@@ -341,6 +387,7 @@ const fragment = document.createDocumentFragment();
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 // On any HTMLElement:
 const div = containerEl.createDiv();
@@ -360,14 +407,17 @@ Rationale: Obsidian's helper functions (`createDiv()`, `createSpan()`, `createEl
 ## Miscellaneous Rules
 
 ### Object.assign Must Have 3 Parameters
+
 Rule: `obsidianmd/object-assign`
 
 ❌ **INCORRECT**:
+
 ```typescript
-Object.assign(settings);  // Missing target
+Object.assign(settings); // Missing target
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 Object.assign({}, DEFAULT_SETTINGS, settings);
 ```
@@ -375,9 +425,11 @@ Object.assign({}, DEFAULT_SETTINGS, settings);
 ---
 
 ### Organize Multi-File Plugins into Folders
+
 Rule: Best practice from official guidelines
 
 ✅ GOOD STRUCTURE:
+
 ```
 my-plugin/
 ├── src/
@@ -396,9 +448,11 @@ Rationale: For plugins with multiple files, organize them into folders to improv
 ---
 
 ### Validate manifest.json
+
 Rule: `obsidianmd/validate-manifest`
 
 Ensure your `manifest.json` is valid:
+
 ```json
 {
   "id": "unique-plugin-id",
@@ -415,6 +469,7 @@ Ensure your `manifest.json` is valid:
 ---
 
 ### Validate LICENSE
+
 Rule: `obsidianmd/validate-license`
 
 Must include a valid LICENSE file (MIT recommended).
