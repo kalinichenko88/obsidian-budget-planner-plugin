@@ -13,7 +13,7 @@ import type {
 } from './models';
 import { Table } from './ui/componets';
 import { BudgetCodeFormatter } from './BudgetCodeFormatter';
-import { BUDGET_BLOCK_REGEX, widgetChangeAnnotation } from './constants';
+import { widgetChangeAnnotation, getTableField } from './constants';
 
 export class TableWidget extends WidgetType {
   private component: Record<string, unknown> | null = null;
@@ -90,17 +90,16 @@ export class TableWidget extends WidgetType {
 
     try {
       const domPos = view.posAtDOM(this.container);
-      const docText = view.state.doc.toString();
+      const field = getTableField();
+      if (!field) return null;
 
-      const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
-      let match: RegExpExecArray | null;
-      while ((match = regex.exec(docText)) !== null) {
-        const matchFrom = match.index;
-        const matchTo = matchFrom + match[0].length;
-
-        if (domPos >= matchFrom && domPos <= matchTo) {
-          return { from: matchFrom, to: matchTo };
+      const decoSet = view.state.field(field);
+      const iter = decoSet.iter();
+      while (iter.value) {
+        if (domPos >= iter.from && domPos < iter.to) {
+          return { from: iter.from, to: iter.to };
         }
+        iter.next();
       }
 
       return null;
