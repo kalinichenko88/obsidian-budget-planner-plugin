@@ -367,7 +367,7 @@ Test:
       expect(result).toBe(expected);
     });
 
-    test('should keep rows with empty name but non-zero amount', () => {
+    test('should keep rows with empty name and zero amount (amount formats as "0")', () => {
       const categories = new Map();
       categories.set('cat1', 'Test');
 
@@ -380,9 +380,14 @@ Test:
       const tableStoreValues: TableStoreValues = { categories, rows };
       const result = formatter.format(tableStoreValues);
 
-      // amount: 0 formats as "0" (truthy), so the row is kept
-      expect(result).toContain('| 0');
-      expect(result).toContain('| Keep');
+      // amount: 0 formats as "0" (truthy string), so the skip condition
+      // (!parsed.name && !parsed.amount) is false — row is kept
+      const expected = `\`\`\`budget
+Test:
+\t[ ] |      | 0
+\t[ ] | Keep | 500
+\`\`\``;
+      expect(result).toBe(expected);
     });
   });
 

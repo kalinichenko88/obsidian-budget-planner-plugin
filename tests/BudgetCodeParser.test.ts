@@ -1,7 +1,11 @@
 import { expect, test, describe } from 'vitest';
 
 import type { TableRow } from '@/codeblocks/models';
-import { BudgetCodeParser, NO_CATEGORY_ID } from '@/codeblocks/BudgetCodeParser';
+import {
+  BudgetCodeParser,
+  NO_CATEGORY_ID,
+  NO_CATEGORY_NAME,
+} from '@/codeblocks/BudgetCodeParser';
 
 describe('BudgetCodeParser', () => {
   test('should parse empty code', () => {
@@ -115,6 +119,7 @@ describe('BudgetCodeParser', () => {
     const result = parser.parse();
 
     expect(result.categories.size).toBe(1);
+    expect(result.categories.get(NO_CATEGORY_ID)).toBe(NO_CATEGORY_NAME);
 
     const rows = result.rows.get(NO_CATEGORY_ID) as TableRow[];
     expect(rows).toBeInstanceOf(Array);

@@ -23,6 +23,10 @@
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
   $effect(() => {
+    name = categoryName;
+  });
+
+  $effect(() => {
     if (name !== categoryName) {
       updateCategory(categoryId, name);
     }
