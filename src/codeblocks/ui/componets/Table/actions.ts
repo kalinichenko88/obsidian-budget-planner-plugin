@@ -100,9 +100,6 @@ export function createStoreActions(
         isEditing,
       }));
     },
-    commitChange: (): void => {
-      onTableChange(get(store).categories, get(store).rows);
-    },
     deleteSelectedRow: (): void => {
       const rowId = get(tableState).selectedRowId;
 

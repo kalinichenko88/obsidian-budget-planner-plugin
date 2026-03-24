@@ -64,7 +64,7 @@ Uses Svelte 5 runes (`$props()`, `$state()`) and context API for dependency inje
 Two stores passed via Svelte context:
 
 - **TableStore** — data: categories map + rows map
-- **TableStateStore** — UI state: selected row, editing/saving flags
+- **TableStateStore** — UI state: selected row, editing flag
 
 All mutations go through `createStoreActions()` in `src/codeblocks/ui/componets/Table/actions.ts`.
 

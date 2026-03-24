@@ -66,8 +66,7 @@
   });
 
   $effect(() => {
-    const disabled = $tableStateStore.isSaving || $tableStateStore.isEditing;
-    dndManager?.setDisabled(disabled);
+    dndManager?.setDisabled($tableStateStore.isEditing);
   });
 </script>
 
@@ -90,7 +89,6 @@
         <AddRow
           text="New Row"
           onClick={() => newRow(categoryId)}
-          disabled={$tableStateStore.isSaving}
         />
 
         {#if $tableStore.categories.size > 1}
@@ -100,7 +98,7 @@
     {/each}
 
     <tbody class="static-row">
-      <AddRow text="New Category" onClick={newCategory} disabled={$tableStateStore.isSaving} />
+      <AddRow text="New Category" onClick={newCategory} />
     </tbody>
 
     <Footer />
