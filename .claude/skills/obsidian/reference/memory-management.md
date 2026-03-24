@@ -3,9 +3,11 @@
 Proper memory management is critical in Obsidian plugins to prevent memory leaks and ensure smooth performance.
 
 ## Use registerEvent() and addCommand() for Cleanup
+
 Rule: Official guidelines
 
 ✅ **CORRECT**:
+
 ```typescript
 async onload() {
   // These are automatically cleaned up on unload
@@ -45,20 +47,23 @@ Rationale: Use `registerEvent()`, `addCommand()`, `registerDomEvent()`, and `reg
 ---
 
 ## Don't Store View References in Plugin
+
 Rule: `obsidianmd/no-view-references-in-plugin`
 
 ❌ **INCORRECT**:
+
 ```typescript
 this.registerView(VIEW_TYPE, (leaf) => {
-  this.view = new MyCustomView(leaf);  // Memory leak!
+  this.view = new MyCustomView(leaf); // Memory leak!
   return this.view;
 });
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 this.registerView(VIEW_TYPE, (leaf) => {
-  return new MyCustomView(leaf);  // Create and return directly
+  return new MyCustomView(leaf); // Create and return directly
 });
 ```
 
@@ -67,9 +72,11 @@ Rationale: Storing view instances as plugin properties prevents proper cleanup a
 ---
 
 ## Don't Use Plugin as Component
+
 Rule: `obsidianmd/no-plugin-as-component`
 
 ❌ **INCORRECT**:
+
 ```typescript
 // Passing plugin instance
 MarkdownRenderer.render(app, markdown, el, sourcePath, this);
@@ -79,6 +86,7 @@ MarkdownRenderer.render(app, markdown, el, sourcePath, new Component());
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 const component = new Component();
 MarkdownRenderer.render(app, markdown, el, sourcePath, component);
@@ -90,9 +98,11 @@ Rationale: Plugin lifecycle is too long, causing memory leaks. Components must b
 ---
 
 ## Don't Detach Leaves in onunload
+
 Rule: `obsidianmd/detach-leaves` (auto-fixable)
 
 ❌ **INCORRECT**:
+
 ```typescript
 onunload() {
   this.app.workspace.detachLeavesOfType(VIEW_TYPE);
@@ -100,6 +110,7 @@ onunload() {
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 onunload() {
   // Let Obsidian handle leaf cleanup automatically
@@ -111,19 +122,23 @@ Rationale: Obsidian handles leaf cleanup automatically. Manual detachment can ca
 ---
 
 ## Use getActiveLeavesOfType() Instead of Storing Views
+
 Rule: Official guidelines (relates to no-view-references-in-plugin)
 
 ❌ **INCORRECT**:
+
 ```typescript
 // Don't store view references
 this.customViews = [];
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 // Get views when needed
-const views = this.app.workspace.getLeavesOfType(VIEW_TYPE)
-  .map(leaf => leaf.view as MyCustomView);
+const views = this.app.workspace
+  .getLeavesOfType(VIEW_TYPE)
+  .map((leaf) => leaf.view as MyCustomView);
 ```
 
 Rationale: Don't store references to custom views. Use `getLeavesOfType()` or `getActiveLeavesOfType()` to access them when needed.

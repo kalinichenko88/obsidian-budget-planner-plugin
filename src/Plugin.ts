@@ -6,7 +6,6 @@ import { registerCommands } from './commands';
 
 class BudgetPlannerPlugin extends Plugin {
   public settings: Settings;
-  // Removed unused UiStateStore
 
   private async loadSettings(): Promise<void> {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());

@@ -217,7 +217,7 @@ Expenses:
 Income:
 \t[ ] | Short                              | 100    | Test
 \t[x] | Very Long Name That Exceeds Others | 999999 | Long Comment
-\t[ ] | Medium                             | 5000  
+\t[ ] | Medium                             | 5000
 \`\`\``;
 
       expect(result).toBe(expected);
@@ -365,6 +365,61 @@ Test:
 \`\`\``;
 
       expect(result).toBe(expected);
+    });
+
+    test('should keep rows with empty name and zero amount (amount formats as "0")', () => {
+      const categories = new Map();
+      categories.set('cat1', 'Test');
+
+      const rows = new Map();
+      rows.set('cat1', [
+        { id: 'row1', checked: false, name: '', amount: 0, comment: '' },
+        { id: 'row2', checked: false, name: 'Keep', amount: 500, comment: '' },
+      ]);
+
+      const tableStoreValues: TableStoreValues = { categories, rows };
+      const result = formatter.format(tableStoreValues);
+
+      // amount: 0 formats as "0" (truthy string), so the skip condition
+      // (!parsed.name && !parsed.amount) is false — row is kept
+      const expected = `\`\`\`budget
+Test:
+\t[ ] |      | 0
+\t[ ] | Keep | 500
+\`\`\``;
+      expect(result).toBe(expected);
+    });
+  });
+
+  describe('round-trip: category names with colons', () => {
+    test('should not produce double colons for category name ending with colon', () => {
+      const categories = new Map();
+      categories.set('cat1', 'Time:');
+
+      const tableStoreValues: TableStoreValues = {
+        categories,
+        rows: new Map([['cat1', []]]),
+      };
+
+      const result = formatter.format(tableStoreValues);
+
+      expect(result).not.toContain('::');
+      expect(result).toContain('Time:');
+    });
+
+    test('should preserve category name with colon in the middle', () => {
+      const categories = new Map();
+      categories.set('cat1', 'Food: Weekly');
+
+      const tableStoreValues: TableStoreValues = {
+        categories,
+        rows: new Map([['cat1', []]]),
+      };
+
+      const result = formatter.format(tableStoreValues);
+
+      expect(result).toContain('Food: Weekly:');
+      expect(result).not.toContain('Food: Weekly::');
     });
   });
 });

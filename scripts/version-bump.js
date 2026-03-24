@@ -17,17 +17,15 @@ if (validateVersion(targetVersion) === false) {
   const writeProcesses = [];
 
   // read minAppVersion from manifest.json and bump version to target version
-  let manifest = JSON.parse(readFileSync('manifest.json', 'utf8'));
+  const manifest = JSON.parse(readFileSync('manifest.json', 'utf8'));
   const { minAppVersion } = manifest;
-  if (manifest.version === targetVersion) {
-    console.error('Version already set to target version');
-    process.exit(0);
+  if (manifest.version !== targetVersion) {
+    manifest.version = targetVersion;
+    writeProcesses.push(writeFile('manifest.json', JSON.stringify(manifest, null, '  ') + '\n'));
   }
-  manifest.version = targetVersion;
-  writeProcesses.push(writeFile('manifest.json', JSON.stringify(manifest, null, '  ') + '\n'));
 
   // update versions.json with target version and minAppVersion from manifest.json
-  let versions = JSON.parse(readFileSync('versions.json', 'utf8'));
+  const versions = JSON.parse(readFileSync('versions.json', 'utf8'));
   if (Object.keys(versions).includes(targetVersion)) {
     console.warn('Version already exists in versions.json');
   }
@@ -35,24 +33,23 @@ if (validateVersion(targetVersion) === false) {
   writeProcesses.push(writeFile('versions.json', JSON.stringify(versions, null, '  ') + '\n'));
 
   // update package.json with target version
-  let packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
-  if (packageJson.version === targetVersion) {
-    console.error('Version already set to target version');
-    process.exit(0);
+  const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
+  if (packageJson.version !== targetVersion) {
+    packageJson.version = targetVersion;
+    writeProcesses.push(writeFile('package.json', JSON.stringify(packageJson, null, '  ') + '\n'));
   }
-  packageJson.version = targetVersion;
-  writeProcesses.push(writeFile('package.json', JSON.stringify(packageJson, null, '  ') + '\n'));
 
   // update package-lock.json with target version
-  let packageLockJson = JSON.parse(readFileSync('package-lock.json', 'utf8'));
-  if (packageLockJson.version === targetVersion) {
-    console.error('Version already set to target version');
-    process.exit(0);
+  const packageLockJson = JSON.parse(readFileSync('package-lock.json', 'utf8'));
+  if (packageLockJson.version !== targetVersion) {
+    packageLockJson.version = targetVersion;
+    if (packageLockJson.packages?.['']) {
+      packageLockJson.packages[''].version = targetVersion;
+    }
+    writeProcesses.push(
+      writeFile('package-lock.json', JSON.stringify(packageLockJson, null, '  ') + '\n')
+    );
   }
-  packageLockJson.version = targetVersion;
-  writeProcesses.push(
-    writeFile('package-lock.json', JSON.stringify(packageLockJson, null, '  ') + '\n')
-  );
 
   await Promise.all(writeProcesses);
 

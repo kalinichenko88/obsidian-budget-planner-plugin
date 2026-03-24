@@ -2,9 +2,9 @@
   import { Menu } from 'obsidian';
   import { getContext, untrack } from 'svelte';
 
-  import type { CategoryId, TableStateStore } from '../../../../models';
+  import type { CategoryId } from '../../../../models';
   import type { StoreActions } from '../actions';
-  import { STORE_ACTIONS_CONTEXT_KEY, STORE_STATE_CONTEXT_KEY } from '../constants';
+  import { STORE_ACTIONS_CONTEXT_KEY } from '../constants';
 
   import Editable from '../Editable/Editable.svelte';
   import Icon from '../AddRow/Icon/Icon.svelte';
@@ -18,9 +18,12 @@
   const { categoryId, categoryName, isDeletingEnabled }: Props = $props();
   let name = $state(untrack(() => categoryName));
 
-  const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
   const { newCategory, deleteCategory, selectRow, updateCategory, toggleEditing } =
     getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
+
+  $effect(() => {
+    name = categoryName;
+  });
 
   $effect(() => {
     if (name !== categoryName) {
@@ -28,26 +31,25 @@
     }
   });
 
-  const menu = new Menu()
-    .addItem((item) => {
-      item
-        .setTitle('New category')
-        .setIcon('table-rows-split')
-        .onClick(() => newCategory());
-    })
-    .addSeparator()
-    .addItem((item) => {
-      item
-        .setTitle('Delete category and all rows')
-        .setIcon('list-x')
-        .setDisabled(!isDeletingEnabled)
-        .onClick(() => deleteCategory(categoryId));
-    });
-
   export const handleOnMenu = (event: MouseEvent): void => {
     event.preventDefault();
     selectRow(null);
-    menu.showAtMouseEvent(event);
+    new Menu()
+      .addItem((item) => {
+        item
+          .setTitle('New category')
+          .setIcon('table-rows-split')
+          .onClick(() => newCategory());
+      })
+      .addSeparator()
+      .addItem((item) => {
+        item
+          .setTitle('Delete category and all rows')
+          .setIcon('list-x')
+          .setDisabled(!isDeletingEnabled)
+          .onClick(() => deleteCategory(categoryId));
+      })
+      .showAtMouseEvent(event);
   };
 
   export const handleOnChange = (value: string): void => {
@@ -60,12 +62,7 @@
     <Icon name="grip-vertical" />
   </td>
   <td colspan={4} class="cell">
-    <Editable
-      value={name}
-      onChange={handleOnChange}
-      onEditingChange={toggleEditing}
-      disabled={$tableState.isSaving}
-    />
+    <Editable value={name} onChange={handleOnChange} onEditingChange={toggleEditing} />
   </td>
 </tr>
 
