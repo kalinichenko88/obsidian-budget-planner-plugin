@@ -107,7 +107,7 @@ export class BudgetCodeFormatter {
       if (parsed.comment) {
         formattedRow += ` | ${parsed.comment}`;
       }
-      resultParts.push(formattedRow.trimEnd());
+      resultParts.push(formattedRow.replace(/\s+$/, ''));
     }
 
     const content = resultParts.join('\n');
