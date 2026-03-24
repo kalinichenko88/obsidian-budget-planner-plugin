@@ -13,7 +13,7 @@ import type {
 } from './models';
 import { Table } from './ui/componets';
 import { BudgetCodeFormatter } from './BudgetCodeFormatter';
-import { BUDGET_BLOCK_REGEX } from './constants';
+import { BUDGET_BLOCK_REGEX, widgetChangeAnnotation } from './constants';
 
 export class TableWidget extends WidgetType {
   private component: Record<string, unknown> | null = null;
@@ -131,6 +131,7 @@ export class TableWidget extends WidgetType {
         to: pos.to,
         insert: newText,
       },
+      annotations: widgetChangeAnnotation.of(true),
     });
   }
 
