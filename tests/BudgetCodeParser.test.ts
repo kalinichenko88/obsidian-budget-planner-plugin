@@ -122,7 +122,8 @@ describe('BudgetCodeParser', () => {
   });
 
   test('should skip lines without pipe separator', () => {
-    const code = 'Income:\n\tSalary | 5000 | Monthly\nsome random text\nanother line\n\tRent | 1500';
+    const code =
+      'Income:\n\tSalary | 5000 | Monthly\nsome random text\nanother line\n\tRent | 1500';
     const parser = new BudgetCodeParser(code);
     const result = parser.parse();
 
