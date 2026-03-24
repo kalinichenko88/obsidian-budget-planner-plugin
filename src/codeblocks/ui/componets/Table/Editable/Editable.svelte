@@ -59,6 +59,12 @@
   };
 
   $effect(() => {
+    if (!isEditing) {
+      editingValue = value;
+    }
+  });
+
+  $effect(() => {
     if (isEditing && inputElement) {
       inputElement.focus();
     }
