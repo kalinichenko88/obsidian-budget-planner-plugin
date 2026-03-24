@@ -34,6 +34,7 @@
   });
 
   // Read from store at flush time so we never write a stale snapshot (fixes rollback on edit)
+  // Trailing-edge debounce: fires 100ms after the last call, giving time for isEditing to settle
   const commitTableChange = debounce(
     (_categories?: TableCategories, _rows?: TableRows) => {
       if (get(tableStateStore).isEditing) return;
@@ -46,8 +47,7 @@
         setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
       }
     },
-    100,
-    true
+    100
   );
 
   const storeActions = untrack(() =>
