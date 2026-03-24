@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "NODE_ENV=development vite build --watch",
     "build": "vite build",
-    "version": "node version-bump.js && git add manifest.json versions.json",
+    "version": "node scripts/version-bump.js && git add manifest.json versions.json",
     "lint": "eslint --config eslint.config.js .",
     "lint:fix": "eslint . --ext .js,.ts,.svelte --fix",
     "format": "prettier --write .",
