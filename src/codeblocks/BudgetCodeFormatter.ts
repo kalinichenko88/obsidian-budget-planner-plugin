@@ -62,7 +62,7 @@ export class BudgetCodeFormatter {
     const parts: string[] = [];
 
     values.categories.forEach((categoryName, categoryId) => {
-      parts.push(`${categoryName}:`);
+      parts.push(`${categoryName.replace(/:+$/, '')}:`);
       const rows = values.rows.get(categoryId) || [];
       rows.forEach((row) => {
         parts.push(this.formatRow(row));

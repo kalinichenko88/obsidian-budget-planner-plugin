@@ -367,4 +367,36 @@ Test:
       expect(result).toBe(expected);
     });
   });
+
+  describe('round-trip: category names with colons', () => {
+    test('should not produce double colons for category name ending with colon', () => {
+      const categories = new Map();
+      categories.set('cat1', 'Time:');
+
+      const tableStoreValues: TableStoreValues = {
+        categories,
+        rows: new Map([['cat1', []]]),
+      };
+
+      const result = formatter.format(tableStoreValues);
+
+      expect(result).not.toContain('::');
+      expect(result).toContain('Time:');
+    });
+
+    test('should preserve category name with colon in the middle', () => {
+      const categories = new Map();
+      categories.set('cat1', 'Food: Weekly');
+
+      const tableStoreValues: TableStoreValues = {
+        categories,
+        rows: new Map([['cat1', []]]),
+      };
+
+      const result = formatter.format(tableStoreValues);
+
+      expect(result).toContain('Food: Weekly:');
+      expect(result).not.toContain('Food: Weekly::');
+    });
+  });
 });
