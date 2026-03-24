@@ -55,6 +55,10 @@ export class BudgetCodeParser {
         continue;
       }
 
+      if (!line.includes('|')) {
+        continue;
+      }
+
       const rowLine = line.split('|').map((cell) => cell.trim());
 
       const isFirstCellCheckbox = this.isCheckboxCell(rowLine[0]);

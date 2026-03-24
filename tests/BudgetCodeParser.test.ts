@@ -120,4 +120,28 @@ describe('BudgetCodeParser', () => {
     expect(rows).toBeInstanceOf(Array);
     expect(rows).toHaveLength(2);
   });
+
+  test('should skip lines without pipe separator', () => {
+    const code = 'Income:\n\tSalary | 5000 | Monthly\nsome random text\nanother line\n\tRent | 1500';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+
+    const categoryId = result.categories.keys().next().value as string;
+    const rows = result.rows.get(categoryId) as TableRow[];
+    expect(rows).toHaveLength(2);
+    expect(rows[0].name).toBe('Salary');
+    expect(rows[1].name).toBe('Rent');
+  });
+
+  test('should not create phantom rows from plain text', () => {
+    const code = 'Notes about budget\nIncome:\n\tSalary | 5000';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+
+    expect(result.categories.size).toBe(1);
+    const categoryId = result.categories.keys().next().value as string;
+    const rows = result.rows.get(categoryId) as TableRow[];
+    expect(rows).toHaveLength(1);
+    expect(rows[0].name).toBe('Salary');
+  });
 });
