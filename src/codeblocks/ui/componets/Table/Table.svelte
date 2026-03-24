@@ -16,7 +16,6 @@
   import CategoryFooter from './CategoryFooter/CategoryFooter.svelte';
   import Footer from './Footer/Footer.svelte';
   import AddRow from './AddRow/AddRow.svelte';
-  import { debounce } from 'obsidian';
   import { DragAndDropManager } from './DragAndDrop/DragAndDropManager';
 
   type Props = {
@@ -33,22 +32,13 @@
     setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
   });
 
-  // Read from store at flush time so we never write a stale snapshot (fixes rollback on edit)
-  // Trailing-edge debounce: fires 100ms after the last call, giving time for isEditing to settle
-  const commitTableChange = debounce((_categories?: TableCategories, _rows?: TableRows) => {
-    if (get(tableStateStore).isEditing) return;
-
-    tableStateStore.update((s) => ({ ...s, isSaving: true }));
-    try {
-      const state = get(tableStore);
-      onTableChange(state.categories, state.rows);
-    } finally {
-      setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
-    }
-  }, 100);
+  const syncToDocument = (_categories?: TableCategories, _rows?: TableRows): void => {
+    const state = get(tableStore);
+    onTableChange(state.categories, state.rows);
+  };
 
   const storeActions = untrack(() =>
-    createStoreActions(tableStore, tableStateStore, commitTableChange, markDirty)
+    createStoreActions(tableStore, tableStateStore, syncToDocument, markDirty)
   );
   setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
@@ -56,23 +46,12 @@
   let tableEl: HTMLTableElement;
   let dndManager: DragAndDropManager | null = null;
 
-  const onBlur = (event: FocusEvent): void => {
-    const newFocus = event.relatedTarget;
-    if (!tableEl.contains(newFocus as Node)) {
-      commitTableChange();
-    }
-  };
-
   onMount(() => {
-    tableEl.addEventListener('focusout', onBlur);
-
     dndManager = new DragAndDropManager(tableEl, storeActions);
     dndManager.init();
   });
 
   onDestroy(() => {
-    commitTableChange.cancel();
-    tableEl.removeEventListener('focusout', onBlur);
     dndManager?.destroy();
   });
 

@@ -165,8 +165,13 @@ export class TableWidget extends WidgetType {
   }
 
   destroy(): void {
-    // Flush only when there are uncommitted changes to avoid overwriting doc after replace
-    if (this.dirty && this.tableStore && this.view && this.container?.isConnected) {
+    if (this.component) {
+      unmount(this.component);
+      this.component = null;
+    }
+
+    // Flush after unmount so Svelte teardown callbacks can propagate final values to the store
+    if (this.dirty && this.tableStore && this.view) {
       try {
         const state = get(this.tableStore);
         this.dispatchChanges(state.categories, state.rows, true);
@@ -176,10 +181,6 @@ export class TableWidget extends WidgetType {
     }
 
     this.isDestroyed = true;
-    if (this.component) {
-      unmount(this.component);
-      this.component = null;
-    }
     this.container = null;
     this.view = null;
     this.tableStore = null;

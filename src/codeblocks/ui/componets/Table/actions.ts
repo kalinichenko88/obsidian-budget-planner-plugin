@@ -91,7 +91,8 @@ export function createStoreActions(
         }
         return { ...state, rows: newRows };
       });
-      // Do not commit on each keystroke; commit via debounced handler
+
+      onTableChange(get(store).categories, get(store).rows);
     },
     toggleEditing: (isEditing: boolean): void => {
       tableState.update((state) => ({
@@ -99,7 +100,6 @@ export function createStoreActions(
         isEditing,
       }));
     },
-    /** Schedules a flush; actual data is read from store when debounced callback runs. */
     commitChange: (): void => {
       onTableChange(get(store).categories, get(store).rows);
     },

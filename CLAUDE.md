@@ -36,7 +36,7 @@ npm run typecheck        # Svelte + TypeScript type checking
 
 `src/codeblocks/tableExtension.ts` — StateField-based decoration that detects ` ```budget ``` ` blocks via regex and replaces them with `TableWidget` instances. Uses incremental updates: widget-dispatched changes (tagged with `widgetChangeAnnotation`) and external changes without fence markers use `RangeSet.map()` instead of full rebuild.
 
-`src/codeblocks/TableWidget.ts` — CodeMirror `WidgetType` that mounts a Svelte `Table` component. Handles bidirectional sync between markdown text and the interactive UI with trailing-edge debounced writes (100ms). Position lookup uses decoration set iteration via `getTableField()` registry (avoids circular imports).
+`src/codeblocks/TableWidget.ts` — CodeMirror `WidgetType` that mounts a Svelte `Table` component. Handles bidirectional sync between markdown text and the interactive UI with immediate writes on every store mutation. Position lookup uses decoration set iteration via `getTableField()` registry (avoids circular imports).
 
 ### Parser / Formatter (Data Layer)
 

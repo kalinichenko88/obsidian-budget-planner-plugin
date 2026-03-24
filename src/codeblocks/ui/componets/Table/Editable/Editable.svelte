@@ -19,10 +19,12 @@
   let editingValue = $state(untrack(() => value));
   let isEditing = $state(false);
   let cancelled = false;
+  let startValue: string | number = untrack(() => value);
   let inputElement: HTMLInputElement | null = $state(null);
 
   const handleOnClick = (): void => {
     if (disabled) return;
+    startValue = value;
     isEditing = true;
     onEditingChange(true);
   };
@@ -30,6 +32,7 @@
   const handleOnKeyDown = (event: KeyboardEvent): void => {
     if (disabled) return;
     if (event.key === 'Enter') {
+      startValue = value;
       isEditing = true;
       onEditingChange(true);
     }
@@ -58,7 +61,8 @@
 
     if (event.key === 'Escape') {
       cancelled = true;
-      editingValue = value;
+      editingValue = startValue;
+      onChange(startValue);
       isEditing = false;
       onEditingChange(false);
     }
@@ -89,6 +93,7 @@
       step={valueType === 'number' ? '0.10' : undefined}
       {disabled}
       onblur={handleOnLeave}
+      oninput={() => onChange(editingValue)}
       onwheel={handleOnWheel}
       onkeydown={handleOnInputKeyDown}
     />
