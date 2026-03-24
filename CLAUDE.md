@@ -66,7 +66,7 @@ Two stores passed via Svelte context:
 - **TableStore** — data: categories map + rows map
 - **TableStateStore** — UI state: selected row, editing flag
 
-All mutations go through `createStoreActions()` in `src/codeblocks/ui/componets/Table/actions.ts`.
+All mutations go through `createStoreActions()` in `src/codeblocks/ui/componets/Table/actions.ts`. Every mutation calls `onTableChange` synchronously (no debounce), which dispatches the formatted markdown to CodeMirror immediately.
 
 ### Settings & Commands
 
@@ -94,4 +94,4 @@ Tests live in `tests/` (parser/formatter/regex) and co-located with source (`*.t
 
 ## CI/CD
 
-GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on tag push, verifies the tag is on master, builds, and creates a draft GitHub release.
+GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on `v*` tag push, verifies the tag is on master, builds, and creates a draft GitHub release.

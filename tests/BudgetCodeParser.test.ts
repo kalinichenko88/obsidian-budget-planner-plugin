@@ -1,11 +1,7 @@
 import { expect, test, describe } from 'vitest';
 
 import type { TableRow } from '@/codeblocks/models';
-import {
-  BudgetCodeParser,
-  NO_CATEGORY_ID,
-  NO_CATEGORY_NAME,
-} from '@/codeblocks/BudgetCodeParser';
+import { BudgetCodeParser, NO_CATEGORY_ID, NO_CATEGORY_NAME } from '@/codeblocks/BudgetCodeParser';
 
 describe('BudgetCodeParser', () => {
   test('should parse empty code', () => {

@@ -6,10 +6,9 @@
     value: string | number;
     onChange: (value: string | number) => void;
     onEditingChange: (isEditing: boolean) => void;
-    disabled?: boolean;
   };
 
-  let { value, onChange, onEditingChange, disabled = false }: Props = $props();
+  let { value, onChange, onEditingChange }: Props = $props();
 
   const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
   const valueDisplay = $derived(
@@ -23,14 +22,12 @@
   let inputElement: HTMLInputElement | null = $state(null);
 
   const handleOnClick = (): void => {
-    if (disabled) return;
     startValue = value;
     isEditing = true;
     onEditingChange(true);
   };
 
   const handleOnKeyDown = (event: KeyboardEvent): void => {
-    if (disabled) return;
     if (event.key === 'Enter') {
       startValue = value;
       isEditing = true;
@@ -91,7 +88,6 @@
       type={valueType}
       min={valueType === 'number' ? '0' : undefined}
       step={valueType === 'number' ? '0.10' : undefined}
-      {disabled}
       onblur={handleOnLeave}
       oninput={() => onChange(editingValue)}
       onwheel={handleOnWheel}
@@ -103,8 +99,7 @@
     class="text"
     class:end={valueType === 'number'}
     role="button"
-    tabindex={disabled ? -1 : 0}
-    aria-disabled={disabled}
+    tabindex="0"
     onclick={handleOnClick}
     onkeydown={handleOnKeyDown}
   >
@@ -156,10 +151,5 @@
 
   .end {
     justify-content: end;
-  }
-
-  .text[aria-disabled='true'] {
-    cursor: not-allowed;
-    opacity: 0.7;
   }
 </style>

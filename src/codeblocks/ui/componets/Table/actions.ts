@@ -1,14 +1,6 @@
 import { get } from 'svelte/store';
 
-import type {
-  CategoryId,
-  RowId,
-  TableCategories,
-  TableRow,
-  TableRows,
-  TableStateStore,
-  TableStore,
-} from '../../../models';
+import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '../../../models';
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
@@ -16,7 +8,7 @@ import { SortColumn, SortOrder } from './models';
 export function createStoreActions(
   store: TableStore,
   tableState: TableStateStore,
-  onTableChange: (categories: TableCategories, rows: TableRows) => void,
+  onTableChange: () => void,
   markDirty?: () => void
 ) {
   const getCategoryByRowId = (rowId: RowId | null): CategoryId | null => {
@@ -77,7 +69,7 @@ export function createStoreActions(
         selectedRowId: rowId,
       }));
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     updateRow: (data: TableRow): void => {
       markDirty?.();
@@ -92,7 +84,7 @@ export function createStoreActions(
         return { ...state, rows: newRows };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     toggleEditing: (isEditing: boolean): void => {
       tableState.update((state) => ({
@@ -119,7 +111,7 @@ export function createStoreActions(
         return { ...state, rows: newRows };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     sortRows: (sortOrder: SortOrder, column: SortColumn): void => {
       markDirty?.();
@@ -146,7 +138,7 @@ export function createStoreActions(
         return { ...state, rows: newRows };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     newCategory: (): void => {
       const newRowId = generateId();
@@ -173,7 +165,7 @@ export function createStoreActions(
         selectedRowId: newRowId,
       }));
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     updateCategory: (categoryId: CategoryId, name: string): void => {
       markDirty?.();
@@ -183,7 +175,7 @@ export function createStoreActions(
         return { ...state, categories: newCategories };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     deleteCategory: (categoryId: CategoryId): void => {
       markDirty?.();
@@ -195,7 +187,7 @@ export function createStoreActions(
         return { categories: newCategories, rows: newRows };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     moveRow: (
       rowId: RowId,
@@ -228,7 +220,7 @@ export function createStoreActions(
         return { ...state, rows: newRows };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
     moveCategory: (categoryId: CategoryId, newIndex: number): void => {
       markDirty?.();
@@ -251,7 +243,7 @@ export function createStoreActions(
         };
       });
 
-      onTableChange(get(store).categories, get(store).rows);
+      onTableChange();
     },
   };
 }

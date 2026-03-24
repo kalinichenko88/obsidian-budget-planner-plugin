@@ -48,28 +48,27 @@
     updateRow(updatingRow);
   });
 
-  const menu = new Menu()
-    .addItem((item) => {
-      item.setTitle('New row');
-      item.setIcon('between-horizontal-end');
-      item.onClick(() => newRow());
-    })
-    .addItem((item) => {
-      item.setTitle('New category');
-      item.setIcon('table-rows-split');
-      item.onClick(() => newCategory());
-    })
-    .addSeparator()
-    .addItem((item) => {
-      item.setTitle('Delete selected row');
-      item.setIcon('list-x');
-      item.onClick(deleteSelectedRow);
-    });
-
   export const handleOnMenu = (event: MouseEvent): void => {
     event.preventDefault();
     selectRow(row.id);
-    menu.showAtMouseEvent(event);
+    new Menu()
+      .addItem((item) => {
+        item.setTitle('New row');
+        item.setIcon('between-horizontal-end');
+        item.onClick(() => newRow());
+      })
+      .addItem((item) => {
+        item.setTitle('New category');
+        item.setIcon('table-rows-split');
+        item.onClick(() => newCategory());
+      })
+      .addSeparator()
+      .addItem((item) => {
+        item.setTitle('Delete selected row');
+        item.setIcon('list-x');
+        item.onClick(deleteSelectedRow);
+      })
+      .showAtMouseEvent(event);
   };
 
   export const handleOnRowClick = (): void => {

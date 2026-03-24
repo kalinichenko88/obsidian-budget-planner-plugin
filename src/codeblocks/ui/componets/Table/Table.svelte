@@ -32,7 +32,7 @@
     setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
   });
 
-  const syncToDocument = (_categories?: TableCategories, _rows?: TableRows): void => {
+  const syncToDocument = (): void => {
     const state = get(tableStore);
     onTableChange(state.categories, state.rows);
   };
@@ -86,10 +86,7 @@
           <Row {row} />
         {/each}
 
-        <AddRow
-          text="New Row"
-          onClick={() => newRow(categoryId)}
-        />
+        <AddRow text="New Row" onClick={() => newRow(categoryId)} />
 
         {#if $tableStore.categories.size > 1}
           <CategoryFooter {categoryId} />

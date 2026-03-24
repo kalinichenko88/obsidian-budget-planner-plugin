@@ -62,11 +62,7 @@
     <Icon name="grip-vertical" />
   </td>
   <td colspan={4} class="cell">
-    <Editable
-      value={name}
-      onChange={handleOnChange}
-      onEditingChange={toggleEditing}
-    />
+    <Editable value={name} onChange={handleOnChange} onEditingChange={toggleEditing} />
   </td>
 </tr>
 
