@@ -1,4 +1,4 @@
-import { StateField, RangeSetBuilder, EditorState } from '@codemirror/state';
+import { StateField, RangeSetBuilder, type EditorState } from '@codemirror/state';
 import { EditorView, Decoration, type DecorationSet } from '@codemirror/view';
 
 import { TableWidget } from './TableWidget';

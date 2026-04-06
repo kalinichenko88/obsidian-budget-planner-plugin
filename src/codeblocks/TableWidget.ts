@@ -1,3 +1,4 @@
+import { Transaction } from '@codemirror/state';
 import { EditorView, WidgetType } from '@codemirror/view';
 import { mount, unmount } from 'svelte';
 import { get, writable } from 'svelte/store';
@@ -170,6 +171,7 @@ export class TableWidget extends WidgetType {
       if (pos && pos.to === this.view.state.doc.length) {
         this.view.dispatch({
           changes: { from: pos.to, insert: '\n' },
+          annotations: Transaction.addToHistory.of(false),
         });
       }
     });
