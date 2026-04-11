@@ -22,7 +22,7 @@ npm run lint:fix         # ESLint auto-fix
 npm run format           # Prettier format
 npm run format:check     # Prettier check only
 npm run typecheck        # Svelte + TypeScript type checking
-./scripts/release X.X.X  # Bump version, commit, tag, push (must be on master)
+/release X.Y.Z           # Cut a release via Claude Code (see docs/release-process.md)
 ```
 
 ## Architecture
