@@ -68,5 +68,6 @@
   .label {
     font-size: calc(var(--font-smallest) - 5%);
     font-weight: var(--font-normal);
+    white-space: nowrap;
   }
 </style>

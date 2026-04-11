@@ -70,6 +70,7 @@
 
     .label {
       font-size: calc(var(--font-smallest) - 5%);
+      white-space: nowrap;
     }
   }
 </style>
