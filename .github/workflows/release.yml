@@ -45,14 +45,27 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: Extract release notes
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          version="${tag#v}"
+          awk -v ver="$version" -f scripts/extract-release-notes.awk CHANGELOG.md > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::No CHANGELOG.md entry found for version $version"
+            exit 1
+          fi
+
+          echo "--- release-notes.md ---"
+          cat release-notes.md
+          echo "--- end ---"
+
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-          echo "$tag"
-
           gh release create "$tag" \
             --title="$tag" \
-            --draft \
+            --notes-file release-notes.md \
             dist/main.js dist/manifest.json
