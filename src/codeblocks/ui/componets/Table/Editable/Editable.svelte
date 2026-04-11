@@ -6,9 +6,10 @@
     value: string | number;
     onChange: (value: string | number) => void;
     onEditingChange: (isEditing: boolean) => void;
+    truncate?: boolean;
   };
 
-  let { value, onChange, onEditingChange }: Props = $props();
+  let { value, onChange, onEditingChange, truncate = false }: Props = $props();
 
   const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
   const valueDisplay = $derived(
@@ -103,7 +104,11 @@
     onclick={handleOnClick}
     onkeydown={handleOnKeyDown}
   >
-    {valueDisplay}
+    {#if truncate}
+      <span class="truncated">{valueDisplay}</span>
+    {:else}
+      {valueDisplay}
+    {/if}
   </div>
 {/if}
 
@@ -147,9 +152,19 @@
     align-items: center;
     height: var(--input-height);
     cursor: text;
+    overflow: hidden;
+    min-width: 0;
   }
 
   .end {
     justify-content: end;
+  }
+
+  .truncated {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
   }
 </style>
