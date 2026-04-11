@@ -17,7 +17,7 @@ npm run dev              # Development build with watch mode
 npm run build            # Production build (outputs to dist/)
 npm run test             # Run all tests (Vitest)
 npx vitest run path/to/file.test.ts  # Run a single test file
-npm run lint             # ESLint check (flat config, v9)
+npm run lint             # ESLint check (flat config, v10)
 npm run lint:fix         # ESLint auto-fix
 npm run format           # Prettier format
 npm run format:check     # Prettier check only
