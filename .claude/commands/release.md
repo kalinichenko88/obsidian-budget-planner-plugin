@@ -1,5 +1,6 @@
 ---
 description: Cut a new release — draft a CHANGELOG.md entry, bump versions, tag, and push
+model: sonnet
 ---
 
 You are running the release flow for a version provided as `$ARGUMENTS`. Execute the following steps in order. **Stop immediately on any failure and clearly report what went wrong. Do not auto-rollback destructive git operations — the user will decide how to recover.**
