@@ -80,7 +80,6 @@ export default [
         extraFileExtensions: ['.svelte'],
         sourceType: 'module',
         ecmaVersion: 'latest',
-        project: './tsconfig.json',
       },
     },
     processor: 'svelte/svelte',

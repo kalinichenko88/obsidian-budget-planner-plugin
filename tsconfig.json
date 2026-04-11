@@ -14,7 +14,7 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "lib": ["DOM", "ESNext"],
-    "types": ["svelte"],
+    "types": ["svelte", "node"],
     "paths": {
       "@/*": ["src/*"]
     }

@@ -22,7 +22,7 @@ npm run lint:fix         # ESLint auto-fix
 npm run format           # Prettier format
 npm run format:check     # Prettier check only
 npm run typecheck        # Svelte + TypeScript type checking
-./scripts/release X.X.X  # Bump version, commit, tag, push (must be on master)
+/release X.Y.Z           # Cut a release via Claude Code (see docs/release-process.md)
 ```
 
 ## Architecture
@@ -44,7 +44,7 @@ npm run typecheck        # Svelte + TypeScript type checking
 
 `src/codeblocks/BudgetCodeFormatter.ts` — Converts structured data back to column-aligned markdown. Strips trailing colons from category names before adding the `:` marker. Trims trailing whitespace from rows without comments. Skips rows missing both name and amount.
 
-`src/codeblocks/helpers/changesAffectBlockStructure.ts` — Inspects a CodeMirror transaction to determine if inserted or deleted text contains fence markers (`` ``` ``). Used by `tableExtension` to decide between a full decoration rebuild versus incremental position remapping.
+`src/codeblocks/helpers/changesAffectBlockStructure.ts` — Inspects a CodeMirror transaction to determine if inserted or deleted text contains fence markers (` ``` `). Used by `tableExtension` to decide between a full decoration rebuild versus incremental position remapping.
 
 `src/codeblocks/constants.ts` — Shared constants: `BUDGET_BLOCK_REGEX` (multiline, requires closing fence at line start), `widgetChangeAnnotation`, and `registerTableField`/`getTableField` registry for StateField access without circular imports.
 
@@ -96,4 +96,4 @@ Tests live in `tests/` (parser/formatter/regex) and co-located with source (`*.t
 
 ## CI/CD
 
-GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on `v*` tag push, verifies the tag is on master, builds, and creates a draft GitHub release.
+GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on semver tag push (pattern `[0-9]*.[0-9]*.[0-9]*`), verifies the tag is on master, builds, extracts the matching section from `CHANGELOG.md` via `scripts/extract-release-notes.awk`, and publishes a GitHub release with that section as the body.
