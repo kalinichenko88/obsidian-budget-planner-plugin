@@ -68,7 +68,7 @@ describe('BudgetCodeParser', () => {
     const parser = new BudgetCodeParser(code);
     const result = parser.parse();
 
-    const categoryId = result.categories.keys().next().value;
+    const categoryId = result.categories.keys().next().value!;
     expect(categoryId).toBeTypeOf('string');
 
     expect(result.categories.size).toBe(1);
@@ -90,7 +90,7 @@ describe('BudgetCodeParser', () => {
     const parser = new BudgetCodeParser(code);
     const result = parser.parse();
 
-    const categoryId = result.categories.keys().next().value;
+    const categoryId = result.categories.keys().next().value!;
     expect(categoryId).toBeTypeOf('string');
 
     const rows = result.rows.get(categoryId) as TableRow[];

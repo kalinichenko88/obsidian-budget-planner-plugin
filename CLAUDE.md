@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Budget Planner — transforms `budget` code blocks in Obsidian notes into interactive tables with categories, checkboxes, sorting, and auto-summation. Built with Svelte 5, Vite 7, TypeScript, and CodeMirror 6. Plugin ID: `budget-planner`.
+Budget Planner — transforms `budget` code blocks in Obsidian notes into interactive tables with categories, checkboxes, sorting, and auto-summation. Built with Svelte 5, Vite 8, TypeScript, and CodeMirror 6. Plugin ID: `budget-planner`.
 
 ## Setup
 

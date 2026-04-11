@@ -52,8 +52,8 @@
       .showAtMouseEvent(event);
   };
 
-  export const handleOnChange = (value: string): void => {
-    name = value;
+  export const handleOnChange = (value: string | number): void => {
+    name = String(value);
   };
 </script>
 

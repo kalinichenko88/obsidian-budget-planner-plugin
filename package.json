@@ -35,13 +35,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
-    "@sveltejs/vite-plugin-svelte": "^6.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@testing-library/svelte": "^5.3.1",
     "@types/node": "^22.15.3",
     "@types/sortablejs": "^1.15.9",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.39.0",
-    "@typescript-eslint/type-utils": "^8.39.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
+    "@typescript-eslint/parser": "^8.58.1",
+    "@typescript-eslint/type-utils": "^8.58.1",
     "builtin-modules": "^5.0.0",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
@@ -54,10 +54,9 @@
     "svelte": "^5.55.3",
     "svelte-check": "^4.4.6",
     "svelte-eslint-parser": "^1.6.0",
-    "svelte-preprocess": "^6.0.3",
     "tslib": "2.8.1",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
-    "vitest": "^4.0.18"
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4"
   }
 }
