@@ -37,8 +37,8 @@ const twoVersions = [
   '### Under the hood',
   '- Upgraded build tooling',
   '',
-  '[1.2.2]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/v1.2.1...v1.2.2',
-  '[1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/v1.2.0...v1.2.1',
+  '[1.2.2]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.1...1.2.2',
+  '[1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.0...1.2.1',
   '',
 ].join('\n');
 
@@ -50,7 +50,7 @@ const singleVersion = [
   '### Added',
   '- Initial release',
   '',
-  '[1.0.0]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/v0.0.0...v1.0.0',
+  '[1.0.0]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/ROOT...1.0.0',
   '',
 ].join('\n');
 
@@ -73,7 +73,7 @@ const firstRunCaseA = [
   '### Under the hood',
   '- Upgraded build tooling and refreshed core dependencies.',
   '',
-  '[1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/v1.2.0...v1.2.1',
+  '[1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.0...1.2.1',
   '',
 ].join('\n');
 
@@ -140,7 +140,7 @@ describe('extract-release-notes.awk', () => {
       '### Fixed',
       '- Real match',
       '',
-      '[1.2.1]: https://example.com/compare/v1.2.0...v1.2.1',
+      '[1.2.1]: https://example.com/compare/1.2.0...1.2.1',
       '',
     ].join('\n');
 

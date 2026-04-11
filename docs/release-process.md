@@ -17,13 +17,13 @@ Releases are cut via the `/release` slash command in Claude Code.
    /release 1.2.3
    ```
 
-3. Claude reads the commits since the last `v*` tag and drafts a `CHANGELOG.md` entry in user-facing English, grouped into **Added**, **Changed**, **Fixed**, and **Under the hood**.
+3. Claude reads the commits since the last semver tag and drafts a `CHANGELOG.md` entry in user-facing English, grouped into **Added**, **Changed**, **Fixed**, and **Under the hood**.
 4. Review the draft in the chat. Ask Claude to reword, merge, or move bullets until it reads the way you want.
 5. Approve the draft. Claude then:
    - Writes (or appends to) `CHANGELOG.md`
    - Runs `node scripts/version-bump.js X.Y.Z` to bump `manifest.json`, `versions.json`, `package.json`, and `package-lock.json`
    - Commits the changes as `Release X.Y.Z`
-   - Tags `vX.Y.Z` and pushes `master` and the tag (two separate commands — legacy non-`v` tags are intentionally not pushed)
+   - Tags `X.Y.Z` (unprefixed, consistent with existing tags) and pushes `master` and the tag as two separate commands
 
 6. GitHub Actions takes over:
    - Runs quality checks (lint, typecheck, tests)
@@ -41,21 +41,21 @@ Instead, recover manually:
 2. Delete the old tag locally and remotely:
 
    ```
-   git push --delete origin vX.Y.Z
-   git tag --delete vX.Y.Z
+   git push --delete origin X.Y.Z
+   git tag --delete X.Y.Z
    ```
 
 3. Recreate the tag on the fixed commit and push it:
 
    ```
-   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git tag -a X.Y.Z -m "X.Y.Z"
    git push origin master
-   git push origin vX.Y.Z
+   git push origin X.Y.Z
    ```
 
 4. The release workflow will trigger again on the re-pushed tag and succeed.
 
-If the release was already published on GitHub with empty/bad notes, edit the release body manually with `gh release edit vX.Y.Z --notes-file <path>` after fixing `CHANGELOG.md`.
+If the release was already published on GitHub with empty/bad notes, edit the release body manually with `gh release edit X.Y.Z --notes-file <path>` after fixing `CHANGELOG.md`.
 
 ## Key files
 
