@@ -7,7 +7,7 @@ export const registerCommands = (plugin: BudgetPlannerPlugin): void => {
     id: 'insert-budget-planner',
     name: 'Insert Budget Planner',
     editorCallback: (editor: Editor) => {
-      editor.replaceSelection('```budget\n' + plugin.settings.defaultBudgetBlock + '\n```');
+      editor.replaceSelection('```budget\n' + plugin.settings.defaultBudgetBlock + '\n```\n');
     },
   });
 };

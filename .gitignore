@@ -22,4 +22,6 @@ dist/
 .cursor/
 
 # ralphex progress logs
+.ralphex
 .ralphex/progress/
+

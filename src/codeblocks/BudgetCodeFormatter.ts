@@ -62,7 +62,7 @@ export class BudgetCodeFormatter {
     const parts: string[] = [];
 
     values.categories.forEach((categoryName, categoryId) => {
-      parts.push(`${categoryName}:`);
+      parts.push(`${categoryName.replace(/:+$/, '')}:`);
       const rows = values.rows.get(categoryId) || [];
       rows.forEach((row) => {
         parts.push(this.formatRow(row));
@@ -107,7 +107,7 @@ export class BudgetCodeFormatter {
       if (parsed.comment) {
         formattedRow += ` | ${parsed.comment}`;
       }
-      resultParts.push(formattedRow);
+      resultParts.push(formattedRow.replace(/\s+$/, ''));
     }
 
     const content = resultParts.join('\n');

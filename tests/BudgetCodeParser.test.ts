@@ -1,7 +1,7 @@
 import { expect, test, describe } from 'vitest';
 
 import type { TableRow } from '@/codeblocks/models';
-import { BudgetCodeParser, NO_CATEGORY_ID } from '@/codeblocks/BudgetCodeParser';
+import { BudgetCodeParser, NO_CATEGORY_ID, NO_CATEGORY_NAME } from '@/codeblocks/BudgetCodeParser';
 
 describe('BudgetCodeParser', () => {
   test('should parse empty code', () => {
@@ -68,7 +68,7 @@ describe('BudgetCodeParser', () => {
     const parser = new BudgetCodeParser(code);
     const result = parser.parse();
 
-    const categoryId = result.categories.keys().next().value;
+    const categoryId = result.categories.keys().next().value!;
     expect(categoryId).toBeTypeOf('string');
 
     expect(result.categories.size).toBe(1);
@@ -90,7 +90,7 @@ describe('BudgetCodeParser', () => {
     const parser = new BudgetCodeParser(code);
     const result = parser.parse();
 
-    const categoryId = result.categories.keys().next().value;
+    const categoryId = result.categories.keys().next().value!;
     expect(categoryId).toBeTypeOf('string');
 
     const rows = result.rows.get(categoryId) as TableRow[];
@@ -115,9 +115,35 @@ describe('BudgetCodeParser', () => {
     const result = parser.parse();
 
     expect(result.categories.size).toBe(1);
+    expect(result.categories.get(NO_CATEGORY_ID)).toBe(NO_CATEGORY_NAME);
 
     const rows = result.rows.get(NO_CATEGORY_ID) as TableRow[];
     expect(rows).toBeInstanceOf(Array);
     expect(rows).toHaveLength(2);
+  });
+
+  test('should skip lines without pipe separator', () => {
+    const code =
+      'Income:\n\tSalary | 5000 | Monthly\nsome random text\nanother line\n\tRent | 1500';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+
+    const categoryId = result.categories.keys().next().value as string;
+    const rows = result.rows.get(categoryId) as TableRow[];
+    expect(rows).toHaveLength(2);
+    expect(rows[0].name).toBe('Salary');
+    expect(rows[1].name).toBe('Rent');
+  });
+
+  test('should not create phantom rows from plain text', () => {
+    const code = 'Notes about budget\nIncome:\n\tSalary | 5000';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+
+    expect(result.categories.size).toBe(1);
+    const categoryId = result.categories.keys().next().value as string;
+    const rows = result.rows.get(categoryId) as TableRow[];
+    expect(rows).toHaveLength(1);
+    expect(rows[0].name).toBe('Salary');
   });
 });

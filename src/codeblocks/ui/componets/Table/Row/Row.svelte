@@ -17,20 +17,20 @@
   const { row }: Props = $props();
 
   const tableState = getContext<TableStateStore>(STORE_STATE_CONTEXT_KEY);
-  const {
-    selectRow,
-    newCategory,
-    newRow,
-    deleteSelectedRow,
-    updateRow,
-    toggleEditing,
-    commitChange,
-  } = getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
+  const { selectRow, newCategory, newRow, deleteSelectedRow, updateRow, toggleEditing } =
+    getContext<StoreActions>(STORE_ACTIONS_CONTEXT_KEY);
 
   let checked = $state(untrack(() => row.checked));
   let name = $state(untrack(() => row.name));
   let amount = $state(untrack(() => row.amount));
   let comment = $state(untrack(() => row.comment));
+
+  $effect(() => {
+    checked = row.checked;
+    name = row.name;
+    amount = row.amount;
+    comment = row.comment;
+  });
 
   $effect(() => {
     const updatingRow: TableRow = {
@@ -48,48 +48,43 @@
     updateRow(updatingRow);
   });
 
-  const menu = new Menu()
-    .addItem((item) => {
-      item.setTitle('New row');
-      item.setIcon('between-horizontal-end');
-      item.onClick(() => newRow());
-    })
-    .addItem((item) => {
-      item.setTitle('New category');
-      item.setIcon('table-rows-split');
-      item.onClick(() => newCategory());
-    })
-    .addSeparator()
-    .addItem((item) => {
-      item.setTitle('Delete selected row');
-      item.setIcon('list-x');
-      item.onClick(deleteSelectedRow);
-    });
-
   export const handleOnMenu = (event: MouseEvent): void => {
     event.preventDefault();
     selectRow(row.id);
-    menu.showAtMouseEvent(event);
+    new Menu()
+      .addItem((item) => {
+        item.setTitle('New row');
+        item.setIcon('between-horizontal-end');
+        item.onClick(() => newRow());
+      })
+      .addItem((item) => {
+        item.setTitle('New category');
+        item.setIcon('table-rows-split');
+        item.onClick(() => newCategory());
+      })
+      .addSeparator()
+      .addItem((item) => {
+        item.setTitle('Delete selected row');
+        item.setIcon('list-x');
+        item.onClick(deleteSelectedRow);
+      })
+      .showAtMouseEvent(event);
   };
 
   export const handleOnRowClick = (): void => {
-    if ($tableState.isSaving) return;
     selectRow(null);
   };
 
   export const handleOnCheckboxClick = (): void => {
-    if ($tableState.isSaving) return;
     selectRow(null);
     checked = !checked;
-    updateRow({ id: row.id, checked, name, amount, comment });
-    commitChange();
   };
 </script>
 
 <tr
   class="row"
   class:selected={$tableState.selectedRowId === row.id}
-  class:checked={row.checked}
+  class:checked
   data-row-id={row.id}
   onclick={handleOnRowClick}
   oncontextmenu={handleOnMenu}
@@ -102,7 +97,7 @@
     <div
       class="check"
       role="button"
-      tabindex={$tableState.isSaving ? -1 : 0}
+      tabindex="0"
       aria-label="Toggle row checkbox"
       onclick={handleOnCheckboxClick}
       onkeydown={(e) => {
@@ -112,16 +107,7 @@
         }
       }}
     >
-      <input
-        type="checkbox"
-        name="checkbox"
-        id={`checkbox-${row.id}`}
-        checked={row.checked}
-        disabled={$tableState.isSaving}
-        onchange={(value: Event) => {
-          checked = (value.target as HTMLInputElement).checked;
-        }}
-      />
+      <input type="checkbox" name="checkbox" id={`checkbox-${row.id}`} bind:checked />
     </div>
   </td>
 
@@ -130,7 +116,6 @@
       value={row.name}
       onChange={(value) => (name = String(value))}
       onEditingChange={toggleEditing}
-      disabled={$tableState.isSaving}
     />
   </td>
 
@@ -139,7 +124,6 @@
       value={row.amount}
       onChange={(value) => (amount = Number(value))}
       onEditingChange={toggleEditing}
-      disabled={$tableState.isSaving}
     />
   </td>
 
@@ -148,7 +132,6 @@
       value={row.comment}
       onChange={(value) => (comment = String(value))}
       onEditingChange={toggleEditing}
-      disabled={$tableState.isSaving}
     />
   </td>
 </tr>
@@ -191,6 +174,7 @@
 
     & > input {
       margin: 0;
+      pointer-events: none;
     }
   }
 

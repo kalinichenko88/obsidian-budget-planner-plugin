@@ -1,3 +1,4 @@
+import { Transaction } from '@codemirror/state';
 import { EditorView, WidgetType } from '@codemirror/view';
 import { mount, unmount } from 'svelte';
 import { get, writable } from 'svelte/store';
@@ -13,7 +14,7 @@ import type {
 } from './models';
 import { Table } from './ui/componets';
 import { BudgetCodeFormatter } from './BudgetCodeFormatter';
-import { BUDGET_BLOCK_REGEX } from './constants';
+import { widgetChangeAnnotation, getTableField } from './constants';
 
 export class TableWidget extends WidgetType {
   private component: Record<string, unknown> | null = null;
@@ -35,15 +36,17 @@ export class TableWidget extends WidgetType {
     if (this.categories.size !== other.categories.size) return false;
     if (this.rows.size !== other.rows.size) return false;
 
-    const otherCatValues = other.categories.values();
-    for (const thisValue of this.categories.values()) {
-      const otherValue = otherCatValues.next().value;
-      if (thisValue !== otherValue) return false;
+    const otherCatEntries = other.categories.entries();
+    for (const [thisKey, thisValue] of this.categories.entries()) {
+      const otherEntry = otherCatEntries.next().value as [string, string];
+      if (thisKey !== otherEntry[0] || thisValue !== otherEntry[1]) return false;
     }
 
-    const otherRowArrays = other.rows.values();
-    for (const thisRows of this.rows.values()) {
-      const otherRows = otherRowArrays.next().value as TableRow[];
+    const otherRowEntries = other.rows.entries();
+    for (const [thisKey, thisRows] of this.rows.entries()) {
+      const otherEntry = otherRowEntries.next().value as [string, TableRow[]];
+      if (thisKey !== otherEntry[0]) return false;
+      const otherRows = otherEntry[1];
       if (thisRows.length !== otherRows.length) return false;
       for (let j = 0; j < thisRows.length; j++) {
         if (!this.isRowEqual(thisRows[j], otherRows[j])) return false;
@@ -55,6 +58,7 @@ export class TableWidget extends WidgetType {
 
   private isRowEqual(a: TableRow, b: TableRow): boolean {
     return (
+      a.id === b.id &&
       a.checked === b.checked &&
       a.name === b.name &&
       a.amount === b.amount &&
@@ -70,7 +74,6 @@ export class TableWidget extends WidgetType {
     const tableStateStore = writable<TableStateValues>({
       selectedRowId: null,
       isEditing: false,
-      isSaving: false,
     });
 
     return [tableStore, tableStateStore];
@@ -90,17 +93,16 @@ export class TableWidget extends WidgetType {
 
     try {
       const domPos = view.posAtDOM(this.container);
-      const docText = view.state.doc.toString();
+      const field = getTableField();
+      if (!field) return null;
 
-      const regex = new RegExp(BUDGET_BLOCK_REGEX.source, BUDGET_BLOCK_REGEX.flags);
-      let match: RegExpExecArray | null;
-      while ((match = regex.exec(docText)) !== null) {
-        const matchFrom = match.index;
-        const matchTo = matchFrom + match[0].length;
-
-        if (domPos >= matchFrom && domPos <= matchTo) {
-          return { from: matchFrom, to: matchTo };
+      const decoSet = view.state.field(field);
+      const iter = decoSet.iter();
+      while (iter.value) {
+        if (domPos >= iter.from && domPos < iter.to) {
+          return { from: iter.from, to: iter.to };
         }
+        iter.next();
       }
 
       return null;
@@ -131,6 +133,7 @@ export class TableWidget extends WidgetType {
         to: pos.to,
         insert: newText,
       },
+      annotations: widgetChangeAnnotation.of(true),
     });
   }
 
@@ -158,12 +161,32 @@ export class TableWidget extends WidgetType {
       },
     });
 
+    // When the budget block is the last thing in the document, the replace
+    // decoration ends at doc.length, leaving no cursor position after the
+    // widget. Defer a newline insertion so the user can type below the table.
+    setTimeout(() => {
+      if (this.isDestroyed || !this.view) return;
+
+      const pos = this.findCurrentPosition(this.view);
+      if (pos && pos.to === this.view.state.doc.length) {
+        this.view.dispatch({
+          changes: { from: pos.to, insert: '\n' },
+          annotations: Transaction.addToHistory.of(false),
+        });
+      }
+    });
+
     return container;
   }
 
   destroy(): void {
-    // Flush only when there are uncommitted changes to avoid overwriting doc after replace
-    if (this.dirty && this.tableStore && this.view && this.container?.isConnected) {
+    if (this.component) {
+      unmount(this.component);
+      this.component = null;
+    }
+
+    // Flush after unmount so Svelte teardown callbacks can propagate final values to the store
+    if (this.dirty && this.tableStore && this.view) {
       try {
         const state = get(this.tableStore);
         this.dispatchChanges(state.categories, state.rows, true);
@@ -173,10 +196,6 @@ export class TableWidget extends WidgetType {
     }
 
     this.isDestroyed = true;
-    if (this.component) {
-      unmount(this.component);
-      this.component = null;
-    }
     this.container = null;
     this.view = null;
     this.tableStore = null;
