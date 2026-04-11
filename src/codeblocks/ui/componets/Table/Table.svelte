@@ -119,6 +119,7 @@
     border-spacing: 0;
     border-color: var(--table-border-color);
     border-width: var(--table-border-width);
+    table-layout: fixed;
   }
 
   :global(.sortable-ghost-row) {

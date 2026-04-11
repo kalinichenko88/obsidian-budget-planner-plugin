@@ -111,11 +111,12 @@
     </div>
   </td>
 
-  <td class="cell">
+  <td class="cell" title={row.name}>
     <Editable
       value={row.name}
       onChange={(value) => (name = String(value))}
       onEditingChange={toggleEditing}
+      truncate={true}
     />
   </td>
 
@@ -127,11 +128,12 @@
     />
   </td>
 
-  <td class="cell">
+  <td class="cell" title={row.comment}>
     <Editable
       value={row.comment}
       onChange={(value) => (comment = String(value))}
       onEditingChange={toggleEditing}
+      truncate={true}
     />
   </td>
 </tr>
