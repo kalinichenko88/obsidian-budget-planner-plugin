@@ -27,4 +27,5 @@ dist/
 
 # superpowers plans and specs (local work notes)
 docs/superpowers/
+.superpowers/
 

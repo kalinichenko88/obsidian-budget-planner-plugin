@@ -66,10 +66,16 @@
       justify-items: end;
       gap: 0 0.5rem;
       padding: var(--size-2-2) var(--size-4-2);
+
+      @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
     }
 
     .label {
       font-size: calc(var(--font-smallest) - 5%);
+      white-space: nowrap;
     }
   }
 </style>
