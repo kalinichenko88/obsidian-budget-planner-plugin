@@ -44,7 +44,7 @@ npm run typecheck        # Svelte + TypeScript type checking
 
 `src/codeblocks/BudgetCodeFormatter.ts` — Converts structured data back to column-aligned markdown. Strips trailing colons from category names before adding the `:` marker. Trims trailing whitespace from rows without comments. Skips rows missing both name and amount.
 
-`src/codeblocks/helpers/changesAffectBlockStructure.ts` — Inspects a CodeMirror transaction to determine if inserted or deleted text contains fence markers (`` ``` ``). Used by `tableExtension` to decide between a full decoration rebuild versus incremental position remapping.
+`src/codeblocks/helpers/changesAffectBlockStructure.ts` — Inspects a CodeMirror transaction to determine if inserted or deleted text contains fence markers (` ``` `). Used by `tableExtension` to decide between a full decoration rebuild versus incremental position remapping.
 
 `src/codeblocks/constants.ts` — Shared constants: `BUDGET_BLOCK_REGEX` (multiline, requires closing fence at line start), `widgetChangeAnnotation`, and `registerTableField`/`getTableField` registry for StateField access without circular imports.
 

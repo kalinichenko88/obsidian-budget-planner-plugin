@@ -28,14 +28,14 @@ is written in English, kept high-level, and free of internal-only detail.
 
 ### Files changed
 
-| File | Change |
-|---|---|
-| `.claude/commands/release.md` | **New.** Slash command prompt that drives the entire release flow end-to-end. |
-| `CHANGELOG.md` | **New.** Keep a Changelog style. Starts fresh at the first release cut with the new flow. |
+| File                            | Change                                                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `.claude/commands/release.md`   | **New.** Slash command prompt that drives the entire release flow end-to-end.                                  |
+| `CHANGELOG.md`                  | **New.** Keep a Changelog style. Starts fresh at the first release cut with the new flow.                      |
 | `.github/workflows/release.yml` | **Modified.** Adds a notes-extraction step. `gh release create` now passes `--notes-file` and drops `--draft`. |
-| `scripts/release` | **Deleted.** Responsibilities move into `.claude/commands/release.md`. |
-| `scripts/version-bump.js` | **Unchanged.** Still invoked by the slash command via `node scripts/version-bump.js <version>`. |
-| `docs/release-process.md` | **Rewritten.** Documents the new `/release X.Y.Z` flow. |
+| `scripts/release`               | **Deleted.** Responsibilities move into `.claude/commands/release.md`.                                         |
+| `scripts/version-bump.js`       | **Unchanged.** Still invoked by the slash command via `node scripts/version-bump.js <version>`.                |
+| `docs/release-process.md`       | **Rewritten.** Documents the new `/release X.Y.Z` flow.                                                        |
 
 ### Architecture
 
@@ -99,12 +99,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.1] - 2026-04-11
 
 ### Fixed
+
 - Budget block insertion now leaves a clean blank line below, so typing continues naturally.
 - Moving the cursor past the bottom of a table no longer gets stuck at the document end.
 - Switching files while editing a table no longer loses unsaved changes — edits are now written immediately.
 - Checkbox visual state stays in sync after drag-and-drop reordering.
 
 ### Under the hood
+
 - Upgraded build tooling (Vite 8, TypeScript 6, ESLint 10) and refreshed core dependencies.
 
 [1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/v1.2.0...v1.2.1
@@ -158,13 +160,13 @@ and aborts. (Default behavior; no override.)
 
 Claude groups commits by conventional-commit type:
 
-| Commit type | Group |
-|---|---|
-| `feat` | `Added` |
-| `fix` | `Fixed` |
-| `perf` | `Changed` |
-| `refactor`, `chore`, `style`, `docs`, `test`, `build`, `ci` | `Under the hood` |
-| Unconventional | Best-fitting group by judgment |
+| Commit type                                                 | Group                          |
+| ----------------------------------------------------------- | ------------------------------ |
+| `feat`                                                      | `Added`                        |
+| `fix`                                                       | `Fixed`                        |
+| `perf`                                                      | `Changed`                      |
+| `refactor`, `chore`, `style`, `docs`, `test`, `build`, `ci` | `Under the hood`               |
+| Unconventional                                              | Best-fitting group by judgment |
 
 Claude rewrites each commit into a short user-facing sentence. Internal
 commits are summarized as **one** `Under the hood` line.
@@ -292,9 +294,9 @@ Changes: `--notes-file release-notes.md` added; `--draft` removed
 
 ## Recovery
 
-If extraction fails (empty notes file), the workflow fails *before* touching
+If extraction fails (empty notes file), the workflow fails _before_ touching
 GitHub's release API — no partial release is created. The tag is still
-pushed (the workflow runs *on* the tag), so to recover: delete the remote
+pushed (the workflow runs _on_ the tag), so to recover: delete the remote
 tag (`git push --delete origin v<version>`), fix `CHANGELOG.md`, and re-run
 `/release`.
 

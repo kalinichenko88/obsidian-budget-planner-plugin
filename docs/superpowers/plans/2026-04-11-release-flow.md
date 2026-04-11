@@ -25,17 +25,17 @@ The awk logic, the extraction contract, the failure behavior, and the YAML step 
 
 ## File map
 
-| Status | File | Responsibility |
-|---|---|---|
-| NEW | `.claude/commands/release.md` | Slash command prompt — drives the full release flow end to end |
-| NEW | `scripts/extract-release-notes.awk` | Extracts one version's bullet body from `CHANGELOG.md` |
-| NEW | `tests/ExtractReleaseNotes.test.ts` | Vitest tests for the awk script (runs via `spawnSync('awk', …)`) |
-| MODIFIED | `.github/workflows/release.yml` | Adds the extraction step; `gh release create` gets `--notes-file`, loses `--draft` |
-| MODIFIED | `docs/release-process.md` | Rewritten to describe the new `/release` flow |
-| MODIFIED | `CLAUDE.md` | "Commands" section: replace `./scripts/release X.X.X` with `/release X.Y.Z` |
-| DELETED | `scripts/release` | Responsibilities moved into the slash command |
-| UNCHANGED | `scripts/version-bump.js` | Still invoked from the slash command |
-| NOT CREATED NOW | `CHANGELOG.md` | The slash command creates it on the first `/release` run; not part of this implementation |
+| Status          | File                                | Responsibility                                                                            |
+| --------------- | ----------------------------------- | ----------------------------------------------------------------------------------------- |
+| NEW             | `.claude/commands/release.md`       | Slash command prompt — drives the full release flow end to end                            |
+| NEW             | `scripts/extract-release-notes.awk` | Extracts one version's bullet body from `CHANGELOG.md`                                    |
+| NEW             | `tests/ExtractReleaseNotes.test.ts` | Vitest tests for the awk script (runs via `spawnSync('awk', …)`)                          |
+| MODIFIED        | `.github/workflows/release.yml`     | Adds the extraction step; `gh release create` gets `--notes-file`, loses `--draft`        |
+| MODIFIED        | `docs/release-process.md`           | Rewritten to describe the new `/release` flow                                             |
+| MODIFIED        | `CLAUDE.md`                         | "Commands" section: replace `./scripts/release X.X.X` with `/release X.Y.Z`               |
+| DELETED         | `scripts/release`                   | Responsibilities moved into the slash command                                             |
+| UNCHANGED       | `scripts/version-bump.js`           | Still invoked from the slash command                                                      |
+| NOT CREATED NOW | `CHANGELOG.md`                      | The slash command creates it on the first `/release` run; not part of this implementation |
 
 **Branch guidance:** implement on a fresh branch off master (suggested name: `feature/claude-release-flow`). Do not mix with the in-progress `chore/refactoring` branch.
 
@@ -44,6 +44,7 @@ The awk logic, the extraction contract, the failure behavior, and the YAML step 
 ## Task 1: The awk extraction script (TDD)
 
 **Files:**
+
 - Create: `scripts/extract-release-notes.awk`
 - Create: `tests/ExtractReleaseNotes.test.ts`
 
@@ -61,11 +62,10 @@ const here = dirname(fileURLToPath(import.meta.url));
 const awkScript = resolve(here, '..', 'scripts', 'extract-release-notes.awk');
 
 function extractNotes(changelog: string, version: string): string {
-  const result = spawnSync(
-    'awk',
-    ['-v', `ver=${version}`, '-f', awkScript],
-    { input: changelog, encoding: 'utf8' }
-  );
+  const result = spawnSync('awk', ['-v', `ver=${version}`, '-f', awkScript], {
+    input: changelog,
+    encoding: 'utf8',
+  });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(`awk exited with ${result.status}: ${result.stderr}`);
@@ -112,15 +112,7 @@ const singleVersion = [
 describe('extract-release-notes.awk', () => {
   it('extracts the body of the newest version, stopping at the next version header', () => {
     const notes = extractNotes(twoVersions, '1.2.2');
-    expect(notes).toBe(
-      [
-        '',
-        '### Added',
-        '- Brand-new feature X',
-        '',
-        '',
-      ].join('\n')
-    );
+    expect(notes).toBe(['', '### Added', '- Brand-new feature X', '', ''].join('\n'));
   });
 
   it('extracts a middle/older version body', () => {
@@ -142,15 +134,7 @@ describe('extract-release-notes.awk', () => {
 
   it('stops at the compare-link block when the version is the only one', () => {
     const notes = extractNotes(singleVersion, '1.0.0');
-    expect(notes).toBe(
-      [
-        '',
-        '### Added',
-        '- Initial release',
-        '',
-        '',
-      ].join('\n')
-    );
+    expect(notes).toBe(['', '### Added', '- Initial release', '', ''].join('\n'));
   });
 
   it('returns empty output when the requested version is not present', () => {
@@ -249,6 +233,7 @@ git commit -m "feat(release): add awk extractor for CHANGELOG.md sections"
 ## Task 2: Update `release.yml` to use the extractor and auto-publish
 
 **Files:**
+
 - Modify: `.github/workflows/release.yml`
 
 ### Step 2.1 — Open the current workflow
@@ -260,20 +245,20 @@ Read `.github/workflows/release.yml` to confirm its current shape. The build ste
 Insert this new step immediately after `- run: npm run build`, before the "Create release" step:
 
 ```yaml
-      - name: Extract release notes
-        run: |
-          tag="${GITHUB_REF#refs/tags/}"
-          version="${tag#v}"
-          awk -v ver="$version" -f scripts/extract-release-notes.awk CHANGELOG.md > release-notes.md
+- name: Extract release notes
+  run: |
+    tag="${GITHUB_REF#refs/tags/}"
+    version="${tag#v}"
+    awk -v ver="$version" -f scripts/extract-release-notes.awk CHANGELOG.md > release-notes.md
 
-          if [ ! -s release-notes.md ]; then
-            echo "::error::No CHANGELOG.md entry found for version $version"
-            exit 1
-          fi
+    if [ ! -s release-notes.md ]; then
+      echo "::error::No CHANGELOG.md entry found for version $version"
+      exit 1
+    fi
 
-          echo "--- release-notes.md ---"
-          cat release-notes.md
-          echo "--- end ---"
+    echo "--- release-notes.md ---"
+    cat release-notes.md
+    echo "--- end ---"
 ```
 
 The `cat` block at the end is intentional: it echoes the extracted notes into the workflow log so a failed run is easy to diagnose.
@@ -283,15 +268,15 @@ The `cat` block at the end is intentional: it echoes the extracted notes into th
 Replace the existing `Create release` step with:
 
 ```yaml
-      - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag="${GITHUB_REF#refs/tags/}"
-          gh release create "$tag" \
-            --title="$tag" \
-            --notes-file release-notes.md \
-            dist/main.js dist/manifest.json
+- name: Create release
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    tag="${GITHUB_REF#refs/tags/}"
+    gh release create "$tag" \
+      --title="$tag" \
+      --notes-file release-notes.md \
+      dist/main.js dist/manifest.json
 ```
 
 The two changes vs. the old step: added `--notes-file release-notes.md`, removed `--draft`.
@@ -317,6 +302,7 @@ git commit -m "ci(release): extract notes from CHANGELOG.md and auto-publish"
 ## Task 3: Write the `/release` slash command
 
 **Files:**
+
 - Create: `.claude/commands/release.md`
 
 ### Step 3.1 — Create the slash command file
@@ -375,13 +361,13 @@ If the resulting output is empty, report "No commits since `<prev-tag>`" and sto
 
 Classify each commit by its conventional-commit prefix:
 
-| Prefix | Group |
-|---|---|
-| `feat` | Added |
-| `fix` | Fixed |
-| `perf` | Changed |
-| `refactor`, `chore`, `style`, `docs`, `test`, `build`, `ci` | Under the hood |
-| No recognized prefix | Pick the best fit by reading the subject |
+| Prefix                                                      | Group                                    |
+| ----------------------------------------------------------- | ---------------------------------------- |
+| `feat`                                                      | Added                                    |
+| `fix`                                                       | Fixed                                    |
+| `perf`                                                      | Changed                                  |
+| `refactor`, `chore`, `style`, `docs`, `test`, `build`, `ci` | Under the hood                           |
+| No recognized prefix                                        | Pick the best fit by reading the subject |
 
 Rules for drafting the entry:
 
@@ -396,15 +382,19 @@ Produce a draft in this shape:
 ## [<version>] - <YYYY-MM-DD>
 
 ### Added
+
 - ...
 
 ### Changed
+
 - ...
 
 ### Fixed
+
 - ...
 
 ### Under the hood
+
 - ...
 ```
 
@@ -515,6 +505,7 @@ git commit -m "feat(release): add /release Claude Code slash command"
 ## Task 4: Delete the old `scripts/release` shell script
 
 **Files:**
+
 - Delete: `scripts/release`
 
 ### Step 4.1 — Delete the file
@@ -534,6 +525,7 @@ Expected: only `version-bump.js` and (after Task 1) `extract-release-notes.awk` 
 Use the Grep tool with pattern `scripts/release` and glob `!node_modules`.
 
 Expected matches (these are fine — they'll be fixed in later tasks):
+
 - `docs/release-process.md` (will be rewritten in Task 5)
 - `CLAUDE.md` (will be updated in Task 6)
 - `docs/superpowers/specs/2026-04-11-release-flow-design.md` (describes the deletion — leave alone)
@@ -555,6 +547,7 @@ git commit -m "chore(release): remove obsolete shell release script"
 ## Task 5: Rewrite `docs/release-process.md`
 
 **Files:**
+
 - Modify: `docs/release-process.md`
 
 ### Step 5.1 — Read the current content
@@ -580,32 +573,35 @@ Releases are cut via the `/release` slash command in Claude Code.
 
 1. Open Claude Code in the project directory.
 2. Run the slash command:
+```
 
-   ```
-   /release 1.2.3
-   ```
+/release 1.2.3
+
+```
 
 3. Claude reads the commits since the last `v*` tag and drafts a `CHANGELOG.md` entry in user-facing English, grouped into **Added**, **Changed**, **Fixed**, and **Under the hood**.
 4. Review the draft in the chat. Ask Claude to reword, merge, or move bullets until it reads the way you want.
 5. Approve the draft. Claude then:
-   - Writes (or appends to) `CHANGELOG.md`
-   - Runs `node scripts/version-bump.js X.Y.Z` to bump `manifest.json`, `versions.json`, `package.json`, and `package-lock.json`
-   - Commits the changes as `Release X.Y.Z`
-   - Tags `vX.Y.Z` and pushes `master` with tags
+- Writes (or appends to) `CHANGELOG.md`
+- Runs `node scripts/version-bump.js X.Y.Z` to bump `manifest.json`, `versions.json`, `package.json`, and `package-lock.json`
+- Commits the changes as `Release X.Y.Z`
+- Tags `vX.Y.Z` and pushes `master` with tags
 
 6. GitHub Actions takes over:
-   - Runs quality checks (lint, typecheck, tests)
-   - Builds the plugin
-   - Extracts the new version's section from `CHANGELOG.md`
-   - Publishes a non-draft GitHub release with that section as the body and `main.js` + `manifest.json` as assets
+- Runs quality checks (lint, typecheck, tests)
+- Builds the plugin
+- Extracts the new version's section from `CHANGELOG.md`
+- Publishes a non-draft GitHub release with that section as the body and `main.js` + `manifest.json` as assets
 
 ## Recovery
 
 If the workflow fails because the extraction returned nothing (e.g., `CHANGELOG.md` didn't get updated), the tag is still pushed. To retry:
 
 ```
+
 git push --delete origin vX.Y.Z
 git tag --delete vX.Y.Z
+
 ```
 
 Fix `CHANGELOG.md`, then re-run `/release X.Y.Z`.
@@ -630,6 +626,7 @@ git commit -m "docs(release): rewrite release-process for /release slash command
 ## Task 6: Update `CLAUDE.md`
 
 **Files:**
+
 - Modify: `CLAUDE.md`
 
 ### Step 6.1 — Read the current commands section
@@ -659,6 +656,7 @@ Keep the trailing newline and the `npm run` line above it intact. The `#` commen
 ### Step 6.3 — Verify
 
 Read the resulting `CLAUDE.md` commands section and confirm:
+
 - The old line is gone.
 - The new line is present.
 - No surrounding lines were accidentally removed.
@@ -721,9 +719,11 @@ No commit for this task (it's verification only).
 ## Testing summary
 
 **Automated (runs in `npm test`):**
+
 - `tests/ExtractReleaseNotes.test.ts` — 5 cases covering the awk extractor against fixture CHANGELOG.md contents.
 
 **Manual (requires real release):**
+
 - `.github/workflows/release.yml` — end-to-end verified on the first real `/release` invocation.
 - `.claude/commands/release.md` — end-to-end verified on the first real `/release` invocation.
 
