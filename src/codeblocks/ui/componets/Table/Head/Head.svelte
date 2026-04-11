@@ -67,6 +67,7 @@
       padding: var(--size-2-2) var(--size-4-2);
       white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   .drag-handle-col {

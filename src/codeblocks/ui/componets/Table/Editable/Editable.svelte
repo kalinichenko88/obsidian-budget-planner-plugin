@@ -99,6 +99,7 @@
   <div
     class="text"
     class:end={valueType === 'number'}
+    class:truncating={truncate}
     role="button"
     tabindex="0"
     onclick={handleOnClick}
@@ -152,8 +153,11 @@
     align-items: center;
     height: var(--input-height);
     cursor: text;
-    overflow: hidden;
     min-width: 0;
+  }
+
+  .text.truncating {
+    overflow: hidden;
   }
 
   .end {
