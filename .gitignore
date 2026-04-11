@@ -25,3 +25,6 @@ dist/
 .ralphex
 .ralphex/progress/
 
+# superpowers plans and specs (local work notes)
+docs/superpowers/
+

@@ -42,8 +42,8 @@ Entertainment:
 
 ## 🚀 Installation
 
-1. Download latest release from [GitHub releases](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/releases)
-2. Extract to your vault's `.obsidian/plugins/budget-planner/` folder
+1. Download `budget-planner-X.Y.Z.zip` from the latest [GitHub release](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/releases)
+2. Extract the archive into your vault's `.obsidian/plugins/` folder — this will create a `budget-planner/` subfolder
 3. Reload Obsidian
 4. Enable plugin in Settings > Community Plugins
 

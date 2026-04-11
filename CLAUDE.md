@@ -96,4 +96,4 @@ Tests live in `tests/` (parser/formatter/regex) and co-located with source (`*.t
 
 ## CI/CD
 
-GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on semver tag push (pattern `[0-9]*.[0-9]*.[0-9]*`), verifies the tag is on master, builds, extracts the matching section from `CHANGELOG.md` via `scripts/extract-release-notes.awk`, and publishes a GitHub release with that section as the body.
+GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on semver tag push (pattern `[0-9]*.[0-9]*.[0-9]*`), verifies the tag is on master, builds, extracts the matching section from `CHANGELOG.md` via `scripts/extract-release-notes.awk`, and publishes a GitHub release with that section as the body. Each release attaches `main.js`, `manifest.json` (for BRAT and the Community Plugin store auto-updater), and a `budget-planner-<tag>.zip` archive containing a `budget-planner/` folder for manual installs.

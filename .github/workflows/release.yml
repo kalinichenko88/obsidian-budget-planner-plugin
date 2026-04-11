@@ -60,6 +60,14 @@ jobs:
           cat release-notes.md
           echo "--- end ---"
 
+      - name: Package plugin archive
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          staging="budget-planner"
+          mkdir "$staging"
+          cp dist/main.js dist/manifest.json "$staging/"
+          zip -r "budget-planner-${tag}.zip" "$staging"
+
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,4 +76,4 @@ jobs:
           gh release create "$tag" \
             --title="$tag" \
             --notes-file release-notes.md \
-            dist/main.js dist/manifest.json
+            dist/main.js dist/manifest.json "budget-planner-${tag}.zip"
