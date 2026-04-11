@@ -4,23 +4,22 @@
   type Props = {
     text: string;
     onClick: () => void;
-    disabled?: boolean;
   };
 
-  const { text, onClick, disabled = false }: Props = $props();
+  const { text, onClick }: Props = $props();
 </script>
 
-<tr class="add-row" class:disabled>
+<tr class="add-row">
   <td
     colspan="5"
     role="button"
-    tabindex={disabled ? -1 : 0}
+    tabindex="0"
     aria-label={text}
-    onclick={() => (disabled ? undefined : onClick())}
+    onclick={onClick}
     onkeydown={(e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        if (!disabled) onClick();
+        onClick();
       }
     }}
   >
@@ -38,14 +37,6 @@
 
   .add-row:hover {
     background-color: var(--table-header-background-hover);
-  }
-
-  .add-row.disabled,
-  .add-row.disabled:hover {
-    pointer-events: none;
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: inherit;
   }
 
   .button {

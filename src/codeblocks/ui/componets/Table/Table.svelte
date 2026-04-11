@@ -16,7 +16,6 @@
   import CategoryFooter from './CategoryFooter/CategoryFooter.svelte';
   import Footer from './Footer/Footer.svelte';
   import AddRow from './AddRow/AddRow.svelte';
-  import { debounce } from 'obsidian';
   import { DragAndDropManager } from './DragAndDrop/DragAndDropManager';
 
   type Props = {
@@ -33,25 +32,13 @@
     setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
   });
 
-  // Read from store at flush time so we never write a stale snapshot (fixes rollback on edit)
-  const commitTableChange = debounce(
-    (_categories?: TableCategories, _rows?: TableRows) => {
-      if (get(tableStateStore).isEditing) return;
-
-      tableStateStore.update((s) => ({ ...s, isSaving: true }));
-      try {
-        const state = get(tableStore);
-        onTableChange(state.categories, state.rows);
-      } finally {
-        setTimeout(() => tableStateStore.update((s) => ({ ...s, isSaving: false })), 0);
-      }
-    },
-    100,
-    true
-  );
+  const syncToDocument = (): void => {
+    const state = get(tableStore);
+    onTableChange(state.categories, state.rows);
+  };
 
   const storeActions = untrack(() =>
-    createStoreActions(tableStore, tableStateStore, commitTableChange, markDirty)
+    createStoreActions(tableStore, tableStateStore, syncToDocument, markDirty)
   );
   setContext(STORE_ACTIONS_CONTEXT_KEY, storeActions);
 
@@ -59,39 +46,31 @@
   let tableEl: HTMLTableElement;
   let dndManager: DragAndDropManager | null = null;
 
-  const onBlur = (event: FocusEvent): void => {
-    const newFocus = event.relatedTarget;
-    if (!tableEl.contains(newFocus as Node)) {
-      commitTableChange();
-    }
-  };
-
   onMount(() => {
-    tableEl.addEventListener('focusout', onBlur);
-
     dndManager = new DragAndDropManager(tableEl, storeActions);
     dndManager.init();
   });
 
   onDestroy(() => {
-    commitTableChange.cancel();
-    tableEl.removeEventListener('focusout', onBlur);
     dndManager?.destroy();
   });
 
+  let prevStructure = '';
   $effect(() => {
-    // Track categories and rows to refresh DnD when they change
-    $tableStore.categories;
-    $tableStore.rows;
+    const cats = [...$tableStore.categories.keys()].join(',');
+    const rows = [...$tableStore.rows.values()].flatMap((rs) => rs.map((r) => r.id)).join(',');
+    const structure = cats + '|' + rows;
 
-    queueMicrotask(() => {
-      dndManager?.refresh();
-    });
+    if (structure !== prevStructure) {
+      prevStructure = structure;
+      queueMicrotask(() => {
+        dndManager?.refresh();
+      });
+    }
   });
 
   $effect(() => {
-    const disabled = $tableStateStore.isSaving || $tableStateStore.isEditing;
-    dndManager?.setDisabled(disabled);
+    dndManager?.setDisabled($tableStateStore.isEditing);
   });
 </script>
 
@@ -111,11 +90,7 @@
           <Row {row} />
         {/each}
 
-        <AddRow
-          text="New Row"
-          onClick={() => newRow(categoryId)}
-          disabled={$tableStateStore.isSaving}
-        />
+        <AddRow text="New Row" onClick={() => newRow(categoryId)} />
 
         {#if $tableStore.categories.size > 1}
           <CategoryFooter {categoryId} />
@@ -124,7 +99,7 @@
     {/each}
 
     <tbody class="static-row">
-      <AddRow text="New Category" onClick={newCategory} disabled={$tableStateStore.isSaving} />
+      <AddRow text="New Category" onClick={newCategory} />
     </tbody>
 
     <Footer />

@@ -24,49 +24,28 @@ You are assisting with Obsidian plugin development. Follow these comprehensive g
 ### Top 27 Most Critical Rules
 
 **Submission & Naming:**
+
 1. **Plugin ID: no "obsidian", can't end with "plugin"** - Validation bot enforced
 2. **Plugin name: no "Obsidian", can't end with "Plugin"** - Validation bot enforced
 3. **Plugin name: can't start with "Obsi" or end with "dian"** - Validation bot enforced
 4. **Description: no "Obsidian", "This plugin", etc.** - Validation bot enforced
 5. **Description must end with `.?!)` punctuation** - Validation bot enforced
 
-**Memory & Lifecycle:**
-6. **Use `registerEvent()` for automatic cleanup** - Prevents memory leaks
-7. **Don't store view references in plugin** - Causes memory leaks
+**Memory & Lifecycle:** 6. **Use `registerEvent()` for automatic cleanup** - Prevents memory leaks 7. **Don't store view references in plugin** - Causes memory leaks
 
-**Type Safety:**
-8. **Use `instanceof` instead of type casting** - Type safety for TFile/TFolder
+**Type Safety:** 8. **Use `instanceof` instead of type casting** - Type safety for TFile/TFolder
 
-**UI/UX:**
-9. **Use sentence case for all UI text** - "Advanced settings" not "Advanced Settings"
-10. **No "command" in command names/IDs** - Redundant
-11. **No plugin ID in command IDs** - Obsidian auto-namespaces
-12. **No default hotkeys** - Avoid conflicts
-13. **Use `.setHeading()` for settings headings** - Not manual HTML
+**UI/UX:** 9. **Use sentence case for all UI text** - "Advanced settings" not "Advanced Settings" 10. **No "command" in command names/IDs** - Redundant 11. **No plugin ID in command IDs** - Obsidian auto-namespaces 12. **No default hotkeys** - Avoid conflicts 13. **Use `.setHeading()` for settings headings** - Not manual HTML
 
-**API Best Practices:**
-14. **Use Editor API for active file edits** - Preserves cursor position
-15. **Use `Vault.process()` for background file mods** - Prevents conflicts
-16. **Use `normalizePath()` for user paths** - Cross-platform compatibility
-17. **Use `Platform` API for OS detection** - Not navigator
-18. **Use `requestUrl()` instead of `fetch()`** - Bypasses CORS restrictions
-19. **No console.log in onload/onunload in production** - Pollutes console
+**API Best Practices:** 14. **Use Editor API for active file edits** - Preserves cursor position 15. **Use `Vault.process()` for background file mods** - Prevents conflicts 16. **Use `normalizePath()` for user paths** - Cross-platform compatibility 17. **Use `Platform` API for OS detection** - Not navigator 18. **Use `requestUrl()` instead of `fetch()`** - Bypasses CORS restrictions 19. **No console.log in onload/onunload in production** - Pollutes console
 
-**Styling:**
-20. **Use Obsidian CSS variables** - Respects user themes
-21. **Scope CSS to plugin containers** - Prevents style conflicts
+**Styling:** 20. **Use Obsidian CSS variables** - Respects user themes 21. **Scope CSS to plugin containers** - Prevents style conflicts
 
-**Accessibility (MANDATORY):**
-22. **Make all interactive elements keyboard accessible** - Accessibility required
-23. **Provide ARIA labels for icon buttons** - Accessibility required
-24. **Define clear focus indicators** - Use `:focus-visible`
+**Accessibility (MANDATORY):** 22. **Make all interactive elements keyboard accessible** - Accessibility required 23. **Provide ARIA labels for icon buttons** - Accessibility required 24. **Define clear focus indicators** - Use `:focus-visible`
 
-**Security & Compatibility:**
-25. **Don't use `innerHTML`/`outerHTML`** - Security risk (XSS)
-26. **Avoid regex lookbehind** - iOS < 16.4 incompatibility
+**Security & Compatibility:** 25. **Don't use `innerHTML`/`outerHTML`** - Security risk (XSS) 26. **Avoid regex lookbehind** - iOS < 16.4 incompatibility
 
-**Code Quality:**
-27. **Remove all sample/template code** - MyPlugin, SampleModal, etc.
+**Code Quality:** 27. **Remove all sample/template code** - MyPlugin, SampleModal, etc.
 
 ---
 
@@ -75,22 +54,26 @@ You are assisting with Obsidian plugin development. Follow these comprehensive g
 For comprehensive information on specific topics, see the reference files:
 
 ### [Memory Management & Lifecycle](reference/memory-management.md)
+
 - Using `registerEvent()`, `addCommand()`, `registerDomEvent()`, `registerInterval()`
 - Avoiding view references in plugin
 - Not using plugin as component
 - Proper leaf cleanup
 
 ### [Type Safety](reference/type-safety.md)
+
 - Using `instanceof` instead of type casting
 - Avoiding `any` type
 - Using `const` and `let` over `var`
 
 ### [UI/UX Standards](reference/ui-ux.md)
+
 - Sentence case enforcement
 - Command naming conventions
 - Settings and configuration best practices
 
 ### [File & Vault Operations](reference/file-operations.md)
+
 - View access patterns
 - Editor vs Vault API
 - Atomic file operations
@@ -98,6 +81,7 @@ For comprehensive information on specific topics, see the reference files:
 - Path handling
 
 ### [CSS Styling Best Practices](reference/css-styling.md)
+
 - Avoiding inline styles
 - Using Obsidian CSS variables
 - Scoping plugin styles
@@ -105,6 +89,7 @@ For comprehensive information on specific topics, see the reference files:
 - Spacing and layout
 
 ### [Accessibility (A11y)](reference/accessibility.md)
+
 - Keyboard navigation (MANDATORY)
 - ARIA labels and roles (MANDATORY)
 - Tooltips and accessibility
@@ -115,6 +100,7 @@ For comprehensive information on specific topics, see the reference files:
 - Accessibility checklist
 
 ### [Code Quality & Best Practices](reference/code-quality.md)
+
 - Removing sample code
 - Security best practices
 - Platform compatibility
@@ -123,6 +109,7 @@ For comprehensive information on specific topics, see the reference files:
 - DOM helpers
 
 ### [Plugin Submission Requirements](reference/submission.md)
+
 - Repository structure
 - Submission process
 - Semantic versioning
@@ -135,15 +122,18 @@ For comprehensive information on specific topics, see the reference files:
 ### Do's ✅
 
 **Memory & Lifecycle**:
+
 - Use `registerEvent()`, `addCommand()`, `registerDomEvent()`, `registerInterval()`
 - Return views/components directly (don't store unnecessarily)
 
 **Type Safety**:
+
 - Use `instanceof` for type checking (not type casting)
 - Use specific types or `unknown` instead of `any`
 - Use `const` and `let` (not `var`)
 
 **API Usage**:
+
 - Use `this.app` (not global `app`)
 - Use Editor API for active file edits
 - Use `Vault.process()` for background file modifications
@@ -156,12 +146,14 @@ For comprehensive information on specific topics, see the reference files:
 - Use `requestUrl()` instead of `fetch()` for network requests
 
 **UI/UX**:
+
 - Use sentence case for all UI text
 - Use `.setHeading()` for settings headings
 - Use Obsidian DOM helpers (`createDiv()`, `createSpan()`, `createEl()`)
 - Use `window.setTimeout/setInterval` with `number` type
 
 **Styling**:
+
 - Move all styles to CSS
 - Use Obsidian CSS variables for all styling
 - Scope CSS to plugin containers
@@ -169,6 +161,7 @@ For comprehensive information on specific topics, see the reference files:
 - Follow Obsidian's 4px spacing grid
 
 **Accessibility (MANDATORY)**:
+
 - Make all interactive elements keyboard accessible
 - Provide ARIA labels for icon buttons
 - Define clear focus indicators using `:focus-visible`
@@ -178,6 +171,7 @@ For comprehensive information on specific topics, see the reference files:
 - Test with keyboard navigation
 
 **Code Quality**:
+
 - Use async/await (not Promise chains)
 - Remove all sample/template code
 - Test on mobile (if not desktop-only)
@@ -187,16 +181,19 @@ For comprehensive information on specific topics, see the reference files:
 ### Don'ts ❌
 
 **Memory & Lifecycle**:
+
 - Don't store view references in plugin properties
 - Don't pass plugin as component to MarkdownRenderer
 - Don't detach leaves in `onunload()`
 
 **Type Safety**:
+
 - Don't cast to TFile/TFolder (use `instanceof`)
 - Don't use `any` type
 - Don't use `var`
 
 **API Usage**:
+
 - Don't use global `app` object
 - Don't use `Vault.modify()` for active file edits
 - Don't hardcode `.obsidian` path (use `vault.configDir`)
@@ -205,6 +202,7 @@ For comprehensive information on specific topics, see the reference files:
 - Don't use `fetch()` (use `requestUrl()` instead)
 
 **UI/UX**:
+
 - Don't use Title Case in UI (use sentence case)
 - Don't include "command" in command names/IDs
 - Don't duplicate plugin ID in command IDs
@@ -213,6 +211,7 @@ For comprehensive information on specific topics, see the reference files:
 - Don't use "General", "settings", or plugin name in settings headings
 
 **Styling**:
+
 - Don't assign styles via JavaScript
 - Don't hardcode colors, sizes, or spacing (use CSS variables)
 - Don't use broad CSS selectors (scope to plugin)
@@ -220,16 +219,19 @@ For comprehensive information on specific topics, see the reference files:
 - Don't create `<link>` or `<style>` elements (use `styles.css` file)
 
 **Security & Compatibility**:
+
 - Don't use `innerHTML`/`outerHTML` (XSS risk)
 - Don't use regex lookbehind (iOS < 16.4 incompatibility)
 
 **Accessibility**:
+
 - Don't create inaccessible interactive elements
 - Don't use icon buttons without ARIA labels
 - Don't remove focus indicators without alternatives
 - Don't make touch targets smaller than 44×44px
 
 **Code Quality**:
+
 - Don't use Promise chains (use async/await)
 - Don't use `document.createElement` (use Obsidian helpers)
 - Don't keep sample class names (MyPlugin, SampleModal, etc.)
@@ -267,7 +269,7 @@ this.addCommand({
   name: 'Insert timestamp',
   editorCallback: (editor: Editor, view: MarkdownView) => {
     editor.replaceSelection(new Date().toISOString());
-  }
+  },
 });
 ```
 
@@ -289,8 +291,8 @@ if (file instanceof TFile) {
 const button = containerEl.createEl('button', {
   attr: {
     'aria-label': 'Open settings',
-    'data-tooltip-position': 'top'
-  }
+    'data-tooltip-position': 'top',
+  },
 });
 button.setText('⚙️');
 

@@ -17,7 +17,7 @@ export class SettingTab extends PluginSettingTab {
 
     new Setting(containerEl).setName('Default value for budget block').addTextArea((text) =>
       text
-        .setPlaceholder('Enter your secret')
+        .setPlaceholder('Category:\n\t[ ] | Item | 0 | Comment')
         .setValue(this.plugin.settings.defaultBudgetBlock)
         .onChange(async (value) => {
           this.plugin.settings.defaultBudgetBlock = value;

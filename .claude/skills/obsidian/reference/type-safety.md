@@ -3,15 +3,18 @@
 Type safety is essential for reliable Obsidian plugins. Use proper type narrowing and avoid unsafe type casts.
 
 ## Avoid Type Casting to TFile/TFolder
+
 Rule: `obsidianmd/no-tfile-tfolder-cast`
 
 ❌ **INCORRECT**:
+
 ```typescript
 const file = abstractFile as TFile;
 const folder = <TFolder>abstractFile;
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 if (abstractFile instanceof TFile) {
   // TypeScript now knows it's a TFile
@@ -28,9 +31,11 @@ Rationale: Type casting bypasses type safety. Use `instanceof` for safe type nar
 ---
 
 ## Avoid TypeScript `any`
+
 Rule: Type safety best practice
 
 ❌ **INCORRECT**:
+
 ```typescript
 function processData(data: any) {
   return data.value;
@@ -38,6 +43,7 @@ function processData(data: any) {
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 // Use specific types
 function processData(data: FileData) {
@@ -57,15 +63,18 @@ Rationale: `any` bypasses type checking. Use specific types or `unknown` for typ
 ---
 
 ## Prefer const and let over var
+
 Rule: Official guidelines (TypeScript best practice)
 
 ❌ **INCORRECT**:
+
 ```typescript
 var count = 0;
 var settings = {};
 ```
 
 ✅ **CORRECT**:
+
 ```typescript
 let count = 0;
 const settings = {};
