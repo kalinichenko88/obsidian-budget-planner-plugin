@@ -49,13 +49,13 @@ If the resulting output is empty, report "No commits since `<prev-tag>`" and sto
 
 Classify each commit by its conventional-commit prefix:
 
-| Prefix | Group |
-|---|---|
-| `feat` | Added |
-| `fix` | Fixed |
-| `perf` | Changed |
-| `refactor`, `chore`, `style`, `docs`, `test`, `build`, `ci` | Under the hood |
-| No recognized prefix | Pick the best fit by reading the subject |
+| Prefix                                                      | Group                                    |
+| ----------------------------------------------------------- | ---------------------------------------- |
+| `feat`                                                      | Added                                    |
+| `fix`                                                       | Fixed                                    |
+| `perf`                                                      | Changed                                  |
+| `refactor`, `chore`, `style`, `docs`, `test`, `build`, `ci` | Under the hood                           |
+| No recognized prefix                                        | Pick the best fit by reading the subject |
 
 Rules for drafting the entry:
 
@@ -70,15 +70,19 @@ Produce a draft in this shape:
 ## [<version>] - <YYYY-MM-DD>
 
 ### Added
+
 - ...
 
 ### Changed
+
 - ...
 
 ### Fixed
+
 - ...
 
 ### Under the hood
+
 - ...
 ```
 
@@ -89,6 +93,8 @@ Show the drafted section in a fenced markdown block in the chat. Ask the user:
 > Does this look right, or do you want changes? I can reword bullets, merge/split them, or move items between groups.
 
 Iterate on edits until the user **explicitly** approves (e.g., "ok", "approved", "yes", "go"). Do not proceed to Step 6 without explicit approval.
+
+**Format guardrail:** the release workflow extracts the new section from `CHANGELOG.md` by matching the literal `## [<version>] ` header and the `### Added` / `### Changed` / `### Fixed` / `### Under the hood` group headings. If the user's edits change the section header (e.g., `## v1.2.1 (2026-04-11)` instead of `## [1.2.1] - 2026-04-11`) or remove the group-heading structure, rewrite the intent back into the canonical format before proceeding. Free-form bullet text inside each group is fine; the headers are not.
 
 ## Step 6 — Write CHANGELOG.md
 
@@ -149,10 +155,13 @@ The commit message is plain `Release <version>` — **no Co-Authored-By trailer*
 
 ```
 git tag -a v<version> -m "v<version>"
-git push origin master --tags
+git push origin master
+git push origin v<version>
 ```
 
-After the push succeeds, report to the user:
+Push `master` and the new tag as **two separate commands**, not `git push --tags`. The repo has legacy tags without a `v` prefix that must not be published.
+
+After both pushes succeed, report to the user:
 
 > Released `v<version>`. Watch the workflow at https://github.com/kalinichenko88/obsidian-budget-planner-plugin/actions
 
@@ -165,3 +174,10 @@ If any command fails at any step, stop and report:
 - The current repo state (is there a new commit? a local tag? was anything pushed?)
 
 Do **not** auto-revert commits, delete tags, or force-push. The user will decide how to recover.
+
+### Recovery hints by step
+
+- **Step 8 (`git commit`) fails** (e.g., hook rejected the commit): fix the underlying issue, re-stage any auto-modified files, and re-run the commit manually. Do not delete or reset — the user's edits in `CHANGELOG.md` and the bumped version files are still on disk.
+- **Step 9 tag creation (`git tag -a`) fails**: extremely unlikely after passing pre-flight, but if it does, report and stop. The commit from Step 8 is already made.
+- **Step 9 `git push origin master` fails** (e.g., branch protection or network): the commit and tag exist locally but nothing is on the remote. Recovery path: resolve the underlying issue, then the user can re-run the two push commands manually (`git push origin master && git push origin v<version>`). Do **not** re-run `/release` — Step 1 will fail because the working tree has advanced past `origin/master`.
+- **Step 9 `git push origin master` succeeds but `git push origin v<version>` fails**: master is published but the workflow won't trigger until the tag is pushed. Recovery: `git push origin v<version>` manually once the issue is fixed.
