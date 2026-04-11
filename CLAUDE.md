@@ -96,4 +96,4 @@ Tests live in `tests/` (parser/formatter/regex) and co-located with source (`*.t
 
 ## CI/CD
 
-GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on `v*` tag push, verifies the tag is on master, builds, and creates a draft GitHub release.
+GitHub Actions runs lint, typecheck, and test in parallel on every push. Release workflow triggers on `v*` tag push, verifies the tag is on master, builds, extracts the matching section from `CHANGELOG.md` via `scripts/extract-release-notes.awk`, and publishes a GitHub release with that section as the body.

@@ -54,6 +54,29 @@ const singleVersion = [
   '',
 ].join('\n');
 
+// Exact shape the /release slash command writes on the first-ever run
+// (Case A in .claude/commands/release.md Step 6). This test protects the
+// contract between the slash command and the awk extractor.
+const firstRunCaseA = [
+  '# Changelog',
+  '',
+  'All notable changes to this project are documented here.',
+  '',
+  'The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),',
+  'and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).',
+  '',
+  '## [1.2.1] - 2026-04-11',
+  '',
+  '### Fixed',
+  '- Budget block insertion now leaves a clean blank line below.',
+  '',
+  '### Under the hood',
+  '- Upgraded build tooling and refreshed core dependencies.',
+  '',
+  '[1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/v1.2.0...v1.2.1',
+  '',
+].join('\n');
+
 describe('extract-release-notes.awk', () => {
   it('extracts the body of the newest version, stopping at the next version header', () => {
     const notes = extractNotes(twoVersions, '1.2.2');
@@ -85,6 +108,22 @@ describe('extract-release-notes.awk', () => {
   it('returns empty output when the requested version is not present', () => {
     const notes = extractNotes(twoVersions, '9.9.9');
     expect(notes).toBe('');
+  });
+
+  it('extracts correctly from the first-run Case A header block the slash command writes', () => {
+    const notes = extractNotes(firstRunCaseA, '1.2.1');
+    expect(notes).toBe(
+      [
+        '',
+        '### Fixed',
+        '- Budget block insertion now leaves a clean blank line below.',
+        '',
+        '### Under the hood',
+        '- Upgraded build tooling and refreshed core dependencies.',
+        '',
+        '',
+      ].join('\n')
+    );
   });
 
   it('handles dotted version numbers without regex escape issues', () => {

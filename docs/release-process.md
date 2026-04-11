@@ -33,14 +33,29 @@ Releases are cut via the `/release` slash command in Claude Code.
 
 ## Recovery
 
-If the workflow fails because the extraction returned nothing (e.g., `CHANGELOG.md` didn't get updated), the tag is still pushed. To retry:
+If the workflow fails (e.g., extraction returned nothing because `CHANGELOG.md` wasn't updated correctly), the commit, local tag, and possibly the remote tag already exist. **Do not re-run `/release`** — its pre-flight will abort because `versions.json` already contains the version.
 
-```
-git push --delete origin vX.Y.Z
-git tag --delete vX.Y.Z
-```
+Instead, recover manually:
 
-Fix `CHANGELOG.md`, then re-run `/release X.Y.Z`.
+1. Fix `CHANGELOG.md` on `master` (edit, stage, commit — e.g., `git commit -m "Fix changelog for X.Y.Z"`).
+2. Delete the old tag locally and remotely:
+
+   ```
+   git push --delete origin vX.Y.Z
+   git tag --delete vX.Y.Z
+   ```
+
+3. Recreate the tag on the fixed commit and push it:
+
+   ```
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin master
+   git push origin vX.Y.Z
+   ```
+
+4. The release workflow will trigger again on the re-pushed tag and succeed.
+
+If the release was already published on GitHub with empty/bad notes, edit the release body manually with `gh release edit vX.Y.Z --notes-file <path>` after fixing `CHANGELOG.md`.
 
 ## Key files
 
