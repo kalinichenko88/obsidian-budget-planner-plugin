@@ -6,6 +6,7 @@ import svelteParser from 'svelte-eslint-parser';
 import prettierPlugin from 'eslint-plugin-prettier';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
+import unicorn from 'eslint-plugin-unicorn';
 
 export default [
   js.configs.recommended,
@@ -38,6 +39,27 @@ export default [
     rules: {
       'prettier/prettier': 'error',
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
+    },
+  },
+
+  // Unicorn rules for TS and Svelte files
+  {
+    files: ['**/*.{ts,svelte}'],
+    plugins: {
+      unicorn,
+    },
+    rules: {
+      'unicorn/numeric-separators-style': 'error',
+      'unicorn/prefer-includes': 'error',
+      'unicorn/prefer-string-slice': 'error',
+      'unicorn/prefer-string-starts-ends-with': 'error',
+      'unicorn/prefer-string-replace-all': 'error',
+      'unicorn/prefer-array-find': 'error',
+      'unicorn/prefer-array-some': 'error',
+      'unicorn/no-useless-spread': 'error',
+      'unicorn/throw-new-error': 'error',
+      'unicorn/prefer-dom-node-append': 'error',
+      'unicorn/prefer-dom-node-remove': 'error',
     },
   },
 

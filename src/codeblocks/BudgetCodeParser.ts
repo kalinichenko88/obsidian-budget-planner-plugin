@@ -35,7 +35,7 @@ export class BudgetCodeParser {
   protected parseAmount(value: string): number {
     if (!value || value.trim() === '') return 0;
 
-    const sanitized = value.replace(/[^\d.-]/g, '');
+    const sanitized = value.replaceAll(/[^\d.-]/g, '');
     const amount = parseFloat(sanitized);
 
     return isNaN(amount) ? 0 : amount;

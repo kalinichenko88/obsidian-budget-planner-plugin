@@ -194,7 +194,7 @@ Expenses:
           id: 'row2',
           checked: true,
           name: 'Very Long Name That Exceeds Others',
-          amount: 999999,
+          amount: 999_999,
           comment: 'Long Comment',
         },
         {
