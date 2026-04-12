@@ -4,12 +4,31 @@ import type { CategoryId, RowId, TableRow, TableStateStore, TableStore } from '.
 import { generateId } from '../../../helpers/generateId';
 import { SortColumn, SortOrder } from './models';
 
+export interface StoreActions {
+  selectRow: (rowId: RowId | null) => void;
+  newRow: (categoryId?: CategoryId | null) => void;
+  updateRow: (data: TableRow) => void;
+  toggleEditing: (isEditing: boolean) => void;
+  deleteSelectedRow: () => void;
+  sortRows: (sortOrder: SortOrder, column: SortColumn) => void;
+  newCategory: () => void;
+  updateCategory: (categoryId: CategoryId, name: string) => void;
+  deleteCategory: (categoryId: CategoryId) => void;
+  moveRow: (
+    rowId: RowId,
+    fromCategoryId: CategoryId,
+    toCategoryId: CategoryId,
+    newIndex: number
+  ) => void;
+  moveCategory: (categoryId: CategoryId, newIndex: number) => void;
+}
+
 export function createStoreActions(
   store: TableStore,
   tableState: TableStateStore,
   onTableChange: () => void,
   markDirty?: () => void
-) {
+): StoreActions {
   const getCategoryByRowId = (rowId: RowId | null): CategoryId | null => {
     if (rowId === null) {
       return null;
@@ -246,5 +265,3 @@ export function createStoreActions(
     },
   };
 }
-
-export type StoreActions = ReturnType<typeof createStoreActions>;
