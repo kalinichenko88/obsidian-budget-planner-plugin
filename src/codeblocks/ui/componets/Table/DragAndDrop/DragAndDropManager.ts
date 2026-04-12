@@ -49,7 +49,7 @@ export class DragAndDropManager {
   }
 
   private saveDragOrigin(event: SortableEvent): void {
-    this.dragOriginalParent = event.from as HTMLElement;
+    this.dragOriginalParent = event.from;
     this.dragOriginalNextSibling = event.item.nextSibling;
   }
 
@@ -115,8 +115,8 @@ export class DragAndDropManager {
           const rowId = item.dataset.rowId as RowId;
           if (!rowId) return;
 
-          const fromCategoryId = (from as HTMLElement).dataset.categoryId as CategoryId;
-          const toCategoryId = (to as HTMLElement).dataset.categoryId as CategoryId;
+          const fromCategoryId = from.dataset.categoryId as CategoryId;
+          const toCategoryId = to.dataset.categoryId as CategoryId;
 
           if (!fromCategoryId || !toCategoryId) return;
           if (fromCategoryId === toCategoryId && oldDraggableIndex === newDraggableIndex) return;

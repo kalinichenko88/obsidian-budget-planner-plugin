@@ -181,7 +181,7 @@ export class TableWidget extends WidgetType {
 
   destroy(): void {
     if (this.component) {
-      unmount(this.component);
+      void unmount(this.component);
       this.component = null;
     }
 
