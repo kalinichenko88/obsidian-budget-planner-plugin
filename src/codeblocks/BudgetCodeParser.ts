@@ -15,7 +15,7 @@ export class BudgetCodeParser {
   protected readonly rows: TableRows;
 
   constructor(code: string) {
-    this.rawData = code.split('\n');
+    this.rawData = code.split(/\r?\n/);
     this.categories = new Map();
     this.rows = new Map();
   }
