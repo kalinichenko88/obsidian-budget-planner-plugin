@@ -146,4 +146,24 @@ describe('BudgetCodeParser', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].name).toBe('Salary');
   });
+
+  test('should parse code with Windows-style CRLF line endings', () => {
+    const code = 'Income:\r\n\t[ ] | Salary | 5000\r\nExpenses:\r\n\t[ ] | Rent | 1500';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+    const categoryIds = Array.from(result.categories.keys());
+
+    expect(result.categories.size).toBe(2);
+    expect(result.categories.get(categoryIds[0])).toBe('Income');
+    expect(result.categories.get(categoryIds[1])).toBe('Expenses');
+
+    const incomeRows = result.rows.get(categoryIds[0]) as TableRow[];
+    expect(incomeRows).toHaveLength(1);
+    expect(incomeRows[0].name).toBe('Salary');
+    expect(incomeRows[0].amount).toBe(5000);
+
+    const expenseRows = result.rows.get(categoryIds[1]) as TableRow[];
+    expect(expenseRows).toHaveLength(1);
+    expect(expenseRows[0].name).toBe('Rent');
+  });
 });

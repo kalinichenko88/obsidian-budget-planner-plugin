@@ -13,7 +13,7 @@
   onMount(() => {
     const icon = getIcon(name);
     if (iconContainer && icon) {
-      iconContainer.appendChild(icon);
+      iconContainer.append(icon);
     }
   });
 </script>

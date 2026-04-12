@@ -73,7 +73,7 @@ export class BudgetCodeFormatter {
   }
 
   private formatCode(code: string): string {
-    const rows = code.split('\n').filter((row) => row.trim());
+    const rows = code.split(/\r?\n/).filter((row) => row.trim());
     const parsedRows: ParsedRow[] = [];
 
     let maxNameLength = 0;
