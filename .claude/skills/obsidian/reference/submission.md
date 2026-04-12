@@ -86,6 +86,60 @@ The Obsidian release validation bot (`validate-plugin-entry.yml`) enforces these
 
 ---
 
+## ObsidianReviewBot Automated Scan
+
+After submitting the PR, the `ObsidianReviewBot` runs an automated ESLint scan of your plugin source code. Issues are categorized as **Required** (must fix) and **Optional** (recommended).
+
+### Key Behavior
+
+- The bot scans the default branch of your repository (usually `master`/`main`)
+- After pushing fixes, the bot rescans automatically within **6 hours**
+- Do **NOT** open a new PR for re-validation — push fixes to your repo
+- Do **NOT** rebase the PR — the reviewer handles that after approval
+- If you believe a required change is incorrect, comment with `/skip` and the reason
+
+### CodeMirror Type Resolution
+
+The review bot's ESLint environment **cannot resolve types from `@codemirror/*` packages** (`@codemirror/view`, `@codemirror/state`, etc.). Types like `EditorView` and `StateField` become error types that act as `any`.
+
+This triggers `@typescript-eslint/no-redundant-type-constituents` when these types appear in unions (e.g., `EditorView | null`), because `any | null` is redundant.
+
+**Fix**: Avoid explicit union type annotations with CodeMirror types. Use optional properties instead:
+
+❌ **INCORRECT** (triggers review bot):
+
+```typescript
+// Class property
+private view: EditorView | null = null;
+
+// Module-level variable
+let _field: StateField<DecorationSet> | null = null;
+
+// Function return type
+function getField(): StateField<DecorationSet> | null { ... }
+```
+
+✅ **CORRECT** (avoids union in annotation):
+
+```typescript
+// Class property — optional avoids explicit union
+private view?: EditorView;
+
+// Module-level — wrap in object with optional property
+const _fieldRef: { current?: StateField<DecorationSet> } = {};
+
+// Function — omit return type, let TypeScript infer
+function getField() {
+  return _fieldRef.current;
+}
+```
+
+### `eslint-plugin-obsidian` Local Testing
+
+The official `eslint-plugin-obsidian` (npm: `eslint-plugin-obsidian`) requires **ESLint 8** and is incompatible with ESLint 9+/10+. If your project uses a newer ESLint version, you cannot run the bot's checks locally.
+
+---
+
 ## Submission Process
 
 ### 1. Create GitHub Release
