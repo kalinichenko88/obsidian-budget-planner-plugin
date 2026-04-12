@@ -47,6 +47,11 @@ You are assisting with Obsidian plugin development. Follow these comprehensive g
 
 **Code Quality:** 27. **Remove all sample/template code** - MyPlugin, SampleModal, etc.
 
+**Review Bot (CodeMirror plugins):**
+28. **Avoid `| null` unions with `@codemirror/*` types** - Bot can't resolve them; use optional properties (`?`) instead
+29. **`void unmount()` for Svelte 5** - `unmount()` returns Promise, must be handled
+30. **`eslint-plugin-obsidian` requires ESLint 8** - Incompatible with ESLint 9+/10+
+
 ---
 
 ## Detailed Guidelines
@@ -111,6 +116,8 @@ For comprehensive information on specific topics, see the reference files:
 ### [Plugin Submission Requirements](reference/submission.md)
 
 - Repository structure
+- ObsidianReviewBot automated scan (CodeMirror type workarounds, `/skip` process)
+- `eslint-plugin-obsidian` local testing limitations
 - Submission process
 - Semantic versioning
 - Testing checklist

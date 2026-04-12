@@ -20,7 +20,7 @@ export class TableWidget extends WidgetType {
   private component: Record<string, unknown> | null = null;
   private container: HTMLElement | null = null;
   private isDestroyed = false;
-  private view: EditorView | null = null;
+  private view?: EditorView;
   private tableStore: TableStore | null = null;
   private formatter: BudgetCodeFormatter | null = null;
   private dirty = false;
@@ -181,7 +181,7 @@ export class TableWidget extends WidgetType {
 
   destroy(): void {
     if (this.component) {
-      unmount(this.component);
+      void unmount(this.component);
       this.component = null;
     }
 
@@ -197,7 +197,7 @@ export class TableWidget extends WidgetType {
 
     this.isDestroyed = true;
     this.container = null;
-    this.view = null;
+    this.view = undefined;
     this.tableStore = null;
     this.formatter = null;
   }

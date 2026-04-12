@@ -327,6 +327,36 @@ Rationale: When reconfiguring editor extensions, use `updateOptions()` to flush 
 
 ---
 
+## Svelte 5 Integration
+
+### Handle `unmount()` Promise
+
+In Svelte 5, `unmount()` returns a `Promise` when components have `$effect` cleanup functions. The `@typescript-eslint/no-floating-promises` rule (enforced by the review bot) requires handling it.
+
+❌ **INCORRECT**:
+
+```typescript
+destroy(): void {
+  if (this.component) {
+    unmount(this.component); // Floating promise
+  }
+}
+```
+
+✅ **CORRECT**:
+
+```typescript
+destroy(): void {
+  if (this.component) {
+    void unmount(this.component); // Explicitly ignored with void
+  }
+}
+```
+
+Rationale: The `void` operator marks the promise as intentionally unhandled, satisfying the linter while keeping the synchronous `destroy()` signature.
+
+---
+
 ## Async/Await Patterns
 
 ### Prefer async/await over Promise chains

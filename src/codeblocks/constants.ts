@@ -10,12 +10,12 @@ export const widgetChangeAnnotation = Annotation.define<boolean>();
  * Late-bound reference to the table StateField.
  * Avoids circular imports between tableExtension ↔ TableWidget.
  */
-let _tableField: StateField<DecorationSet> | null = null;
+const _tableFieldRef: { current?: StateField<DecorationSet> } = {};
 
 export function registerTableField(field: StateField<DecorationSet>): void {
-  _tableField = field;
+  _tableFieldRef.current = field;
 }
 
-export function getTableField(): StateField<DecorationSet> | null {
-  return _tableField;
+export function getTableField() {
+  return _tableFieldRef.current;
 }
