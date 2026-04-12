@@ -5,6 +5,16 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-04-12
+
+### Fixed
+
+- Budget blocks in files saved with Windows-style line endings (CRLF) are now parsed and formatted correctly.
+
+### Under the hood
+
+- Added ESLint Unicorn plugin with code-quality rules and auto-fixed existing violations; updated CI actions to latest major versions; pinned the release command to the Sonnet model.
+
 ## [1.2.2] - 2026-04-12
 
 ### Added
@@ -45,5 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded core tooling (Vite 8, TypeScript 6, ESLint 10, Vitest 4) and refreshed dependencies, refactored internal state management and decoration updates, expanded test coverage, and rebuilt the release workflow around a `/release` Claude Code slash command with automated CHANGELOG extraction.
 
+[1.2.3]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.0...1.2.1
