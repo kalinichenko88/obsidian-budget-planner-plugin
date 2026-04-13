@@ -80,11 +80,8 @@ export class TableWidget extends WidgetType {
     return [tableStore, tableStateStore];
   }
 
-  private findCurrentPosition(
-    view: EditorView,
-    skipDestroyedCheck = false
-  ): { from: number; to: number } | null {
-    if (!skipDestroyedCheck && this.isDestroyed) {
+  private findCurrentPosition(view: EditorView): { from: number; to: number } | null {
+    if (this.isDestroyed) {
       return null;
     }
 
@@ -140,16 +137,12 @@ export class TableWidget extends WidgetType {
     }
   }
 
-  private dispatchChanges(
-    categories: TableCategories,
-    rows: TableRows,
-    skipDestroyedCheck = false
-  ): void {
+  private dispatchChanges(categories: TableCategories, rows: TableRows): void {
     if (!this.view || !this.formatter) {
       return;
     }
 
-    const pos = this.findCurrentPosition(this.view, skipDestroyedCheck);
+    const pos = this.findCurrentPosition(this.view);
     if (pos === null) {
       return;
     }
@@ -209,19 +202,20 @@ export class TableWidget extends WidgetType {
   }
 
   destroy(): void {
-    if (this.component) {
-      void unmount(this.component);
-      this.component = null;
-    }
-
-    // Flush after unmount so Svelte teardown callbacks can propagate final values to the store
+    // Flush BEFORE unmount so the Svelte component is still alive and store state is fresh.
+    // The disconnected-DOM fallback in findCurrentPosition handles position lookup.
     if (this.dirty && this.tableStore && this.view) {
       try {
         const state = get(this.tableStore);
-        this.dispatchChanges(state.categories, state.rows, true);
+        this.dispatchChanges(state.categories, state.rows);
       } catch {
-        // Ignore errors during cleanup
+        // view.dispatch may throw if CodeMirror has already torn down
       }
+    }
+
+    if (this.component) {
+      void unmount(this.component);
+      this.component = null;
     }
 
     this.isDestroyed = true;

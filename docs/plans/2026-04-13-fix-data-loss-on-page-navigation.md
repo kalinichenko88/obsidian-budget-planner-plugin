@@ -58,11 +58,11 @@ With `findCurrentPosition` fixed (task 1), the `destroy()` flush should now be a
 
 - Modify: `src/codeblocks/TableWidget.ts`
 
-- [ ] Move the dirty-flush logic to run BEFORE `unmount()` in `destroy()`, so the Svelte component is still alive and the store state is fresh
-- [ ] Remove the `skipDestroyedCheck` parameter from `dispatchChanges` and `findCurrentPosition` since the fallback path from task 1 makes it unnecessary
-- [ ] Add a guard to handle the case where `view.dispatch` throws during destruction (wrap in try/catch, already partially present)
-- [ ] Write tests verifying that `destroy()` flushes pending store state to the document when `dirty` is true
-- [ ] Run project test suite - must pass before task 3
+- [x] Move the dirty-flush logic to run BEFORE `unmount()` in `destroy()`, so the Svelte component is still alive and the store state is fresh
+- [x] Remove the `skipDestroyedCheck` parameter from `dispatchChanges` and `findCurrentPosition` since the fallback path from task 1 makes it unnecessary
+- [x] Add a guard to handle the case where `view.dispatch` throws during destruction (wrap in try/catch, already partially present)
+- [x] Write tests verifying that `destroy()` flushes pending store state to the document when `dirty` is true
+- [x] Run project test suite - must pass before task 3
 
 ### Task 3: Ensure blur-triggered writes succeed during navigation
 

@@ -37,10 +37,9 @@ function createMockView(
 // Access private method for testing
 function findCurrentPosition(
   widget: TableWidget,
-  view: EditorView,
-  skipDestroyedCheck = false
+  view: EditorView
 ): { from: number; to: number } | null {
-  return (widget as any).findCurrentPosition(view, skipDestroyedCheck);
+  return (widget as any).findCurrentPosition(view);
 }
 
 function setPrivate(widget: TableWidget, field: string, value: unknown): void {
@@ -207,7 +206,7 @@ describe('TableWidget.findCurrentPosition', () => {
   });
 
   describe('destroyed widget', () => {
-    test('returns null when isDestroyed is true and skipDestroyedCheck is false', () => {
+    test('returns null when isDestroyed is true', () => {
       const widget = new TableWidget(new Map(), new Map());
       const decoSet = createDecoSetWithWidget(widget, 0, 50);
       const view = createMockView(decoSet, mockField);
@@ -218,19 +217,6 @@ describe('TableWidget.findCurrentPosition', () => {
       const result = findCurrentPosition(widget, view);
 
       expect(result).toBeNull();
-    });
-
-    test('returns position when isDestroyed is true but skipDestroyedCheck is true', () => {
-      const widget = new TableWidget(new Map(), new Map());
-      const decoSet = createDecoSetWithWidget(widget, 0, 50);
-      const view = createMockView(decoSet, mockField);
-
-      setPrivate(widget, 'isDestroyed', true);
-      setPrivate(widget, 'container', { isConnected: false });
-
-      const result = findCurrentPosition(widget, view, true);
-
-      expect(result).toEqual({ from: 0, to: 50 });
     });
   });
 
