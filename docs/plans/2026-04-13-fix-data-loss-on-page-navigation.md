@@ -41,19 +41,21 @@ Three confirmed data loss paths:
 The core fix: when the container is disconnected from the DOM, `findCurrentPosition` should fall back to looking up the widget's position directly from the StateField's decoration set without using `posAtDOM`. The widget can store its last known position and use the decoration set iteration to find itself by identity comparison.
 
 **Files:**
+
 - Modify: `src/codeblocks/TableWidget.ts`
 
-- [ ] Add a `lastKnownFrom` field to `TableWidget` that is updated every time `findCurrentPosition` succeeds via the normal (connected DOM) path
-- [ ] In `findCurrentPosition`, when `this.container` is null or disconnected, fall back to iterating the decoration set and matching by widget identity (`iter.value.spec.widget === this`) using `lastKnownFrom` as a hint for where to start looking
-- [ ] Ensure the fallback path returns a valid `{from, to}` even when the DOM is detached
-- [ ] Write tests for `findCurrentPosition` covering: connected DOM path, disconnected DOM fallback, and destroyed widget
-- [ ] Run project test suite - must pass before task 2
+- [x] Add a `lastKnownFrom` field to `TableWidget` that is updated every time `findCurrentPosition` succeeds via the normal (connected DOM) path
+- [x] In `findCurrentPosition`, when `this.container` is null or disconnected, fall back to iterating the decoration set and matching by widget identity (`iter.value.spec.widget === this`) using `lastKnownFrom` as a hint for where to start looking
+- [x] Ensure the fallback path returns a valid `{from, to}` even when the DOM is detached
+- [x] Write tests for `findCurrentPosition` covering: connected DOM path, disconnected DOM fallback, and destroyed widget
+- [x] Run project test suite - must pass before task 2
 
 ### Task 2: Fix the `destroy()` flush to actually persist pending changes
 
 With `findCurrentPosition` fixed (task 1), the `destroy()` flush should now be able to write. However, there's another issue: the flush happens after `unmount()`, so the view's dispatch may fail if CodeMirror has already torn down. We need to ensure the flush runs before `unmount` and before the view is invalidated.
 
 **Files:**
+
 - Modify: `src/codeblocks/TableWidget.ts`
 
 - [ ] Move the dirty-flush logic to run BEFORE `unmount()` in `destroy()`, so the Svelte component is still alive and the store state is fresh
@@ -67,6 +69,7 @@ With `findCurrentPosition` fixed (task 1), the `destroy()` flush should now be a
 The `Editable.svelte` blur handler calls `onChange` which eventually calls `dispatchChanges`. With tasks 1 and 2, the position lookup can work even when the DOM is detached. But we should also ensure the `isDestroyed` flag doesn't block legitimate blur-driven writes that fire between DOM detachment and `destroy()` being called.
 
 **Files:**
+
 - Modify: `src/codeblocks/TableWidget.ts`
 
 - [ ] Review the timing of `isDestroyed = true` relative to blur events; ensure `dispatchChanges` still works for blur-triggered writes that fire after DOM detachment but before `destroy()` completes
@@ -79,6 +82,7 @@ The `Editable.svelte` blur handler calls `onChange` which eventually calls `disp
 The `setTimeout` in `toDOM()` (line 167) dispatches a change without `widgetChangeAnnotation`, which could trigger unexpected rebuild paths. This is a minor issue but worth fixing while we're in this area.
 
 **Files:**
+
 - Modify: `src/codeblocks/TableWidget.ts`
 
 - [ ] Add `widgetChangeAnnotation.of(true)` to the trailing newline dispatch at line 172 so it takes the incremental remap path instead of potentially triggering `changesAffectBlockStructure`

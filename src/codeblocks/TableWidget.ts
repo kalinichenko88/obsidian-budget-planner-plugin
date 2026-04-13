@@ -24,6 +24,7 @@ export class TableWidget extends WidgetType {
   private tableStore: TableStore | null = null;
   private formatter: BudgetCodeFormatter | null = null;
   private dirty = false;
+  private lastKnownFrom: number | null = null;
 
   constructor(
     public categories: TableCategories,
@@ -83,26 +84,54 @@ export class TableWidget extends WidgetType {
     view: EditorView,
     skipDestroyedCheck = false
   ): { from: number; to: number } | null {
-    if (!this.container || !this.container.isConnected) {
-      return null;
-    }
-
     if (!skipDestroyedCheck && this.isDestroyed) {
       return null;
     }
 
-    try {
-      const domPos = view.posAtDOM(this.container);
-      const field = getTableField();
-      if (!field) return null;
+    const field = getTableField();
+    if (!field) return null;
 
+    // Connected DOM path: use posAtDOM for precise lookup
+    if (this.container && this.container.isConnected) {
+      try {
+        const domPos = view.posAtDOM(this.container);
+        const decoSet = view.state.field(field);
+        const iter = decoSet.iter();
+        while (iter.value) {
+          if (domPos >= iter.from && domPos < iter.to) {
+            this.lastKnownFrom = iter.from;
+            return { from: iter.from, to: iter.to };
+          }
+          iter.next();
+        }
+        return null;
+      } catch {
+        // Fall through to disconnected path
+      }
+    }
+
+    // Disconnected DOM fallback: iterate decoration set, match by widget identity
+    try {
       const decoSet = view.state.field(field);
-      const iter = decoSet.iter();
+      const iter = decoSet.iter(this.lastKnownFrom ?? 0);
       while (iter.value) {
-        if (domPos >= iter.from && domPos < iter.to) {
+        if (iter.value.spec.widget === this) {
+          this.lastKnownFrom = iter.from;
           return { from: iter.from, to: iter.to };
         }
         iter.next();
+      }
+
+      // If hint-based search missed (positions shifted), scan from the start
+      if (this.lastKnownFrom !== null && this.lastKnownFrom > 0) {
+        const fullIter = decoSet.iter();
+        while (fullIter.value) {
+          if (fullIter.value.spec.widget === this) {
+            this.lastKnownFrom = fullIter.from;
+            return { from: fullIter.from, to: fullIter.to };
+          }
+          fullIter.next();
+        }
       }
 
       return null;
