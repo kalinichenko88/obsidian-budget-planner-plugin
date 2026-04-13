@@ -91,9 +91,9 @@ The `setTimeout` in `toDOM()` (line 167) dispatches a change without `widgetChan
 
 ### Task 5: Verify acceptance criteria
 
-- [ ] Run full test suite (`npm run test`)
-- [ ] Run linter (`npm run lint`)
-- [ ] Run typecheck (`npm run typecheck`)
+- [x] Run full test suite (`npm run test`)
+- [x] Run linter (`npm run lint`)
+- [x] Run typecheck (`npm run typecheck`)
 
 ### Task 6: Update documentation
 
