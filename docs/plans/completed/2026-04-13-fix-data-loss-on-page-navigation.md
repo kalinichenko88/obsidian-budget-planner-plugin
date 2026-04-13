@@ -97,5 +97,5 @@ The `setTimeout` in `toDOM()` (line 167) dispatches a change without `widgetChan
 
 ### Task 6: Update documentation
 
-- [ ] Update CLAUDE.md if internal patterns changed (e.g., new `lastKnownFrom` field, changed `destroy()` semantics)
-- [ ] Move this plan to `docs/plans/completed/`
+- [x] Update CLAUDE.md if internal patterns changed (e.g., new `lastKnownFrom` field, changed `destroy()` semantics)
+- [x] Move this plan to `docs/plans/completed/`
