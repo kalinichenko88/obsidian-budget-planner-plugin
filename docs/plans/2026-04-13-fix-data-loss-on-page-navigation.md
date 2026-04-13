@@ -72,10 +72,10 @@ The `Editable.svelte` blur handler calls `onChange` which eventually calls `disp
 
 - Modify: `src/codeblocks/TableWidget.ts`
 
-- [ ] Review the timing of `isDestroyed = true` relative to blur events; ensure `dispatchChanges` still works for blur-triggered writes that fire after DOM detachment but before `destroy()` completes
-- [ ] If `dispatchChanges` is called after `destroy()` has started but the view is still valid, allow the write to proceed (the `lastKnownFrom` fallback from task 1 handles position lookup)
-- [ ] Write tests simulating the blur-during-navigation sequence: detach DOM -> blur fires -> onChange -> dispatchChanges should succeed
-- [ ] Run project test suite - must pass before task 4
+- [x] Review the timing of `isDestroyed = true` relative to blur events; ensure `dispatchChanges` still works for blur-triggered writes that fire after DOM detachment but before `destroy()` completes
+- [x] If `dispatchChanges` is called after `destroy()` has started but the view is still valid, allow the write to proceed (the `lastKnownFrom` fallback from task 1 handles position lookup)
+- [x] Write tests simulating the blur-during-navigation sequence: detach DOM -> blur fires -> onChange -> dispatchChanges should succeed
+- [x] Run project test suite - must pass before task 4
 
 ### Task 4: Add trailing newline fix
 

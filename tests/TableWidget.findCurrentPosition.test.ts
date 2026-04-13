@@ -206,17 +206,19 @@ describe('TableWidget.findCurrentPosition', () => {
   });
 
   describe('destroyed widget', () => {
-    test('returns null when isDestroyed is true', () => {
+    test('still resolves position when isDestroyed is true (guard is in dispatchChanges)', () => {
       const widget = new TableWidget(new Map(), new Map());
       const decoSet = createDecoSetWithWidget(widget, 0, 50);
       const view = createMockView(decoSet, mockField);
 
       setPrivate(widget, 'isDestroyed', true);
-      setPrivate(widget, 'container', { isConnected: true });
+      setPrivate(widget, 'container', { isConnected: false });
 
       const result = findCurrentPosition(widget, view);
 
-      expect(result).toBeNull();
+      // findCurrentPosition no longer checks isDestroyed; the real guard
+      // is in dispatchChanges which bails when this.view is undefined.
+      expect(result).toEqual({ from: 0, to: 50 });
     });
   });
 

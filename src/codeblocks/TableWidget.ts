@@ -81,10 +81,11 @@ export class TableWidget extends WidgetType {
   }
 
   private findCurrentPosition(view: EditorView): { from: number; to: number } | null {
-    if (this.isDestroyed) {
-      return null;
-    }
-
+    // No isDestroyed guard here: after destroy() completes, this.view is
+    // undefined so dispatchChanges already bails out before calling this
+    // method.  Removing the guard lets blur-triggered writes succeed when
+    // they fire during the destroy() window (DOM detached, isDestroyed
+    // not yet true) or during unmount().
     const field = getTableField();
     if (!field) return null;
 
