@@ -150,14 +150,18 @@ export class TableWidget extends WidgetType {
 
     const newText = this.formatter.format({ categories, rows });
 
-    this.view.dispatch({
-      changes: {
-        from: pos.from,
-        to: pos.to,
-        insert: newText,
-      },
-      annotations: widgetChangeAnnotation.of(true),
-    });
+    try {
+      this.view.dispatch({
+        changes: {
+          from: pos.from,
+          to: pos.to,
+          insert: newText,
+        },
+        annotations: widgetChangeAnnotation.of(true),
+      });
+    } catch {
+      return false;
+    }
 
     return true;
   }

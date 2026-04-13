@@ -225,4 +225,22 @@ describe('TableWidget blur-during-navigation', () => {
     expect(call.changes.from).toBe(100);
     expect(call.changes.to).toBe(200);
   });
+
+  test('dispatchChanges does not throw when view.dispatch fails during blur', () => {
+    // Scenario: blur fires during unmount, view.dispatch throws because
+    // CodeMirror has partially torn down. dispatchChanges should catch the
+    // error and return false instead of propagating an uncaught exception.
+    const categories = new Map([['cat1', 'Food']]);
+    const rows = new Map([
+      ['cat1', [{ id: 'r1', checked: false, name: 'Groceries', amount: 50, comment: '' }]],
+    ]);
+    const widget = new TableWidget(categories, rows);
+    const { dispatchMock } = setupWidget(widget, { containerConnected: false });
+
+    dispatchMock.mockImplementation(() => {
+      throw new Error('view has been destroyed');
+    });
+
+    expect(() => callDispatchChanges(widget, categories, rows)).not.toThrow();
+  });
 });
