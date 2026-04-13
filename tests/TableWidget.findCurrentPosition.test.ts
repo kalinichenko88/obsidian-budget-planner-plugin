@@ -87,7 +87,7 @@ describe('TableWidget.findCurrentPosition', () => {
       expect(getPrivate(widget, 'lastKnownFrom')).toBe(100);
     });
 
-    test('returns null when posAtDOM does not fall within any decoration range', () => {
+    test('falls through to identity lookup when posAtDOM does not match any range', () => {
       const widget = new TableWidget(new Map(), new Map());
       const decoSet = createDecoSetWithWidget(widget, 0, 50);
       // posAtDOM returns 999, outside the 0-50 range
@@ -97,7 +97,8 @@ describe('TableWidget.findCurrentPosition', () => {
 
       const result = findCurrentPosition(widget, view);
 
-      expect(result).toBeNull();
+      // Falls through to identity-based lookup which finds the widget
+      expect(result).toEqual({ from: 0, to: 50 });
     });
   });
 

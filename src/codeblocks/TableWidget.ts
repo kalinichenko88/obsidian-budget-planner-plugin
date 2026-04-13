@@ -96,13 +96,13 @@ export class TableWidget extends WidgetType {
         const decoSet = view.state.field(field);
         const iter = decoSet.iter();
         while (iter.value) {
-          if (domPos >= iter.from && domPos < iter.to) {
+          if (domPos >= iter.from && domPos < iter.to && iter.value.spec.widget === this) {
             this.lastKnownFrom = iter.from;
             return { from: iter.from, to: iter.to };
           }
           iter.next();
         }
-        return null;
+        // No match via posAtDOM — fall through to identity-based lookup
       } catch {
         // Fall through to disconnected path
       }
@@ -138,14 +138,14 @@ export class TableWidget extends WidgetType {
     }
   }
 
-  private dispatchChanges(categories: TableCategories, rows: TableRows): void {
+  private dispatchChanges(categories: TableCategories, rows: TableRows): boolean {
     if (!this.view || !this.formatter) {
-      return;
+      return false;
     }
 
     const pos = this.findCurrentPosition(this.view);
     if (pos === null) {
-      return;
+      return false;
     }
 
     const newText = this.formatter.format({ categories, rows });
@@ -158,6 +158,8 @@ export class TableWidget extends WidgetType {
       },
       annotations: widgetChangeAnnotation.of(true),
     });
+
+    return true;
   }
 
   toDOM(view: EditorView): HTMLElement {
@@ -175,8 +177,9 @@ export class TableWidget extends WidgetType {
         tableStore,
         tableStateStore,
         onTableChange: (categories: TableCategories, rows: TableRows) => {
-          this.dispatchChanges(categories, rows);
-          this.dirty = false;
+          if (this.dispatchChanges(categories, rows)) {
+            this.dirty = false;
+          }
         },
         markDirty: () => {
           this.dirty = true;

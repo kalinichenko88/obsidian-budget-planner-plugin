@@ -36,7 +36,7 @@ npm run typecheck        # Svelte + TypeScript type checking
 
 `src/codeblocks/tableExtension.ts` — StateField-based decoration that detects ` ```budget ``` ` blocks via regex and replaces them with `TableWidget` instances. Uses incremental updates: widget-dispatched changes (tagged with `widgetChangeAnnotation`) and external changes without fence markers use `RangeSet.map()` instead of full rebuild.
 
-`src/codeblocks/TableWidget.ts` — CodeMirror `WidgetType` that mounts a Svelte `Table` component. Handles bidirectional sync between markdown text and the interactive UI with immediate writes on every store mutation. Position lookup uses two paths: connected DOM uses `posAtDOM`, disconnected DOM (during page navigation / widget teardown) falls back to decoration set iteration matching by widget identity with a `lastKnownFrom` hint. `destroy()` flushes any dirty store state to the document before `unmount()` to prevent data loss during navigation.
+`src/codeblocks/TableWidget.ts` — CodeMirror `WidgetType` that mounts a Svelte `Table` component. Handles bidirectional sync between markdown text and the interactive UI with immediate writes on every store mutation. Position lookup uses two paths: connected DOM uses `posAtDOM` with widget identity verification, falling through to identity-only lookup on mismatch; disconnected DOM (during page navigation / widget teardown) uses decoration set iteration matching by widget identity with a `lastKnownFrom` hint. `destroy()` flushes any dirty store state to the document before `unmount()` to prevent data loss during navigation.
 
 ### Parser / Formatter (Data Layer)
 

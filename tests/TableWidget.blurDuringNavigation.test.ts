@@ -104,7 +104,8 @@ describe('TableWidget blur-during-navigation', () => {
     const call = dispatchMock.mock.calls[0][0];
     expect(call.changes.from).toBe(0);
     expect(call.changes.to).toBe(100);
-    expect(typeof call.changes.insert).toBe('string');
+    expect(call.changes.insert).toContain('Food');
+    expect(call.changes.insert).toContain('Groceries');
   });
 
   test('blur-triggered write during unmount in destroy() succeeds', () => {
@@ -132,6 +133,8 @@ describe('TableWidget blur-during-navigation', () => {
     const call = dispatchMock.mock.calls[0][0];
     expect(call.changes.from).toBe(0);
     expect(call.changes.to).toBe(100);
+    expect(call.changes.insert).toContain('Food');
+    expect(call.changes.insert).toContain('Updated');
   });
 
   test('dispatchChanges is no-op after destroy() completes (view cleared)', () => {
