@@ -85,9 +85,9 @@ The `setTimeout` in `toDOM()` (line 167) dispatches a change without `widgetChan
 
 - Modify: `src/codeblocks/TableWidget.ts`
 
-- [ ] Add `widgetChangeAnnotation.of(true)` to the trailing newline dispatch at line 172 so it takes the incremental remap path instead of potentially triggering `changesAffectBlockStructure`
-- [ ] Write a test verifying the trailing newline insertion uses the correct annotation
-- [ ] Run project test suite - must pass before task 5
+- [x] Add `widgetChangeAnnotation.of(true)` to the trailing newline dispatch at line 172 so it takes the incremental remap path instead of potentially triggering `changesAffectBlockStructure`
+- [x] Write a test verifying the trailing newline insertion uses the correct annotation
+- [x] Run project test suite - must pass before task 5
 
 ### Task 5: Verify acceptance criteria
 

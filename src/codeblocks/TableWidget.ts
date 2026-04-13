@@ -187,19 +187,21 @@ export class TableWidget extends WidgetType {
     // When the budget block is the last thing in the document, the replace
     // decoration ends at doc.length, leaving no cursor position after the
     // widget. Defer a newline insertion so the user can type below the table.
-    setTimeout(() => {
-      if (this.isDestroyed || !this.view) return;
-
-      const pos = this.findCurrentPosition(this.view);
-      if (pos && pos.to === this.view.state.doc.length) {
-        this.view.dispatch({
-          changes: { from: pos.to, insert: '\n' },
-          annotations: Transaction.addToHistory.of(false),
-        });
-      }
-    });
+    setTimeout(() => this.ensureTrailingNewline());
 
     return container;
+  }
+
+  private ensureTrailingNewline(): void {
+    if (this.isDestroyed || !this.view) return;
+
+    const pos = this.findCurrentPosition(this.view);
+    if (pos && pos.to === this.view.state.doc.length) {
+      this.view.dispatch({
+        changes: { from: pos.to, insert: '\n' },
+        annotations: [Transaction.addToHistory.of(false), widgetChangeAnnotation.of(true)],
+      });
+    }
   }
 
   destroy(): void {
