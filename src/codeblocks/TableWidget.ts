@@ -208,10 +208,14 @@ export class TableWidget extends WidgetType {
 
     const pos = this.findCurrentPosition(this.view);
     if (pos && pos.to === this.view.state.doc.length) {
-      this.view.dispatch({
-        changes: { from: pos.to, insert: '\n' },
-        annotations: [Transaction.addToHistory.of(false), widgetChangeAnnotation.of(true)],
-      });
+      try {
+        this.view.dispatch({
+          changes: { from: pos.to, insert: '\n' },
+          annotations: [Transaction.addToHistory.of(false), widgetChangeAnnotation.of(true)],
+        });
+      } catch {
+        // view.dispatch may throw if CodeMirror has already torn down
+      }
     }
   }
 
@@ -221,7 +225,9 @@ export class TableWidget extends WidgetType {
     if (this.dirty && this.tableStore && this.view) {
       try {
         const state = get(this.tableStore);
-        this.dispatchChanges(state.categories, state.rows);
+        if (this.dispatchChanges(state.categories, state.rows)) {
+          this.dirty = false;
+        }
       } catch {
         // view.dispatch may throw if CodeMirror has already torn down
       }
