@@ -6,7 +6,7 @@ import type { DecorationSet } from '@codemirror/view';
 
 vi.mock('obsidian', () => ({
   Menu: class {},
-  getIcon: () => null,
+  getIcon: (): null => null,
 }));
 
 vi.mock('svelte', () => ({
@@ -25,10 +25,12 @@ function createDecoSetWithWidget(widget: TableWidget, from: number, to: number):
 }
 
 function setPrivate(widget: TableWidget, field: string, value: unknown): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (widget as any)[field] = value;
 }
 
 function callEnsureTrailingNewline(widget: TableWidget): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (widget as any).ensureTrailingNewline();
 }
 
@@ -82,6 +84,7 @@ describe('TableWidget trailing newline', () => {
     expect(dispatchMock).toHaveBeenCalledOnce();
     const call = dispatchMock.mock.calls[0][0];
     const annotations = Array.isArray(call.annotations) ? call.annotations : [call.annotations];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(annotations.some((a: any) => a.type === widgetChangeAnnotation)).toBe(true);
   });
 
@@ -94,6 +97,7 @@ describe('TableWidget trailing newline', () => {
     expect(dispatchMock).toHaveBeenCalledOnce();
     const call = dispatchMock.mock.calls[0][0];
     const annotations = Array.isArray(call.annotations) ? call.annotations : [call.annotations];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect(annotations.some((a: any) => a.type === Transaction.addToHistory)).toBe(true);
   });
 

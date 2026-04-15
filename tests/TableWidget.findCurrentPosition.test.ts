@@ -6,7 +6,7 @@ import type { DecorationSet } from '@codemirror/view';
 
 vi.mock('obsidian', () => ({
   Menu: class {},
-  getIcon: () => null,
+  getIcon: (): null => null,
 }));
 
 import { TableWidget } from '@/codeblocks/TableWidget';
@@ -39,14 +39,17 @@ function findCurrentPosition(
   widget: TableWidget,
   view: EditorView
 ): { from: number; to: number } | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (widget as any).findCurrentPosition(view);
 }
 
 function setPrivate(widget: TableWidget, field: string, value: unknown): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (widget as any)[field] = value;
 }
 
 function getPrivate(widget: TableWidget, field: string): unknown {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (widget as any)[field];
 }
 
@@ -98,6 +101,21 @@ describe('TableWidget.findCurrentPosition', () => {
       const result = findCurrentPosition(widget, view);
 
       // Falls through to identity-based lookup which finds the widget
+      expect(result).toEqual({ from: 0, to: 50 });
+    });
+
+    test('finds position even when decoration stores a different equal widget instance', () => {
+      const liveWidget = new TableWidget(new Map(), new Map());
+      const staleWidget = new TableWidget(new Map(), new Map());
+      expect(staleWidget.eq(liveWidget)).toBe(true);
+
+      const decoSet = createDecoSetWithWidget(staleWidget, 0, 50);
+      const view = createMockView(decoSet, mockField, 25);
+
+      setPrivate(liveWidget, 'container', { isConnected: true });
+
+      const result = findCurrentPosition(liveWidget, view);
+
       expect(result).toEqual({ from: 0, to: 50 });
     });
   });

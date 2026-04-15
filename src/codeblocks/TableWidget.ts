@@ -37,17 +37,16 @@ export class TableWidget extends WidgetType {
     if (this.categories.size !== other.categories.size) return false;
     if (this.rows.size !== other.rows.size) return false;
 
-    const otherCatEntries = other.categories.entries();
-    for (const [thisKey, thisValue] of this.categories.entries()) {
-      const otherEntry = otherCatEntries.next().value as [string, string];
-      if (thisKey !== otherEntry[0] || thisValue !== otherEntry[1]) return false;
+    const otherCatValues = other.categories.values();
+    for (const thisValue of this.categories.values()) {
+      const otherValue = otherCatValues.next().value as string;
+      if (thisValue !== otherValue) return false;
     }
 
-    const otherRowEntries = other.rows.entries();
-    for (const [thisKey, thisRows] of this.rows.entries()) {
-      const otherEntry = otherRowEntries.next().value as [string, TableRow[]];
-      if (thisKey !== otherEntry[0]) return false;
-      const otherRows = otherEntry[1];
+    const otherRowValues = [...other.rows.values()];
+    let i = 0;
+    for (const thisRows of this.rows.values()) {
+      const otherRows = otherRowValues[i++];
       if (thisRows.length !== otherRows.length) return false;
       for (let j = 0; j < thisRows.length; j++) {
         if (!this.isRowEqual(thisRows[j], otherRows[j])) return false;
@@ -59,7 +58,6 @@ export class TableWidget extends WidgetType {
 
   private isRowEqual(a: TableRow, b: TableRow): boolean {
     return (
-      a.id === b.id &&
       a.checked === b.checked &&
       a.name === b.name &&
       a.amount === b.amount &&
@@ -89,20 +87,23 @@ export class TableWidget extends WidgetType {
     const field = getTableField();
     if (!field) return null;
 
-    // Connected DOM path: use posAtDOM for precise lookup
+    // Connected DOM path: use posAtDOM for precise lookup.
+    // Position + range containment is sufficient — replace decorations don't
+    // overlap, so at most one decoration covers any given position. No identity
+    // check needed; this avoids mismatches when buildDeco reuses a stale widget
+    // instance after deleting one of several identical blocks.
     if (this.container && this.container.isConnected) {
       try {
         const domPos = view.posAtDOM(this.container);
         const decoSet = view.state.field(field);
         const iter = decoSet.iter();
         while (iter.value) {
-          if (domPos >= iter.from && domPos < iter.to && iter.value.spec.widget === this) {
+          if (domPos >= iter.from && domPos < iter.to) {
             this.lastKnownFrom = iter.from;
             return { from: iter.from, to: iter.to };
           }
           iter.next();
         }
-        // No match via posAtDOM — fall through to identity-based lookup
       } catch {
         // Fall through to disconnected path
       }
@@ -162,6 +163,9 @@ export class TableWidget extends WidgetType {
     } catch {
       return false;
     }
+
+    this.categories = categories;
+    this.rows = rows;
 
     return true;
   }

@@ -7,7 +7,7 @@ import { writable } from 'svelte/store';
 
 vi.mock('obsidian', () => ({
   Menu: class {},
-  getIcon: () => null,
+  getIcon: (): null => null,
 }));
 
 vi.mock('svelte', () => ({
@@ -27,6 +27,7 @@ function createDecoSetWithWidget(widget: TableWidget, from: number, to: number):
 }
 
 function setPrivate(widget: TableWidget, field: string, value: unknown): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (widget as any)[field] = value;
 }
 
@@ -40,6 +41,7 @@ function callDispatchChanges(
     Array<{ id: string; checked: boolean; name: string; amount: number; comment: string }>
   >
 ): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (widget as any).dispatchChanges(categories, rows);
 }
 
