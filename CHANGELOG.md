@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded core tooling (Vite 8, TypeScript 6, ESLint 10, Vitest 4) and refreshed dependencies, refactored internal state management and decoration updates, expanded test coverage, and rebuilt the release workflow around a `/release` Claude Code slash command with automated CHANGELOG extraction.
 
+[Unreleased]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.4...HEAD
 [1.2.4]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.1...1.2.2
