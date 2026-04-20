@@ -1,5 +1,5 @@
 import { Transaction } from '@codemirror/state';
-import { EditorView, WidgetType } from '@codemirror/view';
+import { EditorView, WidgetType, type DecorationSet } from '@codemirror/view';
 import { mount, unmount } from 'svelte';
 import { get, writable } from 'svelte/store';
 
@@ -43,10 +43,9 @@ export class TableWidget extends WidgetType {
       if (thisValue !== otherValue) return false;
     }
 
-    const otherRowValues = [...other.rows.values()];
-    let i = 0;
+    const otherRowValues = other.rows.values();
     for (const thisRows of this.rows.values()) {
-      const otherRows = otherRowValues[i++];
+      const otherRows = otherRowValues.next().value as TableRow[];
       if (thisRows.length !== otherRows.length) return false;
       for (let j = 0; j < thisRows.length; j++) {
         if (!this.isRowEqual(thisRows[j], otherRows[j])) return false;
@@ -79,64 +78,57 @@ export class TableWidget extends WidgetType {
   }
 
   private findCurrentPosition(view: EditorView): { from: number; to: number } | null {
-    // No isDestroyed guard here: after destroy() completes, this.view is
-    // undefined so dispatchChanges already bails out before calling this
-    // method.  Removing the guard lets blur-triggered writes succeed when
-    // they fire during the destroy() window (DOM detached, isDestroyed
-    // not yet true) or during unmount().
+    // No isDestroyed guard: blur-triggered writes during the destroy window
+    // need to succeed. dispatchChanges bails when this.view is null post-destroy.
     const field = getTableField();
     if (!field) return null;
 
-    // Connected DOM path: use posAtDOM for precise lookup.
-    // Position + range containment is sufficient — replace decorations don't
-    // overlap, so at most one decoration covers any given position. No identity
-    // check needed; this avoids mismatches when buildDeco reuses a stale widget
-    // instance after deleting one of several identical blocks.
-    if (this.container && this.container.isConnected) {
-      try {
-        const domPos = view.posAtDOM(this.container);
-        const decoSet = view.state.field(field);
-        const iter = decoSet.iter();
-        while (iter.value) {
-          if (domPos >= iter.from && domPos < iter.to) {
-            this.lastKnownFrom = iter.from;
-            return { from: iter.from, to: iter.to };
-          }
-          iter.next();
-        }
-      } catch {
-        // Fall through to disconnected path
-      }
-    }
-
-    // Disconnected DOM fallback: iterate decoration set, match by widget identity
+    let decoSet: DecorationSet;
     try {
-      const decoSet = view.state.field(field);
-      const iter = decoSet.iter(this.lastKnownFrom ?? 0);
-      while (iter.value) {
-        if (iter.value.spec.widget === this) {
-          this.lastKnownFrom = iter.from;
-          return { from: iter.from, to: iter.to };
-        }
-        iter.next();
-      }
-
-      // If hint-based search missed (positions shifted), scan from the start
-      if (this.lastKnownFrom !== null && this.lastKnownFrom > 0) {
-        const fullIter = decoSet.iter();
-        while (fullIter.value) {
-          if (fullIter.value.spec.widget === this) {
-            this.lastKnownFrom = fullIter.from;
-            return { from: fullIter.from, to: fullIter.to };
-          }
-          fullIter.next();
-        }
-      }
-
-      return null;
+      decoSet = view.state.field(field);
     } catch {
       return null;
     }
+
+    // Connected DOM: range containment via posAtDOM. Replace decorations don't
+    // overlap, so identity check isn't needed — buildDeco may reuse a stale
+    // widget instance after deleting one of several identical blocks.
+    if (this.container?.isConnected) {
+      try {
+        const domPos = view.posAtDOM(this.container);
+        const iter = decoSet.iter(domPos);
+        if (iter.value && domPos >= iter.from && domPos < iter.to) {
+          this.lastKnownFrom = iter.from;
+          return { from: iter.from, to: iter.to };
+        }
+      } catch {
+        // Fall through to identity match
+      }
+    }
+
+    // Disconnected DOM: match by widget identity. Try the hint first, then
+    // rescan the prefix in case positions shifted earlier in the doc.
+    const start = this.lastKnownFrom ?? 0;
+    const hit = this.scanForSelf(decoSet, start);
+    if (hit) return hit;
+    if (start > 0) return this.scanForSelf(decoSet, 0, start);
+    return null;
+  }
+
+  private scanForSelf(
+    decoSet: DecorationSet,
+    start: number,
+    endBefore = Infinity
+  ): { from: number; to: number } | null {
+    const iter = decoSet.iter(start);
+    while (iter.value && iter.from < endBefore) {
+      if (iter.value.spec.widget === this) {
+        this.lastKnownFrom = iter.from;
+        return { from: iter.from, to: iter.to };
+      }
+      iter.next();
+    }
+    return null;
   }
 
   private dispatchChanges(categories: TableCategories, rows: TableRows): boolean {
@@ -220,8 +212,7 @@ export class TableWidget extends WidgetType {
   }
 
   destroy(): void {
-    // Flush BEFORE unmount so the Svelte component is still alive and store state is fresh.
-    // The disconnected-DOM fallback in findCurrentPosition handles position lookup.
+    // Flush BEFORE unmount so the Svelte store still holds the latest values.
     if (this.dirty && this.tableStore && this.view) {
       try {
         const state = get(this.tableStore);
