@@ -5,6 +5,13 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Edits to budget table cells are no longer silently lost when navigating to another page while a cell is focused.
+- The trailing-newline insertion after budget blocks now uses the correct annotation, preventing unnecessary widget rebuilds.
+
 ## [1.2.4] - 2026-04-12
 
 ### Fixed
@@ -64,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded core tooling (Vite 8, TypeScript 6, ESLint 10, Vitest 4) and refreshed dependencies, refactored internal state management and decoration updates, expanded test coverage, and rebuilt the release workflow around a `/release` Claude Code slash command with automated CHANGELOG extraction.
 
+[Unreleased]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.4...HEAD
 [1.2.4]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.1...1.2.2
