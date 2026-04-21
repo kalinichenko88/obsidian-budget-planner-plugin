@@ -16,6 +16,6 @@ export function registerTableField(field: StateField<DecorationSet>): void {
   _tableFieldRef.current = field;
 }
 
-export function getTableField(): StateField<DecorationSet> | undefined {
+export function getTableField() {
   return _tableFieldRef.current;
 }
