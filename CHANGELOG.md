@@ -5,6 +5,18 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.8] - 2026-07-25
+
+### Fixed
+
+- Plugin settings are now searchable from Obsidian's settings search on version 1.13 and later.
+- Production builds no longer depend on the ambient build environment, so the released `main.js` reproduces byte for byte from a clean checkout.
+- Cleared the remaining Obsidian plugin review warnings around typing, DOM helpers, and dependency declarations.
+
+### Under the hood
+
+- Releases now attach only `main.js` and `manifest.json` with a build-provenance attestation, and stale repository templates were removed.
+
 ## [1.2.7] - 2026-07-25
 
 ### Fixed
@@ -86,6 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded core tooling (Vite 8, TypeScript 6, ESLint 10, Vitest 4) and refreshed dependencies, refactored internal state management and decoration updates, expanded test coverage, and rebuilt the release workflow around a `/release` Claude Code slash command with automated CHANGELOG extraction.
 
+[1.2.8]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.4...1.2.5
