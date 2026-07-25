@@ -2,7 +2,7 @@
 
 ## Adding a new code block
 
-Use the command palette (**Cmd+P** on macOS or **Ctrl+P** on Windows/Linux) and search for `Insert Budget Planner`.
+Use the command palette (**Cmd+P** on macOS or **Ctrl+P** on Windows/Linux) and run `Budget Planner: Insert budget block`.
 
 ![adding-block](assets/adding-block.gif)
 
