@@ -5,7 +5,6 @@ import { get, writable } from 'svelte/store';
 
 import type {
   TableCategories,
-  TableRow,
   TableRows,
   TableStateStore,
   TableStore,
@@ -24,44 +23,18 @@ export class TableWidget extends WidgetType {
   private tableStore: TableStore | null = null;
   private formatter: BudgetCodeFormatter | null = null;
   private dirty = false;
-  private lastKnownFrom: number | null = null;
 
   constructor(
     public categories: TableCategories,
-    public rows: TableRows
+    public rows: TableRows,
+    /** Block text this widget was built from; kept in sync on every write. */
+    public src = ''
   ) {
     super();
   }
 
   eq(other: TableWidget): boolean {
-    if (this.categories.size !== other.categories.size) return false;
-    if (this.rows.size !== other.rows.size) return false;
-
-    const otherCatValues = other.categories.values();
-    for (const thisValue of this.categories.values()) {
-      const otherValue = otherCatValues.next().value as string;
-      if (thisValue !== otherValue) return false;
-    }
-
-    const otherRowValues = other.rows.values();
-    for (const thisRows of this.rows.values()) {
-      const otherRows = otherRowValues.next().value as TableRow[];
-      if (thisRows.length !== otherRows.length) return false;
-      for (let j = 0; j < thisRows.length; j++) {
-        if (!this.isRowEqual(thisRows[j], otherRows[j])) return false;
-      }
-    }
-
-    return true;
-  }
-
-  private isRowEqual(a: TableRow, b: TableRow): boolean {
-    return (
-      a.checked === b.checked &&
-      a.name === b.name &&
-      a.amount === b.amount &&
-      a.comment === b.comment
-    );
+    return this.src === other.src;
   }
 
   private createTableStore(): [TableStore, TableStateStore] {
@@ -98,7 +71,6 @@ export class TableWidget extends WidgetType {
         const domPos = view.posAtDOM(this.container);
         const iter = decoSet.iter(domPos);
         if (iter.value && domPos >= iter.from && domPos < iter.to) {
-          this.lastKnownFrom = iter.from;
           return { from: iter.from, to: iter.to };
         }
       } catch {
@@ -106,26 +78,10 @@ export class TableWidget extends WidgetType {
       }
     }
 
-    // Disconnected DOM: match by widget identity. Try the hint first, then
-    // rescan the prefix in case positions shifted earlier in the doc.
-    const start = this.lastKnownFrom ?? 0;
-    const hit = this.scanForSelf(decoSet, start);
-    if (hit) return hit;
-    if (start > 0) return this.scanForSelf(decoSet, 0, start);
-    return null;
-  }
-
-  private scanForSelf(
-    decoSet: DecorationSet,
-    start: number,
-    endBefore = Infinity
-  ): { from: number; to: number } | null {
-    const iter = decoSet.iter(start);
-    while (iter.value && iter.from < endBefore) {
-      if (iter.value.spec.widget === this) {
-        this.lastKnownFrom = iter.from;
-        return { from: iter.from, to: iter.to };
-      }
+    // Disconnected DOM (page navigation / teardown): match by widget identity.
+    const iter = decoSet.iter();
+    while (iter.value) {
+      if (iter.value.spec.widget === this) return { from: iter.from, to: iter.to };
       iter.next();
     }
     return null;
@@ -141,9 +97,9 @@ export class TableWidget extends WidgetType {
       return false;
     }
 
-    const newText = this.formatter.format({ categories, rows });
-
+    let newText: string;
     try {
+      newText = this.formatter.format({ categories, rows });
       this.view.dispatch({
         changes: {
           from: pos.from,
@@ -158,6 +114,7 @@ export class TableWidget extends WidgetType {
 
     this.categories = categories;
     this.rows = rows;
+    this.src = newText;
 
     return true;
   }
@@ -213,15 +170,10 @@ export class TableWidget extends WidgetType {
 
   destroy(): void {
     // Flush BEFORE unmount so the Svelte store still holds the latest values.
+    // dispatchChanges swallows format/dispatch failures during teardown.
     if (this.dirty && this.tableStore && this.view) {
-      try {
-        const state = get(this.tableStore);
-        if (this.dispatchChanges(state.categories, state.rows)) {
-          this.dirty = false;
-        }
-      } catch {
-        // view.dispatch may throw if CodeMirror has already torn down
-      }
+      const state = get(this.tableStore);
+      this.dispatchChanges(state.categories, state.rows);
     }
 
     if (this.component) {
