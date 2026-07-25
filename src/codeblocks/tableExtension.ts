@@ -36,19 +36,16 @@ function buildDeco(
   const builder = new RangeSetBuilder<Decoration>();
   const docText = state.doc.toString();
 
-  // Skip widgets whose range collapsed to a point — a surviving identical
-  // block must not reuse a deleted widget's instance.
+  // Surviving widgets keyed by their post-change start. Ranges that collapsed
+  // to a point are skipped — a surviving identical block must not reuse a
+  // deleted widget's instance.
   const oldByFrom = new Map<number, TableWidget>();
   if (oldSet && changes) {
-    const iter = oldSet.iter();
+    const iter = oldSet.map(changes).iter();
     while (iter.value) {
       const w = iter.value.spec.widget;
-      if (w instanceof TableWidget) {
-        const mappedFrom = changes.mapPos(iter.from, 1);
-        const mappedTo = changes.mapPos(iter.to, -1);
-        if (mappedTo > mappedFrom) {
-          oldByFrom.set(mappedFrom, w);
-        }
+      if (w instanceof TableWidget && iter.to > iter.from) {
+        oldByFrom.set(iter.from, w);
       }
       iter.next();
     }
@@ -64,12 +61,11 @@ function buildDeco(
     const parser = new BudgetCodeParser(inner);
     const { categories, rows } = parser.parse();
 
-    // Reuse the old widget instance when content is identical so that
+    // Reuse the old widget instance when the block text is identical so that
     // callbacks captured in toDOM() can still locate themselves via the
     // `iter.value.spec.widget === this` check in findCurrentPosition().
-    const candidate = new TableWidget(categories, rows);
     const prior = oldByFrom.get(from);
-    const widget = prior?.eq(candidate) ? prior : candidate;
+    const widget = prior?.src === full ? prior : new TableWidget(categories, rows, full);
 
     builder.add(
       from,
