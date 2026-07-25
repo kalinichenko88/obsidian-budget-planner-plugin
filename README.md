@@ -9,13 +9,15 @@
 
 ## ✨ Features
 
-- 📝 Native markdown code block syntax
-- 📊 Category-based expense organization
-- ✅ Interactive checkboxes for expense tracking
-- 🔄 Auto-formatting and alignment
-- 📈 Column sorting capabilities
-- 💰 Automatic category and total summations
-- 🔧 Seamless Obsidian integration
+- 📝 Plain markdown storage — the table is just a `budget` code block, editable by hand
+- 📊 Categories with per-category count and sum (shown when there is more than one category)
+- ✅ Click a row's checkbox to mark it paid; totals also show unchecked count and sum
+- ✏️ Inline editing of name, amount and comment (Enter saves, Escape cancels)
+- 🔀 Drag rows between categories and reorder categories via the grip handle
+- 📈 Right-click a column header (`#`, `Name`, `Amount`) to sort rows inside every category
+- 🖱️ Right-click a row or category for new row / new category / delete
+- 🔄 Markdown is rewritten column-aligned on every change
+- ⚙️ Configurable default block template in plugin settings
 
 [Features docs](docs/features.md)
 
@@ -24,10 +26,12 @@
 ### Quick Start
 
 1. Open a note in Obsidian where you want to add a budget planner
-2. Use the command palette (**Cmd+P** on macOS or **Ctrl+P** on Windows/Linux) and search for `Insert Budget Planner`
+2. Use the command palette (**Cmd+P** on macOS or **Ctrl+P** on Windows/Linux) and run `Budget Planner: Insert budget block`
 3. Start editing your budget!
 
-### Examples
+The table renders in editing view (Live Preview and Source mode). In Reading view the block stays a plain code block.
+
+### Syntax
 
 Create budgets using the `budget` code block:
 
@@ -37,10 +41,23 @@ Online Services:
 	[ ] | Youtube   | 16.99
 	[ ] | 1Password | 6.95
 Entertainment:
-	[ ] | Netflix   | 12.99
+	[ ] | Netflix   | 12.99  | Family plan
 ```
 
+- A line ending with `:` starts a category
+- Row cells are `[x]/[ ] | name | amount | comment`; the checkbox and the comment are optional
+- Lines without `|` are ignored
+- Amounts are parsed as numbers — anything else in the cell is stripped, an unparsable amount becomes `0`
+
 ## 🚀 Installation
+
+### From Obsidian (recommended)
+
+1. Open **Settings → Community Plugins → Browse**
+2. Search for **Budget Planner** ([community plugin page](https://community.obsidian.md/plugins/budget-planner))
+3. Install and enable it
+
+### Manual
 
 1. Download `main.js` and `manifest.json` from the latest [GitHub release](https://github.com/kalinichenko88/obsidian-budget-planner-plugin/releases)
 2. Create a `budget-planner/` folder inside your vault's `.obsidian/plugins/` folder and put both files in it
