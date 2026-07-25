@@ -22,7 +22,8 @@ npm run lint:fix         # ESLint auto-fix
 npm run format           # Prettier format
 npm run format:check     # Prettier check only
 npm run typecheck        # Svelte + TypeScript type checking
-/release X.Y.Z           # Cut a release via Claude Code (see docs/release-process.md)
+/release [X.Y.Z]         # Cut a release via the release skill; version derived from
+                         # commits when omitted (see docs/release-process.md)
 ```
 
 ## Architecture
