@@ -40,7 +40,8 @@ You do **not** need to know the version number — the skill derives it.
 
 GitHub Actions runs quality checks, builds, extracts the new version's section from
 `CHANGELOG.md`, and publishes a release with that section as the body plus
-`main.js`, `manifest.json`, and `budget-planner-X.Y.Z.zip` as assets.
+`main.js` and `manifest.json` as assets, with a build-provenance attestation for
+`main.js`.
 
 ## Recovery
 
