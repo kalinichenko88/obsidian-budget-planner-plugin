@@ -13,7 +13,7 @@
   "main": "dist/main.js",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development vite build --watch",
+    "dev": "vite build --watch --mode development",
     "build": "vite build",
     "version": "node scripts/version-bump.js && git add manifest.json versions.json package-lock.json",
     "lint": "eslint --config eslint.config.js .",
