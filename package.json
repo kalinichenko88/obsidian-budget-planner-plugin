@@ -50,7 +50,7 @@
     "eslint-plugin-svelte": "^3.17.0",
     "eslint-plugin-unicorn": "^72.0.0",
     "globals": "^17.7.0",
-    "obsidian": "latest",
+    "obsidian": "1.13.1",
     "prettier": "^3.8.1",
     "prettier-plugin-svelte": "^4.1.1",
     "svelte": "^5.55.3",
