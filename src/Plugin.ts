@@ -8,7 +8,8 @@ class BudgetPlannerPlugin extends Plugin {
   declare public settings: Settings;
 
   private async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const data = (await this.loadData()) as Partial<Settings> | null;
+    this.settings = { ...DEFAULT_SETTINGS, ...data };
   }
 
   public async saveSettings(): Promise<void> {

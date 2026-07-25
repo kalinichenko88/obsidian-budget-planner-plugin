@@ -43,7 +43,7 @@ function buildDeco(
   if (oldSet && changes) {
     const iter = oldSet.map(changes).iter();
     while (iter.value) {
-      const w = iter.value.spec.widget;
+      const w = (iter.value.spec as { widget?: unknown }).widget;
       if (w instanceof TableWidget && iter.to > iter.from) {
         oldByFrom.set(iter.from, w);
       }
