@@ -5,6 +5,16 @@ All notable changes to this project are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.6] - 2026-07-25
+
+### Fixed
+
+- Restored type compatibility with the Obsidian plugin review bot in the shared constants module.
+
+### Under the hood
+
+- Upgraded build tooling and refreshed core dependencies, simplified the editor widget's position syncing (behavior-preserving), and reworked the release process into a skill with a local verification gate.
+
 ## [1.2.5] - 2026-04-20
 
 ### Fixed
@@ -70,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Upgraded core tooling (Vite 8, TypeScript 6, ESLint 10, Vitest 4) and refreshed dependencies, refactored internal state management and decoration updates, expanded test coverage, and rebuilt the release workflow around a `/release` Claude Code slash command with automated CHANGELOG extraction.
 
+[1.2.6]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.4...1.2.5
 [1.2.4]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/kalinichenko88/obsidian-budget-planner-plugin/compare/1.2.2...1.2.3
