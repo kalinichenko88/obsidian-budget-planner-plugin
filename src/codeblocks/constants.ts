@@ -16,6 +16,10 @@ export function registerTableField(field: StateField<DecorationSet>): void {
   _tableFieldRef.current = field;
 }
 
-export function getTableField() {
+// Annotated via `typeof`, not `StateField<DecorationSet> | undefined`: when the
+// Obsidian review bot fails to resolve @codemirror/* the types degrade to `any`,
+// and a written union containing `any` trips no-redundant-type-constituents
+// there (see 30ec1b6). An inferred annotation satisfies both linters.
+export function getTableField(): typeof _tableFieldRef.current {
   return _tableFieldRef.current;
 }
