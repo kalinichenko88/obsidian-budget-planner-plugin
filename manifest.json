@@ -4,7 +4,7 @@
   "version": "1.2.6",
   "minAppVersion": "0.16.0",
   "description": "A minimalist budget planning tool. Create, track, and manage budgets using markdown code blocks directly in your notes.",
-  "author": "Ivan Kalinichenko <ivan@kalinichenko.dev>",
+  "author": "Ivan Kalinichenko",
   "authorUrl": "https://github.com/kalinichenko88",
   "isDesktopOnly": false
 }
