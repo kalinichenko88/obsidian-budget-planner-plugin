@@ -80,6 +80,8 @@ export default [
     },
     rules: {
       ...typescript.configs['recommended'].rules,
+      // TS resolves globals itself (e.g. Obsidian's createDiv); no-undef only false-positives here
+      'no-undef': 'off',
       'prettier/prettier': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'warn',
@@ -106,7 +108,6 @@ export default [
     },
     processor: 'svelte/svelte',
     rules: {
-      ...sveltePlugin.configs.recommended.rules,
       'no-unused-vars': 'off',
       'prettier/prettier': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',

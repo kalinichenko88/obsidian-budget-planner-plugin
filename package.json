@@ -13,7 +13,7 @@
   "main": "dist/main.js",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development vite build --watch",
+    "dev": "vite build --watch --mode development",
     "build": "vite build",
     "version": "node scripts/version-bump.js && git add manifest.json versions.json package-lock.json",
     "lint": "eslint --config eslint.config.js .",
@@ -34,6 +34,8 @@
     "sortablejs": "^1.15.7"
   },
   "devDependencies": {
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6",
     "@eslint/js": "^10.0.1",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@testing-library/svelte": "^5.3.1",
@@ -42,7 +44,6 @@
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.58.1",
     "@typescript-eslint/type-utils": "^8.58.1",
-    "builtin-modules": "^5.0.0",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",

@@ -81,7 +81,9 @@ export class TableWidget extends WidgetType {
     // Disconnected DOM (page navigation / teardown): match by widget identity.
     const iter = decoSet.iter();
     while (iter.value) {
-      if (iter.value.spec.widget === this) return { from: iter.from, to: iter.to };
+      if ((iter.value.spec as { widget?: unknown }).widget === this) {
+        return { from: iter.from, to: iter.to };
+      }
       iter.next();
     }
     return null;
@@ -120,7 +122,7 @@ export class TableWidget extends WidgetType {
   }
 
   toDOM(view: EditorView): HTMLElement {
-    const container = document.createElement('div');
+    const container = createDiv();
     this.container = container;
     this.view = view;
     this.formatter = new BudgetCodeFormatter();
@@ -147,7 +149,7 @@ export class TableWidget extends WidgetType {
     // When the budget block is the last thing in the document, the replace
     // decoration ends at doc.length, leaving no cursor position after the
     // widget. Defer a newline insertion so the user can type below the table.
-    setTimeout(() => this.ensureTrailingNewline());
+    window.setTimeout(() => this.ensureTrailingNewline());
 
     return container;
   }
