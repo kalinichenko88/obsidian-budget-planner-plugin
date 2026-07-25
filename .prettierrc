@@ -13,8 +13,6 @@
       }
     }
   ],
-  "svelteStrictMode": false,
-  "svelteBracketNewLine": true,
   "svelteIndentScriptAndStyle": true,
   "svelteAllowShorthand": true
 }
