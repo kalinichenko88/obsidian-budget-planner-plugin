@@ -46,7 +46,7 @@ Entertainment:
 ```
 
 - A line ending with `:` starts a category
-- Row cells are `[x]/[ ] | name | amount | comment`; the checkbox and the comment are optional. The comment is everything after the third `|`, so `|` is safe to use inside it — but a `|` inside name or amount still splits the row wrong
+- Row cells are `[x]/[ ] | name | amount | comment`; the checkbox and the comment are optional. The comment is the whole rest of the line after the amount, so `|` is safe to use inside it — but a `|` inside name or amount still splits the row wrong
 - Lines without `|` are ignored
 - Amounts are parsed as numbers — anything else in the cell is stripped, an unparsable amount becomes `0`
 
