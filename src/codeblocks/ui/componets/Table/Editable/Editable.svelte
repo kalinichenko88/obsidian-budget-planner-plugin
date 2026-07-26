@@ -150,11 +150,9 @@
     />
   </div>
 {:else if canRenderMarkdown}
-  <!-- Rendered markdown can contain links, so this cell must not be a
-       role="button": ARIA makes a button's children presentational and the
-       link loses its role. The edit affordance is a sibling of the content
-       rather than its container — which also gives back the edit route for a
-       comment whose link fills the whole cell. -->
+  <!-- Not a role="button": ARIA makes a button's children presentational and a
+       rendered link loses its role. Hence the pencil — an edit route that survives a
+       link filling the cell. -->
   <div class="text truncating markdown">
     <span class="truncated" bind:this={containerEl}></span>
     <button class="edit" type="button" aria-label="Edit comment" onclick={startEditing}>
@@ -236,12 +234,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-  }
-
-  .markdown > .truncated {
-    flex: 1 1 auto;
-    width: auto;
-    min-width: 0;
   }
 
   .edit {
