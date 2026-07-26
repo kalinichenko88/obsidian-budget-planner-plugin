@@ -136,6 +136,10 @@ export class TableWidget extends WidgetType {
     let markdown: MarkdownContext | null = null;
 
     if (info) {
+      // ponytail: one Component per widget, not per cell. Child components
+      // (hover previews, embeds) accumulate across re-renders until the
+      // widget is destroyed. Move to per-cell children via addChild if a
+      // leak shows up.
       this.mdComponent = new Component();
       this.mdComponent.load();
       markdown = {

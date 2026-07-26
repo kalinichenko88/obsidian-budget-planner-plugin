@@ -105,15 +105,21 @@
     // Render detached and swap. MarkdownRenderer.render is async; the token
     // stops a slow render from landing on top of a newer one.
     const token = ++renderGeneration;
-    const staging = createDiv();
+    const staging = document.createElement('div');
 
-    void MarkdownRenderer.render(md.app, source, staging, md.sourcePath, md.component).then(() => {
-      if (token !== renderGeneration) {
-        return;
-      }
-      el.empty();
-      el.append(...staging.childNodes);
-    });
+    void MarkdownRenderer.render(md.app, source, staging, md.sourcePath, md.component)
+      .then(() => {
+        if (token !== renderGeneration) {
+          return;
+        }
+        el.empty();
+        el.append(...staging.childNodes);
+      })
+      .catch(() => {
+        if (token === renderGeneration) {
+          el.setText(source);
+        }
+      });
   });
 </script>
 
