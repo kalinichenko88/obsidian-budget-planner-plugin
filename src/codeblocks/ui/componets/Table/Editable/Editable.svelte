@@ -33,6 +33,18 @@
   let inputElement: HTMLInputElement | null = $state(null);
   let containerEl: HTMLElement | null = $state(null);
   let renderGeneration = 0;
+  let linkFillsCell = $state(false);
+
+  // Measured when the pointer arrives rather than after each render: the answer
+  // depends on the column width as much as on the text, and it is only ever read
+  // while the pointer is on this cell. Overflowing content leaves no blank strip
+  // to click, so with a link in it every visible pixel opens the link.
+  const checkLinkFillsCell = (): void => {
+    linkFillsCell =
+      containerEl !== null &&
+      containerEl.scrollWidth > containerEl.clientWidth &&
+      containerEl.querySelector('a') !== null;
+  };
 
   const startEditing = (event?: MouseEvent): void => {
     // A click that landed on a rendered link opens the link instead. The pencil
@@ -159,7 +171,12 @@
        rendered link loses its role. Hence the pencil — an edit route that survives a
        link filling the cell. -->
   <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-  <div class="text truncating markdown" onclick={startEditing}>
+  <div
+    class="text truncating markdown"
+    class:link-fills={linkFillsCell}
+    onclick={startEditing}
+    onmouseenter={checkLinkFillsCell}
+  >
     <span class="truncated" bind:this={containerEl}></span>
     <!-- No handler: the native click, including the one Enter/Space synthesizes,
          bubbles to the container. This button is the keyboard route in. -->
@@ -258,11 +275,11 @@
     cursor: pointer;
   }
 
-  /* Hover only reveals the pencil in a cell that rendered a link — the one case
-     where the click guard hands the click away and the cell itself stops being a
-     way in. The link is created by MarkdownRenderer, hence :global. Keyboard
-     focus reveals it everywhere: the container is not in the tab order. */
-  .markdown:hover > .truncated:has(:global(a)) + .edit,
+  /* Hover reveals the pencil only once a link has taken over the cell — the one
+     case where the click guard hands every click to the link and the cell itself
+     stops being a way in. Keyboard focus reveals it everywhere: the container is
+     not in the tab order, so this button is the only way in without a mouse. */
+  .markdown.link-fills:hover > .edit,
   .edit:focus-visible {
     opacity: 1;
   }
