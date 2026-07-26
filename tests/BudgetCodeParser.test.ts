@@ -166,4 +166,36 @@ describe('BudgetCodeParser', () => {
     expect(expenseRows).toHaveLength(1);
     expect(expenseRows[0].name).toBe('Rent');
   });
+
+  test('should keep an aliased wikilink in the comment', () => {
+    const code = 'Trip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+    const categoryId = Array.from(result.categories.keys())[0];
+    const rows = result.rows.get(categoryId) as TableRow[];
+
+    expect(rows[0].name).toBe('Hotel');
+    expect(rows[0].amount).toBe(1500);
+    expect(rows[0].comment).toBe('[[Trip/Rome|Rome]]');
+  });
+
+  test('should keep a comment made of several pipe-separated parts', () => {
+    const code = 'Trip:\n\t[ ] | Flight | 300 | a | b | c';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+    const categoryId = Array.from(result.categories.keys())[0];
+    const rows = result.rows.get(categoryId) as TableRow[];
+
+    expect(rows[0].comment).toBe('a | b | c');
+  });
+
+  test('should parse a row with no comment to an empty string', () => {
+    const code = 'Trip:\n\t[ ] | Flight | 300';
+    const parser = new BudgetCodeParser(code);
+    const result = parser.parse();
+    const categoryId = Array.from(result.categories.keys())[0];
+    const rows = result.rows.get(categoryId) as TableRow[];
+
+    expect(rows[0].comment).toBe('');
+  });
 });

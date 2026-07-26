@@ -1,5 +1,6 @@
 import type { TableCategories, TableRows, CategoryId, TableRow } from './models';
 import { generateId } from './helpers/generateId';
+import { splitRowCells } from './helpers/splitRowCells';
 
 type ParseReturn = {
   categories: TableCategories;
@@ -22,10 +23,6 @@ export class BudgetCodeParser {
 
   protected isCategoryRow(line: string): boolean {
     return line.endsWith(':') && !line.startsWith('\t');
-  }
-
-  protected isCheckboxCell(cell: string): boolean {
-    return cell === '[ ]' || cell === '[]' || cell === '[x]' || cell === '[X]';
   }
 
   protected getCheckboxState(cell: string): boolean {
@@ -59,21 +56,14 @@ export class BudgetCodeParser {
         continue;
       }
 
-      const rowLine = line.split('|').map((cell) => cell.trim());
-
-      const isFirstCellCheckbox = this.isCheckboxCell(rowLine[0]);
-
-      const checked = isFirstCellCheckbox ? this.getCheckboxState(rowLine[0]) : false;
-      const name = isFirstCellCheckbox ? rowLine[1] : rowLine[0];
-      const amount = isFirstCellCheckbox ? rowLine[2] : rowLine[1];
-      const comment = isFirstCellCheckbox ? rowLine[3] : rowLine[2];
+      const cells = splitRowCells(line);
 
       const row: TableRow = {
         id: generateId(),
-        checked,
-        name: name.trim(),
-        amount: this.parseAmount(amount),
-        comment: (comment || '').trim(),
+        checked: this.getCheckboxState(cells.checkbox),
+        name: cells.name,
+        amount: this.parseAmount(cells.amount),
+        comment: cells.comment,
       };
 
       const rows = this.rows.get(categoryId) || [];
