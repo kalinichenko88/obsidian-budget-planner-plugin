@@ -2,12 +2,19 @@
   import { get } from 'svelte/store';
   import { onDestroy, onMount, setContext, untrack } from 'svelte';
 
-  import type { TableCategories, TableRows, TableStateStore, TableStore } from '../../../models';
+  import type {
+    MarkdownContext,
+    TableCategories,
+    TableRows,
+    TableStateStore,
+    TableStore,
+  } from '../../../models';
   import { createStoreActions } from './actions';
   import {
     STORE_CONTEXT_KEY,
     STORE_STATE_CONTEXT_KEY,
     STORE_ACTIONS_CONTEXT_KEY,
+    MARKDOWN_CONTEXT_KEY,
   } from './constants';
 
   import Head from './Head/Head.svelte';
@@ -23,13 +30,21 @@
     tableStateStore: TableStateStore;
     onTableChange: (categories: TableCategories, rows: TableRows) => void;
     markDirty?: () => void;
+    markdown?: MarkdownContext | null;
   };
 
-  const { tableStore, tableStateStore, onTableChange, markDirty }: Props = $props();
+  const {
+    tableStore,
+    tableStateStore,
+    onTableChange,
+    markDirty,
+    markdown = null,
+  }: Props = $props();
 
   untrack(() => {
     setContext(STORE_CONTEXT_KEY, tableStore);
     setContext(STORE_STATE_CONTEXT_KEY, tableStateStore);
+    setContext(MARKDOWN_CONTEXT_KEY, markdown);
   });
 
   const syncToDocument = (): void => {

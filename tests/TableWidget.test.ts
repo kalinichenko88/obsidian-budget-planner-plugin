@@ -8,6 +8,11 @@ import { writable } from 'svelte/store';
 vi.mock('obsidian', () => ({
   Menu: class {},
   getIcon: (): null => null,
+  Component: class {
+    load(): void {}
+    unload(): void {}
+  },
+  editorInfoField: Symbol('editorInfoField'),
 }));
 
 vi.mock('svelte', () => ({

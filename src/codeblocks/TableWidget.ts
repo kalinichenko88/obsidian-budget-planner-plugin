@@ -1,9 +1,11 @@
+import { Component, editorInfoField } from 'obsidian';
 import { Transaction } from '@codemirror/state';
 import { EditorView, WidgetType, type DecorationSet } from '@codemirror/view';
 import { mount, unmount } from 'svelte';
 import { get, writable } from 'svelte/store';
 
 import type {
+  MarkdownContext,
   TableCategories,
   TableRows,
   TableStateStore,
@@ -22,6 +24,7 @@ export class TableWidget extends WidgetType {
   private view?: EditorView;
   private tableStore: TableStore | null = null;
   private formatter: BudgetCodeFormatter | null = null;
+  private mdComponent: Component | null = null;
   private dirty = false;
 
   constructor(
@@ -127,6 +130,21 @@ export class TableWidget extends WidgetType {
     this.view = view;
     this.formatter = new BudgetCodeFormatter();
 
+    // Two-arg form: state.field() throws when the field is absent, and a
+    // throw here would take down the whole widget render.
+    const info = view.state.field(editorInfoField, false);
+    let markdown: MarkdownContext | null = null;
+
+    if (info) {
+      this.mdComponent = new Component();
+      this.mdComponent.load();
+      markdown = {
+        app: info.app,
+        sourcePath: info.file?.path ?? '',
+        component: this.mdComponent,
+      };
+    }
+
     const [tableStore, tableStateStore] = this.createTableStore();
     this.tableStore = tableStore;
 
@@ -135,6 +153,7 @@ export class TableWidget extends WidgetType {
       props: {
         tableStore,
         tableStateStore,
+        markdown,
         onTableChange: (categories: TableCategories, rows: TableRows) => {
           if (this.dispatchChanges(categories, rows)) {
             this.dirty = false;
@@ -182,6 +201,11 @@ export class TableWidget extends WidgetType {
       void unmount(this.component);
       this.component = null;
     }
+
+    // `?.` is load-bearing: the existing tests call destroy() on widgets that
+    // never went through toDOM(), so mdComponent is null on all of them.
+    this.mdComponent?.unload();
+    this.mdComponent = null;
 
     this.isDestroyed = true;
     this.container = null;
