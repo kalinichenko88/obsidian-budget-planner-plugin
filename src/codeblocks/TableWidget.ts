@@ -1,9 +1,11 @@
+import { Component, editorInfoField } from 'obsidian';
 import { Transaction } from '@codemirror/state';
 import { EditorView, WidgetType, type DecorationSet } from '@codemirror/view';
 import { mount, unmount } from 'svelte';
 import { get, writable } from 'svelte/store';
 
 import type {
+  MarkdownContext,
   TableCategories,
   TableRows,
   TableStateStore,
@@ -22,6 +24,7 @@ export class TableWidget extends WidgetType {
   private view?: EditorView;
   private tableStore: TableStore | null = null;
   private formatter: BudgetCodeFormatter | null = null;
+  private mdComponent: Component | null = null;
   private dirty = false;
 
   constructor(
@@ -126,6 +129,24 @@ export class TableWidget extends WidgetType {
     this.container = container;
     this.view = view;
     this.formatter = new BudgetCodeFormatter();
+    // tableExtension reuses widget instances, so CodeMirror can mount one
+    // that was destroyed earlier. Without this reset ensureTrailingNewline
+    // stays a no-op for the rest of the instance's life.
+    this.isDestroyed = false;
+
+    // Two-arg form: state.field() throws when the field is absent, and a
+    // throw here would take down the whole widget render.
+    const info = view.state.field(editorInfoField, false);
+    let markdown: MarkdownContext | null = null;
+
+    if (info) {
+      // A reused instance may already hold a loaded Component; overwriting it
+      // would leave it loaded with no path back to it from destroy().
+      this.mdComponent?.unload();
+      this.mdComponent = new Component();
+      this.mdComponent.load();
+      markdown = { info, component: this.mdComponent };
+    }
 
     const [tableStore, tableStateStore] = this.createTableStore();
     this.tableStore = tableStore;
@@ -135,6 +156,7 @@ export class TableWidget extends WidgetType {
       props: {
         tableStore,
         tableStateStore,
+        markdown,
         onTableChange: (categories: TableCategories, rows: TableRows) => {
           if (this.dispatchChanges(categories, rows)) {
             this.dirty = false;
@@ -182,6 +204,9 @@ export class TableWidget extends WidgetType {
       void unmount(this.component);
       this.component = null;
     }
+
+    this.mdComponent?.unload();
+    this.mdComponent = null;
 
     this.isDestroyed = true;
     this.container = null;

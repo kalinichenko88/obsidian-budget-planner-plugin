@@ -13,6 +13,7 @@
 - 📊 Categories with per-category count and sum (shown when there is more than one category)
 - ✅ Click a row's checkbox to mark it paid; totals also show unchecked count and sum
 - ✏️ Inline editing of name, amount and comment (Enter saves, Escape cancels)
+- 🔗 Comments render inline markdown (wikilinks, external links, bold, tags) in editing view
 - 🔀 Drag rows between categories and reorder categories via the grip handle
 - 📈 Right-click a column header (`#`, `Name`, `Amount`) to sort rows inside every category
 - 🖱️ Right-click a row or category for new row / new category / delete
@@ -45,7 +46,7 @@ Entertainment:
 ```
 
 - A line ending with `:` starts a category
-- Row cells are `[x]/[ ] | name | amount | comment`; the checkbox and the comment are optional
+- Row cells are `[x]/[ ] | name | amount | comment`; the checkbox and the comment are optional. The comment is the whole rest of the line after the amount, so `|` is safe to use inside it — but a `|` inside name or amount still splits the row wrong
 - Lines without `|` are ignored
 - Amounts are parsed as numbers — anything else in the cell is stripped, an unparsable amount becomes `0`
 

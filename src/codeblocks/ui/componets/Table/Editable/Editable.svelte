@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { getContext, untrack } from 'svelte';
+  import { Component, MarkdownRenderer } from 'obsidian';
+
+  import type { MarkdownContext } from '../../../../models';
+  import { MARKDOWN_CONTEXT_KEY } from '../constants';
   import { moneyFormatter } from '../../../helpers/moneyFormatter';
 
   type Props = {
@@ -7,9 +11,13 @@
     onChange: (value: string | number) => void;
     onEditingChange: (isEditing: boolean) => void;
     truncate?: boolean;
+    markdown?: boolean;
   };
 
-  let { value, onChange, onEditingChange, truncate = false }: Props = $props();
+  let { value, onChange, onEditingChange, truncate = false, markdown = false }: Props = $props();
+
+  const md = getContext<MarkdownContext | null>(MARKDOWN_CONTEXT_KEY) ?? null;
+  const canRenderMarkdown = $derived(markdown && md !== null);
 
   const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
   const valueDisplay = $derived(
@@ -21,14 +29,22 @@
   let cancelled = false;
   let startValue: string | number = untrack(() => value);
   let inputElement: HTMLInputElement | null = $state(null);
+  let containerEl: HTMLElement | null = $state(null);
+  let renderGeneration = 0;
 
-  const handleOnClick = (): void => {
+  const handleOnClick = (event: MouseEvent): void => {
+    if ((event.target as HTMLElement).closest('a')) {
+      return;
+    }
     startValue = value;
     isEditing = true;
     onEditingChange(true);
   };
 
   const handleOnKeyDown = (event: KeyboardEvent): void => {
+    if ((event.target as HTMLElement).closest('a')) {
+      return;
+    }
     if (event.key === 'Enter') {
       startValue = value;
       isEditing = true;
@@ -77,6 +93,50 @@
       inputElement.focus();
     }
   });
+
+  $effect(() => {
+    const el = containerEl;
+    const source = valueDisplay;
+
+    if (!el || !md) {
+      return;
+    }
+
+    // Render detached and swap. MarkdownRenderer.render is async; the token
+    // stops a slow render from landing on top of a newer one.
+    const token = ++renderGeneration;
+    const staging = document.createElement('div');
+
+    // One child per render, released by this effect's cleanup. Registering on
+    // the widget-lifetime component instead piles up a render child per edit,
+    // each still holding events bound to DOM already emptied out of the cell.
+    const child = md.component.addChild(new Component());
+
+    // render can throw synchronously rather than reject — a side-loaded build
+    // on an Obsidian older than the manifest floor has no such method at all.
+    const degrade = (): void => {
+      if (token === renderGeneration) {
+        el.setText(source);
+      }
+    };
+
+    try {
+      void MarkdownRenderer.render(md.info.app, source, staging, md.info.file?.path ?? '', child)
+        .then(() => {
+          if (token !== renderGeneration) {
+            return;
+          }
+          el.empty();
+          el.append(...staging.childNodes);
+        })
+        .catch(degrade);
+    } catch {
+      degrade();
+    }
+
+    // eslint-disable-next-line unicorn/prefer-dom-node-remove -- Obsidian's Component API, not a DOM node
+    return () => md.component.removeChild(child);
+  });
 </script>
 
 {#if isEditing}
@@ -105,7 +165,9 @@
     onclick={handleOnClick}
     onkeydown={handleOnKeyDown}
   >
-    {#if truncate}
+    {#if canRenderMarkdown}
+      <span class="truncated" bind:this={containerEl}></span>
+    {:else if truncate}
       <span class="truncated">{valueDisplay}</span>
     {:else}
       {valueDisplay}
@@ -170,5 +232,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+  }
+
+  .text :global(p) {
+    margin: 0;
+    display: inline;
   }
 </style>

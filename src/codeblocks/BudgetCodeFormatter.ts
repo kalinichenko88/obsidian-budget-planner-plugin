@@ -1,17 +1,9 @@
 import type { TableStoreValues, TableRow } from './models';
+import { splitRowCells, type RowCells } from './helpers/splitRowCells';
 
-type ParsedRow = {
-  checkbox: string;
-  name: string;
-  amount: string;
-  comment: string;
-  isCategory: boolean;
-};
+type ParsedRow = RowCells & { isCategory: boolean };
 
 export class BudgetCodeFormatter {
-  private readonly CHECKBOX_PATTERN = /^\[[xX ]\]$/;
-  private readonly CELL_SEPARATOR = '|';
-
   private isCategoryRow(line: string): boolean {
     return line.endsWith(':') && !line.startsWith('\t');
   }
@@ -37,16 +29,9 @@ export class BudgetCodeFormatter {
       };
     }
 
-    const cells = row.split(this.CELL_SEPARATOR).map((cell) => cell.trim());
-    const isCheckbox = this.CHECKBOX_PATTERN.test(cells[0]);
+    const cells = splitRowCells(row);
 
-    return {
-      checkbox: isCheckbox ? cells[0] : '[ ]',
-      name: isCheckbox ? cells[1] || '' : cells[0] || '',
-      amount: isCheckbox ? cells[2] || '' : cells[1] || '',
-      comment: isCheckbox ? cells[3] || '' : cells[2] || '',
-      isCategory: false,
-    };
+    return { ...cells, checkbox: cells.checkbox || '[ ]', isCategory: false };
   }
 
   private formatRow(row: TableRow): string {
