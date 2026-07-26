@@ -35,7 +35,6 @@ import { mount, unmount } from 'svelte';
 import { Component, editorInfoField } from 'obsidian';
 import type { MarkdownFileInfo } from 'obsidian';
 import { TableWidget } from '@/codeblocks/TableWidget';
-import { BudgetCodeFormatter } from '@/codeblocks/BudgetCodeFormatter';
 import { tableExtension } from '@/codeblocks/tableExtension';
 import * as constants from '@/codeblocks/constants';
 import type { TableCategories, TableRows } from '@/codeblocks/models';
@@ -113,7 +112,6 @@ function setupWidget(
   setPrivate(widget, 'view', view);
   setPrivate(widget, 'container', { isConnected: opts.connected ?? false });
   setPrivate(widget, 'tableStore', writable({ categories: widget.categories, rows: widget.rows }));
-  setPrivate(widget, 'formatter', new BudgetCodeFormatter());
   setPrivate(widget, 'component', {});
   setPrivate(widget, 'dirty', opts.dirty ?? false);
   setPrivate(widget, 'isDestroyed', false);
@@ -483,7 +481,6 @@ describe('TableWidget', () => {
       expect(getPrivate(widget, 'container')).toBeNull();
       expect(getPrivate(widget, 'view')).toBeUndefined();
       expect(getPrivate(widget, 'tableStore')).toBeNull();
-      expect(getPrivate(widget, 'formatter')).toBeNull();
       expect(getPrivate(widget, 'component')).toBeNull();
     });
   });

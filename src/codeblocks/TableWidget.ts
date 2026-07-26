@@ -14,7 +14,7 @@ import type {
   TableStateValues,
 } from './models';
 import { Table } from './ui/componets';
-import { BudgetCodeFormatter } from './BudgetCodeFormatter';
+import { formatBudget } from './BudgetCodeFormatter';
 import { widgetChangeAnnotation, getTableField } from './constants';
 
 export class TableWidget extends WidgetType {
@@ -23,7 +23,6 @@ export class TableWidget extends WidgetType {
   private isDestroyed = false;
   private view?: EditorView;
   private tableStore: TableStore | null = null;
-  private formatter: BudgetCodeFormatter | null = null;
   private mdComponent: Component | null = null;
   private dirty = false;
 
@@ -93,7 +92,7 @@ export class TableWidget extends WidgetType {
   }
 
   private dispatchChanges(categories: TableCategories, rows: TableRows): boolean {
-    if (!this.view || !this.formatter) {
+    if (!this.view) {
       return false;
     }
 
@@ -104,7 +103,7 @@ export class TableWidget extends WidgetType {
 
     let newText: string;
     try {
-      newText = this.formatter.format({ categories, rows });
+      newText = formatBudget({ categories, rows });
       this.view.dispatch({
         changes: {
           from: pos.from,
@@ -128,7 +127,6 @@ export class TableWidget extends WidgetType {
     const container = createDiv();
     this.container = container;
     this.view = view;
-    this.formatter = new BudgetCodeFormatter();
     // tableExtension reuses widget instances, so CodeMirror can mount one
     // that was destroyed earlier. Without this reset ensureTrailingNewline
     // stays a no-op for the rest of the instance's life.
@@ -212,7 +210,6 @@ export class TableWidget extends WidgetType {
     this.container = null;
     this.view = undefined;
     this.tableStore = null;
-    this.formatter = null;
   }
 
   ignoreEvent(): boolean {
