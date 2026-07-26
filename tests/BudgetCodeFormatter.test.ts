@@ -461,4 +461,36 @@ Test:
       );
     });
   });
+
+  describe('pipes in the name column', () => {
+    const tripWith = (name: string): TableStoreValues => ({
+      categories: new Map([['c1', 'Trip']]),
+      rows: new Map([['c1', [{ id: 'r1', checked: true, name, amount: 1500, comment: '' }]]]),
+    });
+
+    test('should escape a pipe typed into the name', () => {
+      const result = formatter.format(tripWith('[[Trip/Rome|Rome]]'));
+
+      expect(result).toBe(
+        String.raw`~~~budget
+Trip:
+	[x] | [[Trip/Rome\|Rome]] | 1500
+~~~`.replaceAll('~~~', '```')
+      );
+    });
+
+    test('should round-trip the name and keep the amount intact', () => {
+      // The bug: the amount used to come back as 0 because `Rome]]` was read
+      // as the amount cell.
+      const once = formatter.format(tripWith('[[Trip/Rome|Rome]]'));
+      const inner = once.replace(/^```budget\n/, '').replace(/\n```$/, '');
+
+      const parsed = new BudgetCodeParser(inner).parse();
+      const row = [...parsed.rows.values()][0][0];
+
+      expect(row.name).toBe('[[Trip/Rome|Rome]]');
+      expect(row.amount).toBe(1500);
+      expect(formatter.format(parsed)).toBe(once);
+    });
+  });
 });
