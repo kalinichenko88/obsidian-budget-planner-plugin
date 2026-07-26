@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { getContext, untrack } from 'svelte';
+  import { MarkdownRenderer } from 'obsidian';
+
+  import type { MarkdownContext } from '../../../../models';
+  import { MARKDOWN_CONTEXT_KEY } from '../constants';
   import { moneyFormatter } from '../../../helpers/moneyFormatter';
 
   type Props = {
@@ -7,9 +11,13 @@
     onChange: (value: string | number) => void;
     onEditingChange: (isEditing: boolean) => void;
     truncate?: boolean;
+    markdown?: boolean;
   };
 
-  let { value, onChange, onEditingChange, truncate = false }: Props = $props();
+  let { value, onChange, onEditingChange, truncate = false, markdown = false }: Props = $props();
+
+  const md = getContext<MarkdownContext | null>(MARKDOWN_CONTEXT_KEY) ?? null;
+  const canRenderMarkdown = $derived(markdown && md !== null);
 
   const valueType = $derived(typeof value === 'number' ? 'number' : 'text');
   const valueDisplay = $derived(
@@ -21,14 +29,22 @@
   let cancelled = false;
   let startValue: string | number = untrack(() => value);
   let inputElement: HTMLInputElement | null = $state(null);
+  let containerEl: HTMLElement | null = $state(null);
+  let renderGeneration = 0;
 
-  const handleOnClick = (): void => {
+  const handleOnClick = (event: MouseEvent): void => {
+    if ((event.target as HTMLElement).closest('a')) {
+      return;
+    }
     startValue = value;
     isEditing = true;
     onEditingChange(true);
   };
 
   const handleOnKeyDown = (event: KeyboardEvent): void => {
+    if ((event.target as HTMLElement).closest('a')) {
+      return;
+    }
     if (event.key === 'Enter') {
       startValue = value;
       isEditing = true;
@@ -77,6 +93,28 @@
       inputElement.focus();
     }
   });
+
+  $effect(() => {
+    const el = containerEl;
+    const source = valueDisplay;
+
+    if (!el || !md) {
+      return;
+    }
+
+    // Render detached and swap. MarkdownRenderer.render is async; the token
+    // stops a slow render from landing on top of a newer one.
+    const token = ++renderGeneration;
+    const staging = createDiv();
+
+    void MarkdownRenderer.render(md.app, source, staging, md.sourcePath, md.component).then(() => {
+      if (token !== renderGeneration) {
+        return;
+      }
+      el.empty();
+      el.append(...staging.childNodes);
+    });
+  });
 </script>
 
 {#if isEditing}
@@ -105,7 +143,9 @@
     onclick={handleOnClick}
     onkeydown={handleOnKeyDown}
   >
-    {#if truncate}
+    {#if canRenderMarkdown}
+      <span class="truncated" bind:this={containerEl}></span>
+    {:else if truncate}
       <span class="truncated">{valueDisplay}</span>
     {:else}
       {valueDisplay}
@@ -170,5 +210,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+  }
+
+  .text :global(p) {
+    margin: 0;
+    display: inline;
   }
 </style>

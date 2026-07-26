@@ -134,6 +134,7 @@
       onChange={(value) => (comment = String(value))}
       onEditingChange={toggleEditing}
       truncate={true}
+      markdown={true}
     />
   </td>
 </tr>
