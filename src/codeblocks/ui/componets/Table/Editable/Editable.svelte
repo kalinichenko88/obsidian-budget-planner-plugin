@@ -33,8 +33,19 @@
   let inputElement: HTMLInputElement | null = $state(null);
   let containerEl: HTMLElement | null = $state(null);
   let renderGeneration = 0;
+  let linkFillsCell = $state(false);
 
-  const startEditing = (): void => {
+  // Column width moves this answer, so measure on arrival, not after render.
+  const checkLinkFillsCell = (): void => {
+    const el = containerEl;
+    linkFillsCell = !!el && el.scrollWidth > el.clientWidth && !!el.querySelector('a');
+  };
+
+  const startEditing = (event?: MouseEvent): void => {
+    // A click on a rendered link opens the link.
+    if ((event?.target as HTMLElement | undefined)?.closest('a')) {
+      return;
+    }
     startValue = value;
     isEditing = true;
     onEditingChange(true);
@@ -153,11 +164,16 @@
   <!-- Not a role="button": ARIA makes a button's children presentational and a
        rendered link loses its role. Hence the pencil — an edit route that survives a
        link filling the cell. -->
-  <div class="text truncating markdown">
+  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+  <div
+    class="text truncating markdown"
+    class:link-fills={linkFillsCell}
+    onclick={startEditing}
+    onmouseenter={checkLinkFillsCell}
+  >
     <span class="truncated" bind:this={containerEl}></span>
-    <button class="edit" type="button" aria-label="Edit comment" onclick={startEditing}>
-      <Icon name="pencil" />
-    </button>
+    <!-- No handler: the native click, Enter and Space included, bubbles to the container. -->
+    <button class="edit" type="button" aria-label="Edit comment"><Icon name="pencil" /></button>
   </div>
 {:else}
   <div
@@ -252,7 +268,8 @@
     cursor: pointer;
   }
 
-  .markdown:hover > .edit,
+  /* A link over the whole cell leaves no pixel that opens the editor; focus reveals it anywhere. */
+  .markdown.link-fills:hover > .edit,
   .edit:focus-visible {
     opacity: 1;
   }
