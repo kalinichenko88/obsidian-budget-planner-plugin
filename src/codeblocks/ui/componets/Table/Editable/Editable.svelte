@@ -35,20 +35,14 @@
   let renderGeneration = 0;
   let linkFillsCell = $state(false);
 
-  // Measured when the pointer arrives rather than after each render: the answer
-  // depends on the column width as much as on the text, and it is only ever read
-  // while the pointer is on this cell. Overflowing content leaves no blank strip
-  // to click, so with a link in it every visible pixel opens the link.
+  // Column width moves this answer, so measure on arrival, not after render.
   const checkLinkFillsCell = (): void => {
-    linkFillsCell =
-      containerEl !== null &&
-      containerEl.scrollWidth > containerEl.clientWidth &&
-      containerEl.querySelector('a') !== null;
+    const el = containerEl;
+    linkFillsCell = !!el && el.scrollWidth > el.clientWidth && !!el.querySelector('a');
   };
 
   const startEditing = (event?: MouseEvent): void => {
-    // A click that landed on a rendered link opens the link instead. The pencil
-    // stays the way in when a link covers the whole cell.
+    // A click on a rendered link opens the link.
     if ((event?.target as HTMLElement | undefined)?.closest('a')) {
       return;
     }
@@ -178,8 +172,7 @@
     onmouseenter={checkLinkFillsCell}
   >
     <span class="truncated" bind:this={containerEl}></span>
-    <!-- No handler: the native click, including the one Enter/Space synthesizes,
-         bubbles to the container. This button is the keyboard route in. -->
+    <!-- No handler: the native click, Enter and Space included, bubbles to the container. -->
     <button class="edit" type="button" aria-label="Edit comment"><Icon name="pencil" /></button>
   </div>
 {:else}
@@ -275,10 +268,7 @@
     cursor: pointer;
   }
 
-  /* Hover reveals the pencil only once a link has taken over the cell — the one
-     case where the click guard hands every click to the link and the cell itself
-     stops being a way in. Keyboard focus reveals it everywhere: the container is
-     not in the tab order, so this button is the only way in without a mouse. */
+  /* A link over the whole cell leaves no pixel that opens the editor; focus reveals it anywhere. */
   .markdown.link-fills:hover > .edit,
   .edit:focus-visible {
     opacity: 1;
