@@ -112,8 +112,16 @@
     // each still holding events bound to DOM already emptied out of the cell.
     const child = md.component.addChild(new Component());
 
+    // render can throw synchronously rather than reject — a side-loaded build
+    // on an Obsidian older than the manifest floor has no such method at all.
+    const degrade = (): void => {
+      if (token === renderGeneration) {
+        el.setText(source);
+      }
+    };
+
     try {
-      void MarkdownRenderer.render(md.app, source, staging, md.sourcePath, child)
+      void MarkdownRenderer.render(md.info.app, source, staging, md.info.file?.path ?? '', child)
         .then(() => {
           if (token !== renderGeneration) {
             return;
@@ -121,16 +129,9 @@
           el.empty();
           el.append(...staging.childNodes);
         })
-        .catch(() => {
-          if (token === renderGeneration) {
-            el.setText(source);
-          }
-        });
+        .catch(degrade);
     } catch {
-      // render can throw synchronously rather than reject — a side-loaded
-      // build on an Obsidian older than the manifest floor has no such
-      // method at all, and .catch would never see that.
-      el.setText(source);
+      degrade();
     }
 
     // eslint-disable-next-line unicorn/prefer-dom-node-remove -- Obsidian's Component API, not a DOM node
@@ -233,34 +234,8 @@
     width: 100%;
   }
 
-  /* MarkdownRenderer always emits block elements, and the cell is one line
-     tall with an ellipsis. Flatten them so a comment like `- pending` or
-     `# Rome` still reads as its own text instead of being clipped out of the
-     visible box. */
-  .text :global(p),
-  .text :global(ul),
-  .text :global(ol),
-  .text :global(li),
-  .text :global(blockquote),
-  .text :global(h1),
-  .text :global(h2),
-  .text :global(h3),
-  .text :global(h4),
-  .text :global(h5),
-  .text :global(h6) {
-    display: inline;
+  .text :global(p) {
     margin: 0;
-    padding: 0;
-    border: none;
-    list-style: none;
-    font-size: inherit;
-    font-weight: inherit;
-    line-height: inherit;
-  }
-
-  /* An <hr> carries no text of its own, so there is nothing to preserve —
-     just keep it from drawing a rule through the row. */
-  .text :global(hr) {
-    display: none;
+    display: inline;
   }
 </style>

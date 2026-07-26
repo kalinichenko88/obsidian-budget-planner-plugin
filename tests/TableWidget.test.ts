@@ -346,33 +346,21 @@ describe('TableWidget', () => {
       return call?.[1]?.props as { markdown: unknown };
     };
 
-    test('field present: passes app/sourcePath/component on markdown and loads the Component', () => {
+    test('field present: passes the editor info itself and a loaded Component', () => {
       const loadSpy = vi.spyOn(Component.prototype, 'load').mockClear();
-      const stubApp = {};
-      const view = {
-        state: buildInfoState({ app: stubApp, file: { path: 'notes/Trip.md' } }),
-      } as unknown as EditorView;
+      // Identity, not a copy: app and file are read off this per render, so a
+      // rename cannot leave the widget resolving links against a stale path.
+      const info = { app: {}, file: { path: 'notes/Trip.md' } };
+      const view = { state: buildInfoState(info) } as unknown as EditorView;
 
       emptyWidget().toDOM(view);
 
       const { markdown } = lastMountProps() as {
-        markdown: { app: unknown; sourcePath: string; component: unknown };
+        markdown: { info: unknown; component: unknown };
       };
-      expect(markdown.app).toBe(stubApp);
-      expect(markdown.sourcePath).toBe('notes/Trip.md');
+      expect(markdown.info).toBe(info);
       expect(markdown.component).toBeInstanceOf(Component);
       expect(loadSpy).toHaveBeenCalledOnce();
-    });
-
-    test('field present, file null: sourcePath falls back to empty string', () => {
-      const view = {
-        state: buildInfoState({ app: {}, file: null }),
-      } as unknown as EditorView;
-
-      emptyWidget().toDOM(view);
-
-      const { markdown } = lastMountProps() as { markdown: { sourcePath: string } };
-      expect(markdown.sourcePath).toBe('');
     });
 
     test('field absent: markdown prop is null and no Component is built', () => {
@@ -396,21 +384,6 @@ describe('TableWidget', () => {
       widget.destroy();
 
       expect(unloadSpy).toHaveBeenCalledOnce();
-    });
-
-    test('sourcePath tracks a rename instead of snapshotting the path', () => {
-      // A rename mutates TFile.path in place and fires no CodeMirror
-      // transaction, so the widget is never rebuilt.
-      const file = { path: 'notes/Trip.md' };
-      const view = { state: buildInfoState({ app: {}, file }) } as unknown as EditorView;
-
-      emptyWidget().toDOM(view);
-      const { markdown } = lastMountProps() as { markdown: { sourcePath: string } };
-      expect(markdown.sourcePath).toBe('notes/Trip.md');
-
-      file.path = 'archive/Trip 2026.md';
-
-      expect(markdown.sourcePath).toBe('archive/Trip 2026.md');
     });
 
     test('a second toDOM() unloads the Component the first one left behind', () => {

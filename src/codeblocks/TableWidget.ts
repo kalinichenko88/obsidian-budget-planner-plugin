@@ -145,16 +145,7 @@ export class TableWidget extends WidgetType {
       this.mdComponent?.unload();
       this.mdComponent = new Component();
       this.mdComponent.load();
-      markdown = {
-        app: info.app,
-        // Getter, not a snapshot: renaming a note mutates TFile.path in place
-        // and fires no CodeMirror transaction, so a captured string would go
-        // stale and resolve wikilinks against the old folder.
-        get sourcePath(): string {
-          return info.file?.path ?? '';
-        },
-        component: this.mdComponent,
-      };
+      markdown = { info, component: this.mdComponent };
     }
 
     const [tableStore, tableStateStore] = this.createTableStore();
@@ -214,8 +205,6 @@ export class TableWidget extends WidgetType {
       this.component = null;
     }
 
-    // `?.` is load-bearing: the existing tests call destroy() on widgets that
-    // never went through toDOM(), so mdComponent is null on all of them.
     this.mdComponent?.unload();
     this.mdComponent = null;
 

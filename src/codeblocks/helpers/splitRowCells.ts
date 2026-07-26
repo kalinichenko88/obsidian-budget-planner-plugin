@@ -5,10 +5,6 @@ export type RowCells = {
   comment: string;
 };
 
-/**
- * Matches every checkbox spelling the parser has always accepted, including
- * the empty `[]` form the formatter's own copy of this rule used to reject.
- */
 const CHECKBOX_PATTERN = /^\[[xX ]?\]$/;
 
 /**

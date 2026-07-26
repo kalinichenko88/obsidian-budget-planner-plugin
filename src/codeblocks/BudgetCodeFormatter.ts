@@ -1,13 +1,7 @@
 import type { TableStoreValues, TableRow } from './models';
-import { splitRowCells } from './helpers/splitRowCells';
+import { splitRowCells, type RowCells } from './helpers/splitRowCells';
 
-type ParsedRow = {
-  checkbox: string;
-  name: string;
-  amount: string;
-  comment: string;
-  isCategory: boolean;
-};
+type ParsedRow = RowCells & { isCategory: boolean };
 
 export class BudgetCodeFormatter {
   private isCategoryRow(line: string): boolean {
@@ -37,13 +31,7 @@ export class BudgetCodeFormatter {
 
     const cells = splitRowCells(row);
 
-    return {
-      checkbox: cells.checkbox || '[ ]',
-      name: cells.name,
-      amount: cells.amount,
-      comment: cells.comment,
-      isCategory: false,
-    };
+    return { ...cells, checkbox: cells.checkbox || '[ ]', isCategory: false };
   }
 
   private formatRow(row: TableRow): string {
