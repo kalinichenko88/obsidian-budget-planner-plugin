@@ -34,7 +34,12 @@
   let containerEl: HTMLElement | null = $state(null);
   let renderGeneration = 0;
 
-  const startEditing = (): void => {
+  const startEditing = (event?: MouseEvent): void => {
+    // A click that landed on a rendered link opens the link instead. The pencil
+    // stays the way in when a link covers the whole cell.
+    if ((event?.target as HTMLElement | undefined)?.closest('a')) {
+      return;
+    }
     startValue = value;
     isEditing = true;
     onEditingChange(true);
@@ -153,11 +158,12 @@
   <!-- Not a role="button": ARIA makes a button's children presentational and a
        rendered link loses its role. Hence the pencil — an edit route that survives a
        link filling the cell. -->
-  <div class="text truncating markdown">
+  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+  <div class="text truncating markdown" onclick={startEditing}>
     <span class="truncated" bind:this={containerEl}></span>
-    <button class="edit" type="button" aria-label="Edit comment" onclick={startEditing}>
-      <Icon name="pencil" />
-    </button>
+    <!-- No handler: the native click, including the one Enter/Space synthesizes,
+         bubbles to the container. This button is the keyboard route in. -->
+    <button class="edit" type="button" aria-label="Edit comment"><Icon name="pencil" /></button>
   </div>
 {:else}
   <div
