@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest';
 
-import { splitRowCells } from './splitRowCells';
+import { escapeCell, splitRowCells } from './splitRowCells';
 
 describe('splitRowCells', () => {
   test('should split a row with a checkbox', () => {
@@ -56,5 +56,23 @@ describe('splitRowCells', () => {
       amount: '1',
       comment: 'c',
     });
+  });
+
+  test('should read an escaped pipe as part of the name, not a column break', () => {
+    expect(splitRowCells(String.raw`	[x] | [[Trip/Rome\|Rome]] | 1500`)).toEqual({
+      checkbox: '[x]',
+      name: '[[Trip/Rome|Rome]]',
+      amount: '1500',
+      comment: '',
+    });
+  });
+
+  test('should still split on an unescaped pipe', () => {
+    expect(splitRowCells('\t[x] | [[Trip/Rome|Rome]] | 1500').amount).not.toBe('1500');
+  });
+
+  test('escapeCell escapes only pipes', () => {
+    expect(escapeCell('[[Trip/Rome|Rome]]')).toBe(String.raw`[[Trip/Rome\|Rome]]`);
+    expect(escapeCell('plain name')).toBe('plain name');
   });
 });

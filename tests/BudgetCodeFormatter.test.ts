@@ -1,16 +1,10 @@
-import { expect, test, describe, beforeEach } from 'vitest';
+import { expect, test, describe } from 'vitest';
 
 import type { TableStoreValues } from '@/codeblocks/models';
-import { BudgetCodeFormatter } from '@/codeblocks/BudgetCodeFormatter';
+import { formatBudget } from '@/codeblocks/BudgetCodeFormatter';
 import { BudgetCodeParser } from '@/codeblocks/BudgetCodeParser';
 
-describe('BudgetCodeFormatter', () => {
-  let formatter: BudgetCodeFormatter;
-
-  beforeEach(() => {
-    formatter = new BudgetCodeFormatter();
-  });
-
+describe('formatBudget', () => {
   describe('format', () => {
     test('should format empty table store values', () => {
       const tableStoreValues: TableStoreValues = {
@@ -18,7 +12,7 @@ describe('BudgetCodeFormatter', () => {
         rows: new Map(),
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       expect(result).toBe('```budget\n```');
     });
@@ -33,7 +27,7 @@ describe('BudgetCodeFormatter', () => {
         rows: new Map(),
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       expect(result).toBe('```budget\nIncome:\nExpenses:\n```');
     });
@@ -75,7 +69,7 @@ describe('BudgetCodeFormatter', () => {
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Income:
@@ -115,7 +109,7 @@ Expenses:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Income:
@@ -140,7 +134,7 @@ Income:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       expect(result).toBe('```budget\nIncome:\nExpenses:\n```');
     });
@@ -167,7 +161,7 @@ Income:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Income:
@@ -212,7 +206,7 @@ Expenses:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Income:
@@ -244,7 +238,7 @@ Income:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Income:
@@ -281,7 +275,7 @@ Income:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Expenses:
@@ -319,7 +313,7 @@ Expenses:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Debt:
@@ -357,7 +351,7 @@ Debt:
         rows,
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       const expected = `\`\`\`budget
 Test:
@@ -379,7 +373,7 @@ Test:
       ]);
 
       const tableStoreValues: TableStoreValues = { categories, rows };
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       // amount: 0 formats as "0" (truthy string), so the skip condition
       // (!parsed.name && !parsed.amount) is false — row is kept
@@ -402,7 +396,7 @@ Test:
         rows: new Map([['cat1', []]]),
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       expect(result).not.toContain('::');
       expect(result).toContain('Time:');
@@ -417,7 +411,7 @@ Test:
         rows: new Map([['cat1', []]]),
       };
 
-      const result = formatter.format(tableStoreValues);
+      const result = formatBudget(tableStoreValues);
 
       expect(result).toContain('Food: Weekly:');
       expect(result).not.toContain('Food: Weekly::');
@@ -428,7 +422,7 @@ Test:
     test('should round-trip an aliased wikilink', () => {
       const inner = 'Trip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]';
 
-      const result = formatter.format(new BudgetCodeParser(inner).parse());
+      const result = formatBudget(new BudgetCodeParser(inner).parse());
 
       expect(result).toBe('```budget\nTrip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]\n```');
     });
@@ -436,7 +430,7 @@ Test:
     test('should round-trip a comment with several pipes', () => {
       const inner = 'Trip:\n\t[ ] | Flight | 300 | a | b | c';
 
-      const result = formatter.format(new BudgetCodeParser(inner).parse());
+      const result = formatBudget(new BudgetCodeParser(inner).parse());
 
       expect(result).toBe('```budget\nTrip:\n\t[ ] | Flight | 300 | a | b | c\n```');
     });
@@ -444,9 +438,9 @@ Test:
     test('should be stable on a second pass', () => {
       const inner = 'Trip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]';
 
-      const once = formatter.format(new BudgetCodeParser(inner).parse());
+      const once = formatBudget(new BudgetCodeParser(inner).parse());
       const innerOnce = once.replace(/^```budget\n/, '').replace(/\n```$/, '');
-      const twice = formatter.format(new BudgetCodeParser(innerOnce).parse());
+      const twice = formatBudget(new BudgetCodeParser(innerOnce).parse());
 
       expect(twice).toBe(once);
     });
@@ -454,11 +448,38 @@ Test:
     test('should not pad columns based on comment length', () => {
       const inner = 'Trip:\n\t[x] | A | 1 | [[very/long/note/path|x]]\n\t[ ] | BB | 22';
 
-      const result = formatter.format(new BudgetCodeParser(inner).parse());
+      const result = formatBudget(new BudgetCodeParser(inner).parse());
 
       expect(result).toBe(
         '```budget\nTrip:\n\t[x] | A  | 1  | [[very/long/note/path|x]]\n\t[ ] | BB | 22\n```'
       );
+    });
+  });
+
+  describe('pipes in the name column', () => {
+    const tripWith = (name: string): TableStoreValues => ({
+      categories: new Map([['c1', 'Trip']]),
+      rows: new Map([['c1', [{ id: 'r1', checked: true, name, amount: 1500, comment: '' }]]]),
+    });
+
+    test('should escape a pipe typed into the name', () => {
+      const result = formatBudget(tripWith('[[Trip/Rome|Rome]]'));
+
+      expect(result).toBe('```budget\nTrip:\n\t[x] | [[Trip/Rome\\|Rome]] | 1500\n```');
+    });
+
+    test('should round-trip the name and keep the amount intact', () => {
+      // The bug: the amount used to come back as 0 because `Rome]]` was read
+      // as the amount cell.
+      const once = formatBudget(tripWith('[[Trip/Rome|Rome]]'));
+      const inner = once.replace(/^```budget\n/, '').replace(/\n```$/, '');
+
+      const parsed = new BudgetCodeParser(inner).parse();
+      const row = [...parsed.rows.values()][0][0];
+
+      expect(row.name).toBe('[[Trip/Rome|Rome]]');
+      expect(row.amount).toBe(1500);
+      expect(formatBudget(parsed)).toBe(once);
     });
   });
 });
