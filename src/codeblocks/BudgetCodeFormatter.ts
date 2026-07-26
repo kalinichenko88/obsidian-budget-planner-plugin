@@ -1,4 +1,5 @@
 import type { TableStoreValues, TableRow } from './models';
+import { splitRowCells } from './helpers/splitRowCells';
 
 type ParsedRow = {
   checkbox: string;
@@ -9,9 +10,6 @@ type ParsedRow = {
 };
 
 export class BudgetCodeFormatter {
-  private readonly CHECKBOX_PATTERN = /^\[[xX ]\]$/;
-  private readonly CELL_SEPARATOR = '|';
-
   private isCategoryRow(line: string): boolean {
     return line.endsWith(':') && !line.startsWith('\t');
   }
@@ -37,14 +35,13 @@ export class BudgetCodeFormatter {
       };
     }
 
-    const cells = row.split(this.CELL_SEPARATOR).map((cell) => cell.trim());
-    const isCheckbox = this.CHECKBOX_PATTERN.test(cells[0]);
+    const cells = splitRowCells(row);
 
     return {
-      checkbox: isCheckbox ? cells[0] : '[ ]',
-      name: isCheckbox ? cells[1] || '' : cells[0] || '',
-      amount: isCheckbox ? cells[2] || '' : cells[1] || '',
-      comment: isCheckbox ? cells[3] || '' : cells[2] || '',
+      checkbox: cells.checkbox || '[ ]',
+      name: cells.name,
+      amount: cells.amount,
+      comment: cells.comment,
       isCategory: false,
     };
   }

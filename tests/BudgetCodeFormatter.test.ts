@@ -2,6 +2,7 @@ import { expect, test, describe, beforeEach } from 'vitest';
 
 import type { TableStoreValues } from '@/codeblocks/models';
 import { BudgetCodeFormatter } from '@/codeblocks/BudgetCodeFormatter';
+import { BudgetCodeParser } from '@/codeblocks/BudgetCodeParser';
 
 describe('BudgetCodeFormatter', () => {
   let formatter: BudgetCodeFormatter;
@@ -420,6 +421,44 @@ Test:
 
       expect(result).toContain('Food: Weekly:');
       expect(result).not.toContain('Food: Weekly::');
+    });
+  });
+
+  describe('markdown comments', () => {
+    test('should round-trip an aliased wikilink', () => {
+      const inner = 'Trip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]';
+
+      const result = formatter.format(new BudgetCodeParser(inner).parse());
+
+      expect(result).toBe('```budget\nTrip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]\n```');
+    });
+
+    test('should round-trip a comment with several pipes', () => {
+      const inner = 'Trip:\n\t[ ] | Flight | 300 | a | b | c';
+
+      const result = formatter.format(new BudgetCodeParser(inner).parse());
+
+      expect(result).toBe('```budget\nTrip:\n\t[ ] | Flight | 300 | a | b | c\n```');
+    });
+
+    test('should be stable on a second pass', () => {
+      const inner = 'Trip:\n\t[x] | Hotel | 1500 | [[Trip/Rome|Rome]]';
+
+      const once = formatter.format(new BudgetCodeParser(inner).parse());
+      const innerOnce = once.replace(/^```budget\n/, '').replace(/\n```$/, '');
+      const twice = formatter.format(new BudgetCodeParser(innerOnce).parse());
+
+      expect(twice).toBe(once);
+    });
+
+    test('should not pad columns based on comment length', () => {
+      const inner = 'Trip:\n\t[x] | A | 1 | [[very/long/note/path|x]]\n\t[ ] | BB | 22';
+
+      const result = formatter.format(new BudgetCodeParser(inner).parse());
+
+      expect(result).toBe(
+        '```budget\nTrip:\n\t[x] | A  | 1  | [[very/long/note/path|x]]\n\t[ ] | BB | 22\n```'
+      );
     });
   });
 });
