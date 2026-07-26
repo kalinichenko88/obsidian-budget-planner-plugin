@@ -258,7 +258,11 @@
     cursor: pointer;
   }
 
-  .markdown:hover > .edit,
+  /* Hover only reveals the pencil in a cell that rendered a link — the one case
+     where the click guard hands the click away and the cell itself stops being a
+     way in. The link is created by MarkdownRenderer, hence :global. Keyboard
+     focus reveals it everywhere: the container is not in the tab order. */
+  .markdown:hover > .truncated:has(:global(a)) + .edit,
   .edit:focus-visible {
     opacity: 1;
   }
