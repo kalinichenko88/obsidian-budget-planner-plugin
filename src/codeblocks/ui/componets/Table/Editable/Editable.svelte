@@ -6,6 +6,8 @@
   import { MARKDOWN_CONTEXT_KEY } from '../constants';
   import { moneyFormatter } from '../../../helpers/moneyFormatter';
 
+  import Icon from '../AddRow/Icon/Icon.svelte';
+
   type Props = {
     value: string | number;
     onChange: (value: string | number) => void;
@@ -32,23 +34,15 @@
   let containerEl: HTMLElement | null = $state(null);
   let renderGeneration = 0;
 
-  const handleOnClick = (event: MouseEvent): void => {
-    if ((event.target as HTMLElement).closest('a')) {
-      return;
-    }
+  const startEditing = (): void => {
     startValue = value;
     isEditing = true;
     onEditingChange(true);
   };
 
   const handleOnKeyDown = (event: KeyboardEvent): void => {
-    if ((event.target as HTMLElement).closest('a')) {
-      return;
-    }
     if (event.key === 'Enter') {
-      startValue = value;
-      isEditing = true;
-      onEditingChange(true);
+      startEditing();
     }
   };
 
@@ -155,6 +149,18 @@
       onkeydown={handleOnInputKeyDown}
     />
   </div>
+{:else if canRenderMarkdown}
+  <!-- Rendered markdown can contain links, so this cell must not be a
+       role="button": ARIA makes a button's children presentational and the
+       link loses its role. The edit affordance is a sibling of the content
+       rather than its container — which also gives back the edit route for a
+       comment whose link fills the whole cell. -->
+  <div class="text truncating markdown">
+    <span class="truncated" bind:this={containerEl}></span>
+    <button class="edit" type="button" aria-label="Edit comment" onclick={startEditing}>
+      <Icon name="pencil" />
+    </button>
+  </div>
 {:else}
   <div
     class="text"
@@ -162,12 +168,10 @@
     class:truncating={truncate}
     role="button"
     tabindex="0"
-    onclick={handleOnClick}
+    onclick={startEditing}
     onkeydown={handleOnKeyDown}
   >
-    {#if canRenderMarkdown}
-      <span class="truncated" bind:this={containerEl}></span>
-    {:else if truncate}
+    {#if truncate}
       <span class="truncated">{valueDisplay}</span>
     {:else}
       {valueDisplay}
@@ -232,6 +236,37 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
+  }
+
+  .markdown > .truncated {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  .edit {
+    /* Kept in the layout rather than hidden, so the column does not shift on
+       hover and the control stays in the accessibility tree and tab order. */
+    opacity: 0;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    height: var(--icon-size);
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+  }
+
+  .markdown:hover > .edit,
+  .edit:focus-visible {
+    opacity: 1;
+  }
+
+  .edit:hover {
+    color: var(--text-normal);
   }
 
   .text :global(p) {
