@@ -397,6 +397,49 @@ describe('TableWidget', () => {
 
       expect(unloadSpy).toHaveBeenCalledOnce();
     });
+
+    test('sourcePath tracks a rename instead of snapshotting the path', () => {
+      // A rename mutates TFile.path in place and fires no CodeMirror
+      // transaction, so the widget is never rebuilt.
+      const file = { path: 'notes/Trip.md' };
+      const view = { state: buildInfoState({ app: {}, file }) } as unknown as EditorView;
+
+      emptyWidget().toDOM(view);
+      const { markdown } = lastMountProps() as { markdown: { sourcePath: string } };
+      expect(markdown.sourcePath).toBe('notes/Trip.md');
+
+      file.path = 'archive/Trip 2026.md';
+
+      expect(markdown.sourcePath).toBe('archive/Trip 2026.md');
+    });
+
+    test('a second toDOM() unloads the Component the first one left behind', () => {
+      // tableExtension reuses widget instances, so one instance can be mounted
+      // more than once. Overwriting mdComponent would strand the old one.
+      const unloadSpy = vi.spyOn(Component.prototype, 'unload').mockClear();
+      const view = {
+        state: buildInfoState({ app: {}, file: { path: 'a.md' } }),
+      } as unknown as EditorView;
+      const widget = emptyWidget();
+
+      widget.toDOM(view);
+      widget.toDOM(view);
+
+      expect(unloadSpy).toHaveBeenCalledOnce();
+    });
+
+    test('toDOM() clears isDestroyed so a remounted widget is live again', () => {
+      const view = {
+        state: buildInfoState({ app: {}, file: { path: 'a.md' } }),
+      } as unknown as EditorView;
+      const widget = emptyWidget();
+
+      widget.toDOM(view);
+      widget.destroy();
+      widget.toDOM(view);
+
+      expect((widget as unknown as { isDestroyed: boolean }).isDestroyed).toBe(false);
+    });
   });
 
   describe('destroy', () => {

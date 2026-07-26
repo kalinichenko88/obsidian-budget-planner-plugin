@@ -129,6 +129,10 @@ export class TableWidget extends WidgetType {
     this.container = container;
     this.view = view;
     this.formatter = new BudgetCodeFormatter();
+    // tableExtension reuses widget instances, so CodeMirror can mount one
+    // that was destroyed earlier. Without this reset ensureTrailingNewline
+    // stays a no-op for the rest of the instance's life.
+    this.isDestroyed = false;
 
     // Two-arg form: state.field() throws when the field is absent, and a
     // throw here would take down the whole widget render.
@@ -136,15 +140,19 @@ export class TableWidget extends WidgetType {
     let markdown: MarkdownContext | null = null;
 
     if (info) {
-      // ponytail: one Component per widget, not per cell. Child components
-      // (hover previews, embeds) accumulate across re-renders until the
-      // widget is destroyed. Move to per-cell children via addChild if a
-      // leak shows up.
+      // A reused instance may already hold a loaded Component; overwriting it
+      // would leave it loaded with no path back to it from destroy().
+      this.mdComponent?.unload();
       this.mdComponent = new Component();
       this.mdComponent.load();
       markdown = {
         app: info.app,
-        sourcePath: info.file?.path ?? '',
+        // Getter, not a snapshot: renaming a note mutates TFile.path in place
+        // and fires no CodeMirror transaction, so a captured string would go
+        // stale and resolve wikilinks against the old folder.
+        get sourcePath(): string {
+          return info.file?.path ?? '';
+        },
         component: this.mdComponent,
       };
     }

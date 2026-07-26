@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext, untrack } from 'svelte';
-  import { MarkdownRenderer } from 'obsidian';
+  import { Component, MarkdownRenderer } from 'obsidian';
 
   import type { MarkdownContext } from '../../../../models';
   import { MARKDOWN_CONTEXT_KEY } from '../constants';
@@ -107,19 +107,34 @@
     const token = ++renderGeneration;
     const staging = document.createElement('div');
 
-    void MarkdownRenderer.render(md.app, source, staging, md.sourcePath, md.component)
-      .then(() => {
-        if (token !== renderGeneration) {
-          return;
-        }
-        el.empty();
-        el.append(...staging.childNodes);
-      })
-      .catch(() => {
-        if (token === renderGeneration) {
-          el.setText(source);
-        }
-      });
+    // One child per render, released by this effect's cleanup. Registering on
+    // the widget-lifetime component instead piles up a render child per edit,
+    // each still holding events bound to DOM already emptied out of the cell.
+    const child = md.component.addChild(new Component());
+
+    try {
+      void MarkdownRenderer.render(md.app, source, staging, md.sourcePath, child)
+        .then(() => {
+          if (token !== renderGeneration) {
+            return;
+          }
+          el.empty();
+          el.append(...staging.childNodes);
+        })
+        .catch(() => {
+          if (token === renderGeneration) {
+            el.setText(source);
+          }
+        });
+    } catch {
+      // render can throw synchronously rather than reject — a side-loaded
+      // build on an Obsidian older than the manifest floor has no such
+      // method at all, and .catch would never see that.
+      el.setText(source);
+    }
+
+    // eslint-disable-next-line unicorn/prefer-dom-node-remove -- Obsidian's Component API, not a DOM node
+    return () => md.component.removeChild(child);
   });
 </script>
 
@@ -218,8 +233,34 @@
     width: 100%;
   }
 
-  .text :global(p) {
-    margin: 0;
+  /* MarkdownRenderer always emits block elements, and the cell is one line
+     tall with an ellipsis. Flatten them so a comment like `- pending` or
+     `# Rome` still reads as its own text instead of being clipped out of the
+     visible box. */
+  .text :global(p),
+  .text :global(ul),
+  .text :global(ol),
+  .text :global(li),
+  .text :global(blockquote),
+  .text :global(h1),
+  .text :global(h2),
+  .text :global(h3),
+  .text :global(h4),
+  .text :global(h5),
+  .text :global(h6) {
     display: inline;
+    margin: 0;
+    padding: 0;
+    border: none;
+    list-style: none;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
+
+  /* An <hr> carries no text of its own, so there is nothing to preserve —
+     just keep it from drawing a rule through the row. */
+  .text :global(hr) {
+    display: none;
   }
 </style>
