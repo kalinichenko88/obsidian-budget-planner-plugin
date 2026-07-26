@@ -5,22 +5,35 @@ import { Decoration, EditorView } from '@codemirror/view';
 import type { DecorationSet } from '@codemirror/view';
 import { writable } from 'svelte/store';
 
-vi.mock('obsidian', () => ({
-  Menu: class {},
-  getIcon: (): null => null,
-  Component: class {
-    load(): void {}
-    unload(): void {}
-  },
-  editorInfoField: Symbol('editorInfoField'),
-}));
+// editorInfoField must be a real StateField (not a plain Symbol): the new
+// toDOM() tests build a genuine EditorState via CodeMirror's own state.field()
+// resolution, so a regression that drops the `false` default-arg from
+// `view.state.field(editorInfoField, false)` in TableWidget.ts makes CM6
+// itself throw — a plain Symbol stand-in couldn't reproduce that.
+vi.mock('obsidian', async () => {
+  const { StateField } = await import('@codemirror/state');
+  return {
+    Menu: class {},
+    getIcon: (): null => null,
+    Component: class {
+      load(): void {}
+      unload(): void {}
+    },
+    editorInfoField: StateField.define({
+      create: (): unknown => null,
+      update: (value: unknown): unknown => value,
+    }),
+  };
+});
 
 vi.mock('svelte', () => ({
   mount: vi.fn(() => ({})),
   unmount: vi.fn(async () => {}),
 }));
 
-import { unmount } from 'svelte';
+import { mount, unmount } from 'svelte';
+import { Component, editorInfoField } from 'obsidian';
+import type { MarkdownFileInfo } from 'obsidian';
 import { TableWidget } from '@/codeblocks/TableWidget';
 import { BudgetCodeFormatter } from '@/codeblocks/BudgetCodeFormatter';
 import { tableExtension } from '@/codeblocks/tableExtension';
@@ -301,6 +314,88 @@ describe('TableWidget', () => {
       dispatchChanges(widget, CATEGORIES, ROWS);
 
       expect(widget.src).toBe(dispatchMock.mock.calls[0][0].changes.insert);
+    });
+  });
+
+  describe('toDOM', () => {
+    // toDOM() calls the real `createDiv()`/`window.setTimeout()` globals that
+    // Obsidian's Electron shell normally provides. Stub them minimally and
+    // freeze the deferred ensureTrailingNewline() timer instead of letting it
+    // fire against a fake view.
+    beforeEach(() => {
+      vi.stubGlobal('createDiv', () => ({}));
+      vi.stubGlobal('window', globalThis);
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      vi.unstubAllGlobals();
+    });
+
+    type Info = { app: unknown; file: { path: string } | null } | null;
+
+    const buildInfoState = (info: Info): EditorState =>
+      EditorState.create({
+        doc: 'x',
+        extensions: info ? [editorInfoField.init(() => info as unknown as MarkdownFileInfo)] : [],
+      });
+
+    const lastMountProps = (): { markdown: unknown } => {
+      const call = vi.mocked(mount).mock.calls.at(-1);
+      return call?.[1]?.props as { markdown: unknown };
+    };
+
+    test('field present: passes app/sourcePath/component on markdown and loads the Component', () => {
+      const loadSpy = vi.spyOn(Component.prototype, 'load').mockClear();
+      const stubApp = {};
+      const view = {
+        state: buildInfoState({ app: stubApp, file: { path: 'notes/Trip.md' } }),
+      } as unknown as EditorView;
+
+      emptyWidget().toDOM(view);
+
+      const { markdown } = lastMountProps() as {
+        markdown: { app: unknown; sourcePath: string; component: unknown };
+      };
+      expect(markdown.app).toBe(stubApp);
+      expect(markdown.sourcePath).toBe('notes/Trip.md');
+      expect(markdown.component).toBeInstanceOf(Component);
+      expect(loadSpy).toHaveBeenCalledOnce();
+    });
+
+    test('field present, file null: sourcePath falls back to empty string', () => {
+      const view = {
+        state: buildInfoState({ app: {}, file: null }),
+      } as unknown as EditorView;
+
+      emptyWidget().toDOM(view);
+
+      const { markdown } = lastMountProps() as { markdown: { sourcePath: string } };
+      expect(markdown.sourcePath).toBe('');
+    });
+
+    test('field absent: markdown prop is null and no Component is built', () => {
+      const loadSpy = vi.spyOn(Component.prototype, 'load').mockClear();
+      const view = { state: buildInfoState(null) } as unknown as EditorView;
+
+      expect(() => emptyWidget().toDOM(view)).not.toThrow();
+
+      expect(lastMountProps().markdown).toBeNull();
+      expect(loadSpy).not.toHaveBeenCalled();
+    });
+
+    test('destroy() unloads the Component created by a real toDOM()', () => {
+      const unloadSpy = vi.spyOn(Component.prototype, 'unload').mockClear();
+      const view = {
+        state: buildInfoState({ app: {}, file: { path: 'a.md' } }),
+      } as unknown as EditorView;
+      const widget = emptyWidget();
+      widget.toDOM(view);
+
+      widget.destroy();
+
+      expect(unloadSpy).toHaveBeenCalledOnce();
     });
   });
 
