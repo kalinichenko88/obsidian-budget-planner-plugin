@@ -73,7 +73,7 @@ All mutations go through `createStoreActions()` in `src/codeblocks/ui/componets/
 
 ### Settings & Commands
 
-`src/settings/` — Plugin settings with configurable default budget block template. `SettingTab` returns declarative definitions from `getSettingDefinitions()` (Obsidian 1.13+, makes settings searchable); `display()` stays as the fallback for the 0.16.0 `minAppVersion`.
+`src/settings/` — Plugin settings with configurable default budget block template. `SettingTab` returns declarative definitions from `getSettingDefinitions()` (Obsidian 1.13+, makes settings searchable); `display()` stays as the fallback for the 1.3.5 `minAppVersion`.
 `src/commands/` — Command palette integration ("Insert Budget Planner").
 
 ## Code Conventions
